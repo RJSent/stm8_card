@@ -9,4 +9,6 @@ int delay(unsigned long num);
 
 int random(int max);
 
+int ascii_to_int(char);
+
 #endif

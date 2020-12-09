@@ -9,6 +9,6 @@ int blink_code(int);
 int blink_clear();
 int blink_flash(int, int);
 int blink_code_clear(int);
-int blink_set_pins(char *[]);
+int blink_set_pins(char **);
 
 #endif
