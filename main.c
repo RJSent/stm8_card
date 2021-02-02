@@ -11,6 +11,8 @@
 #include "blink_code.h"
 #include "baseline.h"
 
+#include <stdarg.h>             /* Included for uart_printf */
+
 #define UART1_BASE      0x005230
 /* #define UART2_BASE      0x005230 */
 /* #define UART3_BASE      0x005230 */
@@ -56,6 +58,7 @@ int uart_init(long baud_rate, long fmaster) {
 /*   } */
 /* } */
 
+/* Changing to uart_putchar may be good idea */
 int uart_one_char(char hi) {
   uint64_t base_addr = UART1_BASE;
   uint8_t* dr_addr = (uint8_t*) base_addr + UART_DR_OFF;
@@ -89,6 +92,40 @@ of 0x682. */
 
 int clk_prescaler() {
   *CLK_CKDIVR = (!0x18) & (*CLK_CKDIVR);
+
+  return 0;
+}
+
+/* Based on hackerearth.com/practice/notes/know-our-printf-variable-number-of-arguments-to-a-function */
+/* Needs reworking to remove recursive uart_printf calls. hackerearth
+   article just used printf when his minimal printf needed to print
+   integers or strings */
+int uart_printf(char *format, ...) {
+  va_list ap;
+  char *p, *sval;
+  int ival;
+  va_start(ap, format);
+  for (p = format; *p; p++) {
+    if (*p != '%') {
+      uart_one_char(*p);
+      continue;
+    }
+    switch(*++p) {
+    case 'd':
+      ival = va_arg(ap, int);
+      uart_printf("infinite loop");
+      uart_printf("%d", ival);
+      break;
+    case 's':
+      for (sval = va_arg(ap, char *); *sval; sval++)
+	uart_one_char(*sval);
+      break;
+    default:
+      uart_one_char(*p);
+      break;
+    }
+  }
+  va_end(ap);
 }
 
 int main() {
@@ -106,6 +143,8 @@ int main() {
     
   while (1) {
     uart_transmit(message);
+    uart_printf("%s", message);
+    //    uart_printf("hello %d", 10);
     blink_code(rand());
     delay(100000);
   }
