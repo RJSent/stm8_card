@@ -9,5 +9,8 @@
 *.sym
 *.mem
 *.ihx
+*.dump
+*.s19
+*.elf
 main
 *#*
