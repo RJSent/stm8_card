@@ -1,9 +1,7 @@
 #+TITLE: stm8_card
 #+AUTHOR: Richard Sent
 
-* stm8_card
-
-** Overview
+* Overview
 
 This is a work-in-progress project for an STM8 microcontroller powered
 business card. I will use the STM8 alongside a OLED with a SSD1306
@@ -19,7 +17,7 @@ as a miniature library of sorts for me to use. When that happens I
 might move that to a different git project, and leave business card
 specific code here.
 
-** License
+* License
 
 This project is available under the terms of the [[https://opensource.org/licenses/MIT][MIT License]].
 
