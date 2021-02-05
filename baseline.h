@@ -1,3 +1,5 @@
+#include "registers.h"
+
 #ifndef BASELINE_H
 #define BASELINE_H
 
@@ -7,16 +9,14 @@
 
 int delay(unsigned long num);
 
-int random(int max);
+int random();
+
+int random_upto(int max);
 
 int ascii_to_int(char);
 
-/* Returns nth digit in integer num, in base b.
-   e.g. int_to_digit(20, 16, 1) returns 4 */
-char int_to_digit(int num, int b, int n);
+int clk_hsi_prescaler(int divider); /* 1, 2, 4, or 8. Both CPU and peripherals */
 
-/* Returns number of digits in num in base b
-   e.g. num_digits(8, 2) returns 4 */
-char num_digits(int num, int b);
+int clk_cpu_prescaler(int divider); /* Powers of 2. <= 128. [1, 2, 4, 8, ... 128]*/
 
 #endif
