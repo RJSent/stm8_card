@@ -1,6 +1,8 @@
 #ifndef REGISTERS_H
 #define REGISTERS_H
 
+/* GPIO */
+
 #define ODR_OFF 0x0000
 #define IDR_OFF 0x0001
 #define DDR_OFF 0x0002
@@ -50,7 +52,23 @@
 #define PF_CR1 (PF_BASE + CR1_OFF)
 #define PF_CR2 (PF_BASE + CR2_OFF)
 
+/* UART */
 
+#define UART1_BASE      0x005230
+/* #define UART2_BASE      0x005230  */
+/* #define UART3_BASE      0x005230 */
+/* #define UART4_BASE      0x005230 */
+#define UART_SR_OFF     0x00     // Status
+#define UART_DR_OFF     0x01     // Data
+#define UART_BRR1_OFF   0x02     // Clock divider 1
+#define UART_BRR2_OFF   0x03     // Clock divider 2
+#define UART_CR1_OFF    0x04     // Control 1
+#define UART_CR2_OFF    0x05     // Control 2
 
+/* CLOCK */
+#define CLK_BASE        0x0050C0
+#define CLK_CKDIVR_OFF  0x000006
+
+#define CLK_CKDIVR      (uint8_t*) (CLK_BASE + CLK_CKDIVR_OFF)
 
 #endif
