@@ -1,28 +1,38 @@
+# http://web.mit.edu/gnu/doc/html/make_4.html
+# Use -m$(family) in both compiling and linking stage
+CC = sdcc
+CFLAGS = -m$(family)
+LDFLAGS = -m$(family) --out-fmt-$(bin_fmt)
+objects := $(patsubst %.c,%.rel,$(wildcard *.c))
+
 family = stm8
 part = stm8s103?3
 programmer = stlinkv2
-output = --out-fmt-ihx
+bin_fmt = ihx
+final_exe = main.$(bin_fmt)
 
-all: main.rel baseline.rel blink_code.rel gpio.rel uart.rel
-	sdcc -m$(family) --out-fmt-ihx -o main.ihx main.rel baseline.rel blink_code.rel gpio.rel uart.rel
+all: $(final_exe)
 
-main.rel: main.c # Careful to include -m$(family) in both compiling and linking stage
-	sdcc -m$(family) -c main.c
+$(final_exe): $(objects)
+	$(CC) $(LDFLAGS) -o $(final_exe) $(objects)
 
-baseline.rel: baseline.c
-	sdcc -m$(family) -c baseline.c
+%.rel : %.c 
+	$(CC) -c $(CFLAGS) $< -o $@
 
-blink_code.rel: blink_code.c
-	sdcc -m$(family) -c blink_code.c
+flash: $(final_exe)
+	stm8flash -c $(programmer) -p $(part) -w $(final_exe)
 
-gpio.rel: gpio.c
-	sdcc -m$(family) -c gpio.c
+memdump:
+	stm8flash -s ram -c $(programmer) -p $(part) -r mem.dump
 
-uart.rel: uart.c
-	sdcc -m$(family) -c uart.c
+flashdump:
+	stm8flash -s flash -c $(programmer) -p $(part) -r flash.dump
 
-flash: all
-	stm8flash -c $(programmer) -p $(part) -w main.ihx
+eepromdump:
+	stm8flash -s eeprom -c $(programmer) -p $(part) -r eeprom.dump
+
+optdump:
+	stm8flash -s opt -c $(programmer) -p $(part) -r opt.dump
 
 clean:
-	rm -f *.asm *.cdb *.lk *.lst *.map *.rel *.rst *.sym *.mem *.ihx
+	rm -f *.asm *.cdb *.lk *.lst *.map *.rel *.rst *.sym *.mem *.$(bin_fmt)
