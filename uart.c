@@ -62,16 +62,36 @@ int uart_printf(char *format, ...) {
       uart_putc(*p);
       continue;
     }
+    int buf[16];
     switch(*++p) {
-    case 'd':
+    case 'b':
       ival = va_arg(ap, int);
-      int buf[16];
-      _itoa(ival, buf, 16);     /* sdcc nonstandard stdlib extension */
+      _uitoa(ival, buf, 2);     /* sdcc nonstandard stdlib extension */
+      uart_printf("%s", buf);
+      break;
+    case 'c':
+      ival = va_arg(ap, int);
+      uart_putc(ival);
+      break;
+    case 'd':
+    case 'i':
+      ival = va_arg(ap, int);
+      _itoa(ival, buf, 10);
       uart_printf("%s", buf);
       break;
     case 's':
       for (sval = va_arg(ap, char *); *sval; sval++)
 	uart_putc(*sval);
+      break;
+    case 'u':
+      ival = va_arg(ap, int);
+      _uitoa(ival, buf, 10);
+      uart_printf("%s", buf);
+      break;
+    case 'x':
+      ival = va_arg(ap, int);
+      _uitoa(ival, buf, 16);
+      uart_printf("%s", buf);
       break;
     default:
       uart_putc(*p);
