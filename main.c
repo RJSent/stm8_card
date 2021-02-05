@@ -113,8 +113,9 @@ int uart_printf(char *format, ...) {
     switch(*++p) {
     case 'd':
       ival = va_arg(ap, int);
-      uart_printf("infinite loop");
-      uart_printf("%d", ival);
+      int buf[16];
+      _itoa(ival, buf, 16);     /* sdcc nonstandard stdlib extension */
+      uart_printf("%s", buf);
       break;
     case 's':
       for (sval = va_arg(ap, char *); *sval; sval++)
@@ -126,6 +127,7 @@ int uart_printf(char *format, ...) {
     }
   }
   va_end(ap);
+  return 0;
 }
 
 int main() {
@@ -134,16 +136,19 @@ int main() {
   const int baud_rate = 9600;
   const long fmaster = 16000000;
   char *message = "Hello world!\n\r";
+  char *message2 = "How are you?\n\r";
 
   clk_prescaler();
 
   uart_init(baud_rate, fmaster);
   blink_code(5);
     
-    
+
+  uart_transmit(message);
+  
   while (1) {
-    uart_transmit(message);
-    uart_printf("%s", message);
+    uart_printf("%s", message2);
+    uart_printf("Value is %d\n\r", 20534);
     //    uart_printf("hello %d", 10);
     blink_code(rand());
     delay(100000);
