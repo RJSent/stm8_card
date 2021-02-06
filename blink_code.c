@@ -15,7 +15,7 @@ int blink_code(int code) {
     if ((pins[i][0]) == 0) break;
     uint8_t *base_addr = (uint8_t *)get_gpio_base(pins[i][0]);
     
-    int pin = ascii_to_int(pins[i][1]);
+    int pin = atoi(&pins[i][1]);
     if (pin == -1) return -1;
     
     if (code & (1 << i)) {

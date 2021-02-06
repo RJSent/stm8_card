@@ -17,12 +17,6 @@ int random_upto(int max) {
   return random() % (max + 1);
 }
 
-
-int ascii_to_int(char ascii) {
-  if (ascii < 48 || ascii > 57) return -1;
-  return ascii - 48;
-}
-
 /* This method will eliminate the fHSI = fHSI / 8 prescaler. (So
 fmaster = fHSI = 2MHz). This divided fmaster is sent to the UART,
 where we further divide it using the BRR1 and BRR2 registers. The
