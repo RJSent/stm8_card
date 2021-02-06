@@ -35,4 +35,4 @@ optdump:
 	stm8flash -s opt -c $(programmer) -p $(part) -r opt.dump
 
 clean:
-	rm -f *.asm *.cdb *.lk *.lst *.map *.rel *.rst *.sym *.mem *.$(bin_fmt)
+	rm -f *.asm *.cdb *.lk *.lst *.map *.rel *.rst *.sym *.mem *.ihx *.elf *.s19 *.dump
