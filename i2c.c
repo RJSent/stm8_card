@@ -4,8 +4,8 @@
 #include "baseline.h"
 
 #define PERIPH_ENABLE 1
-#define START_GEN 1
-#define STOP_GEN 0x20
+#define START_GEN 0x01
+#define STOP_GEN 0x02
 
 #define TRANSMIT 0
 #define RECEIVER 1
@@ -14,8 +14,8 @@
 
 int i2c_init(uint8_t freq_mhz) {
   uint8_t trise = freq_mhz + 1;      /* pg. 318 in rm0016. I think this shortcut calculation is valid */
-  if (freq_mhz > 24) return -1;      /* 1-24 valid */
-  if (trise >= 2 << 6) return -1;    /* <= 6 bits */
+  if (freq_mhz > 24 || freq_mhz < 1) return -1;      /* 1-24 valid */
+  if (trise >= 2 << 6) return -1;                    /* <= 6 bits */
 
   I2C_FREQR = freq_mhz;
   I2C_TRISER = trise;           /* must configure before PE  */
@@ -37,6 +37,7 @@ void i2c_start_condition() {
 
 int i2c_send_bytes(uint8_t *data, int size, uint8_t addr) {
   i2c_start_condition();
+  delay(50);
   i2c_send_byte(addr << 1 | TRANSMIT);
   /* for (int i = 0; i < size; i++) { */
   /*   while ((I2C_SR1 & TXE) != 0) {}; */
