@@ -17,6 +17,7 @@
 
 #define AF   ((I2C_SR2 & 0x04) >> 2)
 
+#define MSL  ((I2C_SR3 & 0x01))
 #define BUSY ((I2C_SR3 & 0x02) >> 1)
 #define TRA  ((I2C_SR3 & 0x04) >> 2)
 
@@ -41,13 +42,13 @@ int i2c_send_byte(uint8_t data) {
 }
 
 void i2c_start_condition() {
+  while (BUSY) {};              /* wait until bus is free */
   I2C_CR2 |= START_GEN;
-  while (!SB) {}; /* return when start condition is sent */
+  while (!SB) {};               /* return when start condition is sent */
 }
 
 void i2c_stop_condition() {
   I2C_CR2 |= STOP_GEN;
-  // while ((I2C_SR1 & 0x01) != 1) {}; /* return when start condition is sent */
 }
 
 void i2c_debug() {
