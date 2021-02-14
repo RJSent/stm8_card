@@ -3,6 +3,7 @@
 #include "baseline.h"
 #include "i2c.h"
 #include "uart.h"
+#include "ssd1306.h"
 
 /* Note that the dev board that I am using has a button meant to help
    quickly power cycle for testing. This power cycle seems to only
@@ -36,22 +37,24 @@ int main() {
   i2c_init(2);                  /* fixme no apparent effect */
   uart_printf("\n\r------------\n\r");
   uart_printf("Started!\n\r");
-  uint8_t data[] = {1, 2, 3};
-  int err = i2c_send_bytes(data, 3, 0x3C);
+  uint8_t data[5];
+  data[0] = CONTROL_BYTE(CO_BOTH, DC_COMMAND);
+  data[1] = CMD_ON;
+  data[2] = CONTROL_BYTE(CO_BOTH, DC_COMMAND);
+  data[3] = CMD_FOLLOW_RAM;
+
+  int err = i2c_send_bytes(data, 4, 0x3C);
   if (err == NACK_ERROR) {
     uart_printf("NACK ERROR!!!\n\r");
   }
   /* Funny story with (char) cast. Originally send_bytes took an int in that spot, but I changed it to char in i2c.c/h for memory concerns. I then noticed that addr wasn't being sent correctly after that. Turns out I needed to recompile main.c as well! */
 
-  uart_printf("Done!\n\r");
+  /* uart_printf("Done!\n\r"); */
 
   while (1) {
-    /* uart_printf("Binary:    %b\n\r", 8); */
-    /* uart_printf("Character: %c\n\r", 'c'); */
-    /* uart_printf("Signed:    %d\n\r", -14); */
-    /* uart_printf("String:    %s\n\r", "Hi there!"); */
-    /* uart_printf("Unsigned:  %u\n\r", 14); */
-    /* uart_printf("Hex:       %x\n\r", 12); */
-    delay(50000);
+    data[0] = CONTROL_BYTE(CO_BOTH, DC_DATA);
+    data[1] = random_upto(0xFF);
+    i2c_send_bytes(data, 2, 0x3C);
+    /* delay(50); */
   }
 }

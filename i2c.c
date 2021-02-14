@@ -53,6 +53,7 @@ void i2c_debug() {
 
 /* FIXME: Remaining data bytes aren't transmitted if called too quickly. */
 /* Seems to be an inconsistent on-and-off issue, might not be tied to logic here. */
+/* Tested in commit 11ff9ee, no issues that time without any delay at all. */
 int i2c_send_bytes(uint8_t *data, char size, uint8_t addr) {
   volatile uint8_t temp;
   i2c_start_condition();
