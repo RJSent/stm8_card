@@ -21,7 +21,7 @@
 #define BUSY ((I2C_SR3 & 0x02) >> 1)
 #define TRA  ((I2C_SR3 & 0x04) >> 2)
 
-
+/* FIXME: Disable before + reset to initial, also ensure GPIO is set properly */
 int i2c_init(uint8_t freq_mhz) {
   uint8_t trise = freq_mhz + 1;      /* pg. 318 in rm0016. I think this shortcut calculation is valid */
   if (freq_mhz > 24 || freq_mhz < 1) return -1;      /* 1-24 valid */
@@ -32,12 +32,6 @@ int i2c_init(uint8_t freq_mhz) {
   I2C_CCRL = 0x08;              /* this actually controls freq of communications */
   I2C_CR1 |= PERIPH_ENABLE;     /* enable bit */
 
-  return 0;
-}
-
-int i2c_send_byte(uint8_t data) {
-  I2C_DR = (data);
-  /* while () */
   return 0;
 }
 
@@ -63,14 +57,14 @@ void i2c_debug() {
 int i2c_send_bytes(uint8_t *data, char size, uint8_t addr) {
   volatile uint8_t temp;
   i2c_start_condition();
-  i2c_send_byte(addr << 1 | TRANSMIT);
+  I2C_DR = (addr << 1 | TRANSMIT);
   delay(30);                    /* FIXME: hardcoded delay. Need to wait until we get ACK, but I can't read SR3 to do it since that'll reset ADDR */
   /* clear ADDR by reading SR1 then SR3 */
   if (ADDR == 1) {              /* read SR1 */
     temp = I2C_SR3;             /* read SR3 */
     for (int i = 0; i < size; i++) {
-      i2c_send_byte(data[i]);
-      while (TXE != 1) {};
+      I2C_DR = data[i];
+      while (TXE != 1) {};      /* order matters here since sending addr doesn't set TXE */
     }
     i2c_stop_condition();
     return 0;
