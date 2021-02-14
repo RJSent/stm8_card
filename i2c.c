@@ -51,24 +51,24 @@ void i2c_debug() {
   uart_printf("SR3: 0b%b\n\r", I2C_SR3);
 }
 
-/* FIXME: i2c_start_condition() reads SR1, meaning we can't read SR3
-   at all before the if statement as ADDR would be cleared and we'd
-   have a NACK_ERROR even though it was ACK'd */
+/* FIXME: Remaining data bytes aren't transmitted if called too quickly. */
+/* Seems to be an inconsistent on-and-off issue, might not be tied to logic here. */
 int i2c_send_bytes(uint8_t *data, char size, uint8_t addr) {
   volatile uint8_t temp;
   i2c_start_condition();
   I2C_DR = (addr << 1 | TRANSMIT);
-  delay(30);                    /* FIXME: hardcoded delay. Need to wait until we get ACK, but I can't read SR3 to do it since that'll reset ADDR */
-  /* clear ADDR by reading SR1 then SR3 */
-  if (ADDR == 1) {              /* read SR1 */
-    temp = I2C_SR3;             /* read SR3 */
-    for (int i = 0; i < size; i++) {
-      I2C_DR = data[i];
-      while (TXE != 1) {};      /* order matters here since sending addr doesn't set TXE */
+  while (ADDR != 1) {           /* while addr transmission is ongoing */
+    if (AF == 1) {              /* if not ACK'd, return */
+      i2c_stop_condition();
+      return NACK_ERROR;
     }
-    i2c_stop_condition();
-    return 0;
-  } else {
-    return NACK_ERROR;
   }
+  /* clear ADDR by reading SR1 then SR3 */
+  temp = I2C_SR3;               /* read SR3 */
+  for (int i = 0; i < size; i++) {
+    I2C_DR = data[i];
+    while (TXE != 1) {};        /* order matters here since sending addr doesn't set TXE */
+  }
+  i2c_stop_condition();
+  return 0;
 }
