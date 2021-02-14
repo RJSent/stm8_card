@@ -33,11 +33,11 @@ int i2c_send_byte(uint8_t data) {
 
 void i2c_start_condition() {
   I2C_CR2 |= START_GEN;
+  while ((I2C_SR1 & 0x01) != 1) {}; /* return when start condition is sent */
 }
 
 int i2c_send_bytes(uint8_t *data, int size, uint8_t addr) {
   i2c_start_condition();
-  delay(50);
   i2c_send_byte(addr << 1 | TRANSMIT);
   /* for (int i = 0; i < size; i++) { */
   /*   while ((I2C_SR1 & TXE) != 0) {}; */
