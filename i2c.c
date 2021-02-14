@@ -51,9 +51,12 @@ void i2c_debug() {
   uart_printf("SR3: 0b%b\n\r", I2C_SR3);
 }
 
-/* FIXME: Remaining data bytes aren't transmitted if called too quickly. */
-/* Seems to be an inconsistent on-and-off issue, might not be tied to logic here. */
-/* Tested in commit 11ff9ee, no issues that time without any delay at all. */
+/* FIXME: Issue in consistency */
+/* Once we get a NACK, we will continue to get NACK's for a long period of time (approx 57ms) */
+/* (Above might be an issue with the OLED) */
+/* When we get a ACK again, data bytes are not transmitted and SCL remains low indefinitely */
+/* I noticed two address messages with ACKs before SCL is stuck low. */
+/* No stop condition is sent. No data in SDA while SCL is stuck low */
 int i2c_send_bytes(uint8_t *data, char size, uint8_t addr) {
   volatile uint8_t temp;
   i2c_start_condition();
@@ -65,6 +68,7 @@ int i2c_send_bytes(uint8_t *data, char size, uint8_t addr) {
     }
   }
   /* clear ADDR by reading SR1 then SR3 */
+  temp = I2C_SR1;               /* read SR1. May not be needed if reading SR2 between SR1 and SR3 isn't a problem. */
   temp = I2C_SR3;               /* read SR3 */
   for (int i = 0; i < size; i++) {
     I2C_DR = data[i];
