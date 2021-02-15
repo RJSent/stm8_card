@@ -4,7 +4,7 @@
 * Overview
 
 This is a work-in-progress project for an STM8 microcontroller powered
-business card. I will use the STM8 alongside a OLED with a SSD1306
+business card. I will use an STM8 alongside a OLED with a SSD1306
 controller.
 
 I am currently implementing some basic functionality to assist with
