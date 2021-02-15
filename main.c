@@ -103,10 +103,7 @@ int main() {
   /* clear display */
   data[0] = CONTROL_BYTE(CO_DATA, DC_DATA);
   data[1] = 0x00;
-  for (int i = 0; i < 512; i++) {
-    i2c_send_bytes(data, 2, 0x3C);
-    delay(5);
-  }
+
 
   /* Set address to start writing */
   data[0] = CONTROL_BYTE(CO_DATA, DC_COMMAND);
@@ -134,23 +131,29 @@ int main() {
   while (1) {
     count++;
     data[0] = CONTROL_BYTE(CO_DATA, DC_DATA);
-    for (int i = 0; i < 4; i++) {
-      if (count % 2 == 0) {
-	if (i % 2 == 0) {
-	  data[1] = 0x00;
-	} else {
-	  data[1] = 0xFF;
-	}
-      } else {
-	if (i % 2 == 0) {
-	  data[1] = 0xFF;
-	} else {
-	  data[1] = 0x00;
-	}
-      }
-      for (int i = 0; i < 128; i++) {
-	i2c_send_bytes(data, 2, 0x3C);
-      }
+    /* for (int i = 0; i < 4; i++) { */
+    /*   if (count % 2 == 0) { */
+    /* 	if (i % 2 == 0) { */
+    /* 	  data[1] = 0x00; */
+    /* 	} else { */
+    /* 	  data[1] = 0xFF; */
+    /* 	} */
+    /*   } else { */
+    /* 	if (i % 2 == 0) { */
+    /* 	  data[1] = 0xFF; */
+    /* 	} else { */
+    /* 	  data[1] = 0x00; */
+    /* 	} */
+    /*   } */
+    /*   for (int i = 0; i < 128; i++) { */
+    /* 	i2c_send_bytes(data, 2, 0x3C); */
+    /*   } */
+    /* } */
+
+    for (int i = 0; i < 512; i++) {
+      data[1] = 0x0F;
+      i2c_send_bytes(data, 2, 0x3C);
+      delay(5);
     }
 
     /* data[0] = CONTROL_BYTE(CO_DATA, DC_DATA); */
