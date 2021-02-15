@@ -37,13 +37,25 @@ int main() {
   i2c_init(2);                  /* fixme no apparent effect */
   uart_printf("\n\r------------\n\r");
   uart_printf("Started!\n\r");
-  uint8_t data[5];
-  data[0] = CONTROL_BYTE(CO_BOTH, DC_COMMAND);
-  data[1] = CMD_ON;
-  data[2] = CONTROL_BYTE(CO_BOTH, DC_COMMAND);
-  data[3] = CMD_FOLLOW_RAM;
+  uint8_t data[16];
+  data[0] = CONTROL_BYTE(CO_DATA, DC_COMMAND);
+  data[1] = CMD_OFF;
+  data[2] = CMD_TIM_DISPLAY_CLK_DIVIDE_RATIO;
+  data[3] = 0x80;                /* ratio 0x80 */
+  data[4] = CMD_HW_MULTIPLEX_RATIO;
+  data[5] = 0x1F;                /* ratio 32 mux */
+  data[6] = CMD_HW_COM_PINS_CONFIG;
+  data[7] = 0x12;                /* split for 128x32 */
+  data[8] = 0x20;   /* set addressing mode */
+  data[9] = 0x00;   /* horiztonal addressing mode */
+  data[10] = CMD_PUMP_SETTING;
+  data[11] = CHARGE_PUMP_75;
+  data[12] = CMD_FOLLOW_RAM;
+  data[13] = CMD_NOINVERSE;
+  data[14] = CMD_ON;
+  delay(75000);
 
-  int err = i2c_send_bytes(data, 4, 0x3C);
+  int err = i2c_send_bytes(data, 15, 0x3C);
   if (err == NACK_ERROR) {
     uart_printf("NACK ERROR!!!\n\r");
   }
@@ -51,10 +63,14 @@ int main() {
 
   /* uart_printf("Done!\n\r"); */
 
+  int i = 0;
+
   while (1) {
-    data[0] = CONTROL_BYTE(CO_BOTH, DC_DATA);
+    data[0] = CONTROL_BYTE(CO_DATA, DC_DATA);
     data[1] = random_upto(0xFF);
-    i2c_send_bytes(data, 2, 0x3C);
-    /* delay(50); */
+    if (NACK_ERROR == i2c_send_bytes(data, 2, 0x3C)) {
+      uart_printf("err\n\r");
+    }
+    delay(50);
   }
 }

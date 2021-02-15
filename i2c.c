@@ -29,7 +29,7 @@ int i2c_init(uint8_t freq_mhz) {
 
   I2C_FREQR = freq_mhz;
   I2C_TRISER = trise;           /* must configure before PE  */
-  I2C_CCRL = 0x08;              /* this actually controls freq of communications */
+  I2C_CCRL = 0x16;              /* this actually controls freq of communications 1306 requires 2.5us cycle time*/
   I2C_CR1 |= PERIPH_ENABLE;     /* enable bit */
 
   return 0;
