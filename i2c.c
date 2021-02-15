@@ -64,6 +64,7 @@ int i2c_send_bytes(uint8_t *data, char size, uint8_t addr) {
   while (ADDR != 1) {           /* while addr transmission is ongoing */
     if (AF == 1) {              /* if not ACK'd, return */
       i2c_stop_condition();
+      I2C_SR2 &= 0xFB;          /* clear AF. Would like to find a way to type AF = 0 instead. */
       return NACK_ERROR;
     }
   }
