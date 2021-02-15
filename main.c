@@ -19,22 +19,13 @@
    Confirmed when I noticed I2C communication wasn't being sent at
    all, but after fully power cycling it was sent again. */
 
-
-/* void second_func(int i) { */
-/*   volatile char char_var = 'c'; */
-/*   i -= 1; */
-/*   if (i > 0) { */
-/*     second_func(i); */
-/*   } */
-/* } */
-
 int main() {
   const int baud_rate = 9600;
   const long fmaster = 16000000;
 
   clk_hsi_prescaler(1);
   uart_init(baud_rate, fmaster);
-  i2c_init(2);                  /* fixme no apparent effect */
+  i2c_init(2);
   uart_printf("\n\r------------\n\r");
   uart_printf("Started!\n\r");
 
@@ -48,8 +39,8 @@ int main() {
   data[5] = 0x1F;                /* ratio 31 mux */
   data[6] = CMD_HW_COM_PINS_CONFIG;
   data[7] = 0x02;                /* split for 128x32 */
-  data[8] = 0x20;   /* set addressing mode */
-  data[9] = 0x00;   /* horiztonal addressing mode */
+  data[8] = 0x20;                /* set addressing mode */
+  data[9] = 0x00;                /* horiztonal addressing mode */
   data[10] = CMD_PUMP_SETTING;
   data[11] = CHARGE_PUMP_75;
   data[12] = CMD_FOLLOW_RAM;
@@ -63,6 +54,7 @@ int main() {
   }
   /* Funny story with (char) cast. Originally send_bytes took an int in that spot, but I changed it to char in i2c.c/h for memory concerns. I then noticed that addr wasn't being sent correctly after that. Turns out I needed to recompile main.c as well! */
 
+  /* Generated with https://javl.github.io/image2cpp/ */
   const uint8_t buffer2[512] = {
     0x00, 0x00, 0x00, 0x00, 0xfe, 0x12, 0x12, 0x12, 0xec, 0x00, 0xfa, 0x00, 0x70, 0x88, 0x88, 0x88, 
     0x50, 0x00, 0xfe, 0x08, 0x08, 0x08, 0xf0, 0x00, 0x40, 0xa8, 0xa8, 0xa8, 0xf0, 0x00, 0xf8, 0x08, 
@@ -101,7 +93,9 @@ int main() {
   /* clear display */
   data[0] = CONTROL_BYTE(CO_DATA, DC_DATA);
   data[1] = 0x00;
-
+  for (int i = 0; i < 512; i++) {
+    i2c_send_bytes(data, 2, 0x3C);
+  }
 
   /* Set address to start writing */
   data[0] = CONTROL_BYTE(CO_DATA, DC_COMMAND);
@@ -113,48 +107,13 @@ int main() {
   data[6] = 0x03;
   i2c_send_bytes(data, 7, 0x3C);
 
-  /* Problem: The display is 128x32 (512 pixels), and yet currently to
-     clear it I need to send 0x00 data 1024 times. To my
-     understanding, pages4-7 should not appear on the display at all,
-     and we control it only through pages0-3. This is not currently
-     the case. I suspect splitting HW_COM_PINS_CONFIG with 0x12 is the
-     cause. I'll try some other values found on page 40 of the
-     datasheet. I did notice some behavior that suggested pixels
-     weren't perfectly mapped 1 to 1, but it's hard to tell since
-     they're so tiny. */
-
-  int count = 0;
-
-  
-  while (1) {
-    count++;
+  while (1) {    
     data[0] = CONTROL_BYTE(CO_DATA, DC_DATA);
     for (int i = 0; i < 512; i++) {
       data[1] = buffer2[i];
       i2c_send_bytes(data, 2, 0x3C);
     }
-
-    /* for (int i = 0; i < 512; i++) { */
-    /*   data[1] = 0x0F; */
-    /*   i2c_send_bytes(data, 2, 0x3C); */
-    /*   delay(5); */
-    /* } */
-
-    /* data[0] = CONTROL_BYTE(CO_DATA, DC_DATA); */
-    /* data[1] = 0x00; */
-    /* i2c_send_bytes(data, 2, 0x3C); */
-  
-    /* for (int i = 0; i < 512; i++) { */
-    /*   data[1] = buffer2[i]; */
-    /*   i2c_send_bytes(data, 2, 0x3C); */
-    /* } */
-
-    delay(50);
+    delay(1000000);
     uart_printf("No stack overflow here!\n\r");
   }
-  /* data[1] = random_upto(0xFF); */
-  /* if (NACK_ERROR == i2c_send_bytes(data, 2, 0x3C)) { */
-  /* uart_printf("err\n\r"); */
-  /* } */
-
 }
