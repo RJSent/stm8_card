@@ -17,6 +17,8 @@ as a miniature library of sorts for me to use. When that happens I
 might move that to a different git project, and leave business card
 specific code here.
 
+[[file:media/20210215_153346.jpg]]
+
 * License
 
 This project is available under the terms of the [[https://opensource.org/licenses/MIT][MIT License]].
