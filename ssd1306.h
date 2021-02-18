@@ -4,6 +4,11 @@
 
 #define SSD1306_I2C_ADDR                                (0x3C)  /* 0x3C xor 0x3D for SSD1306 and SSD1306B. Determined by D/C# pin */
 
+#define SSD1306_I2C                                     (1)
+#define SSD1306_UART                                    (2)
+#define SSD1306_SPI                                     (3)
+#define SSD1306_INVALID_PROTOCOL                        (-1)
+
 #define PAGE0                                           (0x0)
 #define PAGE1                                           (0x1)
 #define PAGE2                                           (0x2)
@@ -123,7 +128,11 @@ struct MultiCommand cmd_zoom(char enable);
 
 /* charge pump commands */
 struct MultiCommand cmd_pump_setting();
-  
+
+/* display functions */
+char ssd1306_protocol(char protocol);
+
+char draw_pixel(char x, char y);
 
 
 #endif
