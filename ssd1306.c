@@ -79,7 +79,12 @@ char draw_left_half() {
 }
 
 char draw_pixel(char x, char y) {
-  frame_buffer[0] = 0xFF;
+  static int temp = -1;
+  if (temp != -1) frame_buffer[temp] = 0;
+  if (temp == -1) frame_buffer[255] = 0;
+  temp++;
+  frame_buffer[temp] = 0xFF;
+  if (temp == 255) temp = -1;
 
   return NOT_IMPLEMENTED;
 }

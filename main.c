@@ -77,7 +77,6 @@ int main() {
     draw_pixel(1, 1);
     draw_left_half();
     draw_right_half();
-    delay(1000000);
-    uart_printf("No stack overflow here!\n\r");
+    delay(50);
   }
 }
