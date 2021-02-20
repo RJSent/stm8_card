@@ -7,7 +7,13 @@
 #define SSD1306_I2C                                     (1)
 #define SSD1306_UART                                    (2)
 #define SSD1306_SPI                                     (3)
-#define SSD1306_INVALID_PROTOCOL                        (-1)
+
+#define HORIZONTAL_MODE                                 (0)
+#define VERTICAL_MODE                                   (1)
+#define PAGE_MODE                                       (2)
+
+#define INVALID                                         (-1)
+#define NOT_IMPLEMENTED                                 (-2)
 
 #define PAGE0                                           (0x0)
 #define PAGE1                                           (0x1)
@@ -49,7 +55,7 @@
 /* address setting commands */
 #define CMD_ADDR_LOW_COL_PAGE_MODE(nibble)              (nibble)
 #define CMD_ADDR_HIGH_COL_PAGE_MODE(nibble)             (0x10 | nibble)
-#define CMD_ADDR_MEM_MODE(crumb)                        (0x2 | crumb)
+#define CMD_ADDR_MEM_MODE(mode)                         (0x2 | mode)
 #define CMD_ADDR_COL                                    (0x21)  /* 3 commands */
 #define CMD_ADDR_PAGE                                   (0x22)  /* 3 commands */
 #define CMD_ADDR_PAGE_START_PAGE_MODE(three_bits)       (0xA0 | (three_bits))
@@ -133,6 +139,12 @@ struct MultiCommand cmd_pump_setting();
 char ssd1306_protocol(char protocol);
 
 char draw_pixel(char x, char y);
+
+char draw_right_half();
+
+char draw_left_half();
+
+char clear_display();
 
 
 #endif
