@@ -26,8 +26,7 @@ int main() {
   clk_hsi_prescaler(1);
   uart_init(baud_rate, fmaster);
   i2c_init(2);
-  uart_printf("\n\r------------\n\r");
-  uart_printf("Started!\n\r");
+  uart_printf("%s\n\r", __DATE__);
 
   /* Initialize display */
   uint8_t data[16];
