@@ -52,6 +52,7 @@ int uart_putc(char c) {
 
 /* Based on
    hackerearth.com/practice/notes/know-our-printf-variable-number-of-arguments-to-a-function */
+/* FIXME negative values for %d print positive integers (-1 -> 255) */
 int uart_printf(char *format, ...) {
   va_list ap;
   char *p, *sval;
