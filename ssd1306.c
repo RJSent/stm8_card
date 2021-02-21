@@ -78,6 +78,12 @@ char draw_left_half() {
   return 0;
 }
 
+char clear_buffer() {
+  for (int i = 0; i < (int)(sizeof(frame_buffer) / sizeof(frame_buffer[0])); i++) {
+    frame_buffer[i] = 0;
+  }
+}
+
 char draw_pixel(char x, char y) {
   static int temp = -1;
   if (temp != -1) frame_buffer[temp] = 0;
