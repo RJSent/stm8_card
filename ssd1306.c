@@ -6,12 +6,17 @@
 
 #define WIDTH  (128)
 #define HEIGHT (32)
+#define BUF_SIZE (WIDTH * HEIGHT / (8 * 2))
 
 /* Notice that char != signed char. Implementation defined so it might act like either
    stackoverflow.com/questions/451375 */
 static signed char protocol = INVALID;
 static char address_mode;
-static uint8_t frame_buffer[256];
+
+struct S {
+  uint8_t control_byte;
+  uint8_t frame_buffer[BUF_SIZE];
+} SSD1306_Data = {.control_byte = CONTROL_BYTE(CO_DATA, DC_DATA)};
 
 char ssd1306_protocol(char protocol_arg) {
   switch (protocol_arg) {
@@ -45,13 +50,8 @@ char send_data(const uint8_t *data, int size, char address) {
 
 /* TODO: Speedup by minimizing redundant start conditions and function calls */
 char draw_frame_buffer() {
-  uint8_t data[2] = {CONTROL_BYTE(CO_DATA, DC_DATA)};
-  int size_buf = sizeof(frame_buffer) / sizeof(frame_buffer[0]);
-  for (int i = 0; i < size_buf; i++) {
-    data[1] = frame_buffer[i];
-    int err = send_data(data, 2, SSD1306_I2C_ADDR);
-    if (err != 0) return err;
-  }
+  uart_printf("%d\n\r", sizeof(struct S));
+  send_data(&SSD1306_Data.control_byte, sizeof(struct S), SSD1306_I2C_ADDR);
   return 0;
 }
 
@@ -80,18 +80,18 @@ char draw_left_half() {
 }
 
 char clear_buffer() {
-  for (int i = 0; i < (int)(sizeof(frame_buffer) / sizeof(frame_buffer[0])); i++) {
-    frame_buffer[i] = 0;
+  for (int i = 0; i < BUF_SIZE; i++) {
+    SSD1306_Data.frame_buffer[i] = 0;
   }
   return 0;
 }
 
 char draw_pixel(char x, char y) {
   static int temp = -1;
-  if (temp != -1) frame_buffer[temp] = 0;
-  if (temp == -1) frame_buffer[255] = 0;
+  if (temp != -1) SSD1306_Data.frame_buffer[temp] = 0;
+  if (temp == -1) SSD1306_Data.frame_buffer[255] = 0;
   temp++;
-  frame_buffer[temp] = 0xFF;
+  SSD1306_Data.frame_buffer[temp] = 0xFF;
   if (temp == 255) temp = -1;
 
   return NOT_IMPLEMENTED;
@@ -99,10 +99,10 @@ char draw_pixel(char x, char y) {
 
 char demonstration() {
   static int temp = 255;
-  if (temp != -1) frame_buffer[temp] = 0;
-  if (temp == -1) frame_buffer[0] = 0;
+  if (temp != -1) SSD1306_Data.frame_buffer[temp] = 0;
+  if (temp == -1) SSD1306_Data.frame_buffer[0] = 0;
   temp--;
-  frame_buffer[temp] = 0xFF;
+  SSD1306_Data.frame_buffer[temp] = 0xFF;
   if (temp == -1) temp = 255;
 
   return NOT_IMPLEMENTED;
