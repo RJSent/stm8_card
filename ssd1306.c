@@ -95,6 +95,17 @@ char draw_pixel(char x, char y) {
   return NOT_IMPLEMENTED;
 }
 
+char demonstration() {
+  static int temp = 255;
+  if (temp != -1) frame_buffer[temp] = 0;
+  if (temp == -1) frame_buffer[0] = 0;
+  temp--;
+  frame_buffer[temp] = 0xFF;
+  if (temp == -1) temp = 255;
+
+  return NOT_IMPLEMENTED;
+}
+
 char clear_display() {
   const uint8_t data[2] = {CONTROL_BYTE(CO_DATA, DC_DATA),
     0};

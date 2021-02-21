@@ -76,7 +76,10 @@ int main() {
   while (1) {
     draw_pixel(1, 1);
     draw_left_half();
+    clear_buffer();
+    demonstration();
     draw_right_half();
+    clear_buffer();
     delay(50);
   }
 }

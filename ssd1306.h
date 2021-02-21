@@ -140,6 +140,8 @@ char ssd1306_protocol(char protocol);
 
 char draw_pixel(char x, char y);
 
+char demonstration();
+
 char draw_right_half();
 
 char draw_left_half();
