@@ -80,6 +80,5 @@ int main() {
     demonstration();
     draw_right_half();
     clear_buffer();
-    delay(50);
   }
 }
