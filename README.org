@@ -22,6 +22,9 @@ specific code here.
 [[file:media/independent_movement.mp4][A demonstration of the use of draw_left_half and draw_right_half to
 work with a framebuffer smaller than the number of pixels.]]
 
+[[file:media/draw_pixel_demo.mp4][A demonstration of the draw_pixel code, showcasing a smiling blinky
+face. (Pixel art is not my strong suit...)]]
+
 * License
 
 This project is available under the terms of the [[https://opensource.org/licenses/MIT][MIT License]].
