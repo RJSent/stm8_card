@@ -43,6 +43,7 @@ char send_data(const uint8_t *data, char size, char address) {
   }
 }
 
+/* TODO: Speedup by minimizing redundant start conditions and function calls */
 char draw_frame_buffer() {
   uint8_t data[2] = {CONTROL_BYTE(CO_DATA, DC_DATA)};
   int size_buf = sizeof(frame_buffer) / sizeof(frame_buffer[0]);
@@ -108,13 +109,9 @@ char demonstration() {
 }
 
 char clear_display() {
-  const uint8_t data[2] = {CONTROL_BYTE(CO_DATA, DC_DATA),
-    0};
-
-  for (int i = 0; i < WIDTH * HEIGHT; i++) {
-    int err = send_data(data, 2, SSD1306_I2C_ADDR);
-    if (err != 0) return err;
-  }
+  clear_buffer();
+  draw_right_half();
+  draw_left_half();
   
   return 0;
 }
