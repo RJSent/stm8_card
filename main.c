@@ -74,11 +74,32 @@ int main() {
   ssd1306_protocol(SSD1306_I2C);
 
   while (1) {
-    draw_pixel(1, 1);
+    for (int i = 0; i < 16; i++) {
+      draw_pixel(i, 0);
+    }
+
+    for (int i = 0; i < 16; i++) {
+      draw_pixel(0, i);
+    }
+
+
     draw_left_half();
-    clear_buffer();
-    demonstration();
     draw_right_half();
     clear_buffer();
+    delay(500000);
+
+    for (int i = 0; i < 16; i++) {
+      draw_pixel(i, 15);
+    }
+
+    for (int i = 0; i < 16; i++) {
+      draw_pixel(15, i);
+    }
+
+
+    draw_left_half();
+    draw_right_half();
+    clear_buffer();
+    delay(500000);
   }
 }

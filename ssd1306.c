@@ -4,8 +4,8 @@
 #include "i2c.h"
 #include "uart.h"
 
-#define WIDTH  (128)
-#define HEIGHT (32)
+#define WIDTH    (128)
+#define HEIGHT   (32)
 #define BUF_SIZE (WIDTH * HEIGHT / (8 * 2))
 
 /* Notice that char != signed char. Implementation defined so it might act like either
@@ -87,25 +87,11 @@ char clear_buffer() {
 }
 
 char draw_pixel(char x, char y) {
-  static int temp = -1;
-  if (temp != -1) SSD1306_Data.frame_buffer[temp] = 0;
-  if (temp == -1) SSD1306_Data.frame_buffer[255] = 0;
-  temp++;
-  SSD1306_Data.frame_buffer[temp] = 0xFF;
-  if (temp == 255) temp = -1;
+  /* Since we split screen into two halves */
+  if (x >= WIDTH / 2 || y >= HEIGHT / 2) return INVALID;
+  SSD1306_Data.frame_buffer[x + ((y / 8) * (WIDTH / 2))] |= (1 << (y % 8)); 
 
-  return NOT_IMPLEMENTED;
-}
-
-char demonstration() {
-  static int temp = 255;
-  if (temp != -1) SSD1306_Data.frame_buffer[temp] = 0;
-  if (temp == -1) SSD1306_Data.frame_buffer[0] = 0;
-  temp--;
-  SSD1306_Data.frame_buffer[temp] = 0xFF;
-  if (temp == -1) temp = 255;
-
-  return NOT_IMPLEMENTED;
+  return 0;
 }
 
 char clear_display() {

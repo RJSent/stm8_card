@@ -138,9 +138,11 @@ struct MultiCommand cmd_pump_setting();
 /* display functions */
 char ssd1306_protocol(char protocol);
 
+/* x < WIDTH / 2 and y < HEIGHT / 2. This is needed because we split
+   the screen into two halves. The calling function / source code
+   needs to keep track itself as to what half we're on. */
+/* (0,0) refers to top-left corner for the half */
 char draw_pixel(char x, char y);
-
-char demonstration();
 
 char draw_right_half();
 
