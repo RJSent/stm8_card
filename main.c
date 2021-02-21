@@ -25,6 +25,7 @@ int main() {
 
   clk_hsi_prescaler(1);
   uart_init(baud_rate, fmaster);
+  ssd1306_protocol(SSD1306_I2C);
   i2c_init(2);
   uart_printf("%s\n\r", __DATE__);
 
@@ -70,36 +71,89 @@ int main() {
   /* data[6] = 0x03; */
   /* i2c_send_bytes(data, 7, 0x3C); */
 
+  int smile_state = 0;
+  int reverse = 0, left_reverse = 1;;
   clear_display();
-  ssd1306_protocol(SSD1306_I2C);
+
 
   while (1) {
-    for (int i = 0; i < 16; i++) {
-      draw_pixel(i, 0);
+    /* Left smile line */
+    draw_pixel(17, 17);
+    draw_pixel(18, 18);
+    draw_pixel(19, 19);
+    draw_pixel(20, 20);
+    draw_pixel(21, 21);
+    /* Mouth */
+    for (int i = 1; i <= 13; i++) {
+      draw_pixel(i + 22, 22);
     }
-
-    for (int i = 0; i < 16; i++) {
-      draw_pixel(0, i);
+    /* Right smile line */
+    draw_pixel(36, 21);
+    draw_pixel(37, 20);
+    draw_pixel(38, 19);
+    draw_pixel(39, 18);
+    draw_pixel(40, 17);
+    /* right eye */
+    for (int i = 4; i <= 11; i++) {
+      draw_pixel(35, i);
     }
-
-
+    /* left eye */
+    switch (smile_state) {
+    case 0:
+      for (int i = 4; i <= 11; i++) {
+	draw_pixel(23, i);
+      }
+      delay(50000);
+      break;
+    case 1:
+      for (int i = 5; i <= 10; i++) {
+	draw_pixel(23, i);
+      }
+      break;
+    case 2:
+      for (int i = 6; i <= 9; i++) {
+	draw_pixel(23, i);
+      }
+      break;
+    case 3:
+      for (int i = 7; i <= 8; i++) {
+	draw_pixel(23, i);
+      }
+      break;
+    case 4:
+      for (int i = 22; i <= 24; i++) {
+	draw_pixel(i, 7);
+      }
+      break;
+    case 5:
+      for (int i = 21; i <= 25; i++) {
+	draw_pixel(i, 7);
+      }
+      break;
+    case 6:
+      for (int i = 20; i <= 26; i++) {
+	draw_pixel(i, 7);
+      }
+      break;
+    default:
+      smile_state = 0;
+    }
+    if (reverse == 0) {
+      if (smile_state < 6) {
+	smile_state++;
+      } else {
+	reverse = 1;
+      }
+    } else {
+      if (smile_state > 0) {
+	smile_state--;
+      } else {
+	reverse = 0;
+      }
+    }
     draw_left_half();
-    draw_right_half();
     clear_buffer();
-    delay(500000);
-
-    for (int i = 0; i < 16; i++) {
-      draw_pixel(i, 15);
-    }
-
-    for (int i = 0; i < 16; i++) {
-      draw_pixel(15, i);
-    }
-
-
-    draw_left_half();
-    draw_right_half();
-    clear_buffer();
-    delay(500000);
+    delay(300000);
   }
 }
+
