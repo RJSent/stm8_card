@@ -25,11 +25,12 @@ int main() {
 
   clk_hsi_prescaler(1);
   uart_init(baud_rate, fmaster);
-  ssd1306_protocol(SSD1306_I2C);
+  ssd1306_protocol(SSD1306_I2C); /* TODO: Move into ssd1306_init */
   i2c_init(2);
   uart_printf("%s\n\r", __DATE__);
 
   /* Initialize display */
+  /* TODO: Move into ssd1306.c as ssd1306_init() */
   uint8_t data[16];
   data[0] = CONTROL_BYTE(CO_DATA, DC_COMMAND);
   data[1] = CMD_OFF;
@@ -54,27 +55,9 @@ int main() {
   }
   /* Funny story with (char) cast. Originally send_bytes took an int in that spot, but I changed it to char in i2c.c/h for memory concerns. I then noticed that addr wasn't being sent correctly after that. Turns out I needed to recompile main.c as well! */
 
-  /* clear display */
-  /* data[0] = CONTROL_BYTE(CO_DATA, DC_DATA); */
-  /* data[1] = 0x00; */
-  /* for (int i = 0; i < 512; i++) { */
-  /*   i2c_send_bytes(data, 2, 0x3C); */
-  /* } */
-
-  /* Set address to start writing */
-  /* data[0] = CONTROL_BYTE(CO_DATA, DC_COMMAND); */
-  /* data[1] = CMD_ADDR_COL; */
-  /* data[2] = 0; */
-  /* data[3] = 127; */
-  /* data[4] = CMD_ADDR_PAGE; */
-  /* data[5] = 0x00; */
-  /* data[6] = 0x03; */
-  /* i2c_send_bytes(data, 7, 0x3C); */
-
   int smile_state = 0;
-  int reverse = 0, left_reverse = 1;;
+  int reverse = 0;
   clear_display();
-
 
   while (1) {
     /* Left smile line */
@@ -153,7 +136,7 @@ int main() {
     }
     draw_left_half();
     clear_buffer();
-    delay(300000);
+    delay(50000);
   }
 }
 
