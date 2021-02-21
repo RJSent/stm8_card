@@ -22,17 +22,9 @@ $(final_exe): $(objects)
 flash: $(final_exe)
 	stm8flash -c $(programmer) -p $(part) -w $(final_exe)
 
-memdump:
-	stm8flash -s ram -c $(programmer) -p $(part) -r mem.dump
-
-flashdump:
-	stm8flash -s flash -c $(programmer) -p $(part) -r flash.dump
-
-eepromdump:
-	stm8flash -s eeprom -c $(programmer) -p $(part) -r eeprom.dump
-
-optdump:
-	stm8flash -s opt -c $(programmer) -p $(part) -r opt.dump
+# Valid options for dump are flash, eeprom, ram, opt, or an explicit address
+dump:
+	stm8flash -s $(dump) -c $(programmer) -p $(part) -r $(dump).dump
 
 clean:
 	rm -f *.asm *.cdb *.lk *.lst *.map *.rel *.rst *.sym *.mem *.ihx *.elf *.s19 *.dump
