@@ -57,7 +57,7 @@ char draw_frame_buffer() {
 
 char draw_right_half() {
   const uint8_t change_start[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
-    CMD_ADDR_COL, 64, 127,
+    CMD_ADDR_COL, WIDTH / 2, WIDTH - 1,
     CMD_ADDR_PAGE, 0, 3};
   int err = send_data(change_start, 7, SSD1306_I2C_ADDR);
   if (err != 0) return err;
@@ -69,7 +69,7 @@ char draw_right_half() {
 
 char draw_left_half() {
   const uint8_t change_start[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
-    CMD_ADDR_COL, 0, 63,
+    CMD_ADDR_COL, 0, WIDTH / 2 - 1,
     CMD_ADDR_PAGE, 0, 3};
   int err = send_data(change_start, 7, SSD1306_I2C_ADDR);
   if (err != 0) return err;
