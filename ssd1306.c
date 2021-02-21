@@ -13,6 +13,13 @@
 static signed char protocol = INVALID;
 static char address_mode;
 
+/* This structure is created so send_data and subfunctions will send a
+   control byte as well as the frame_buffer. */
+/* Note that structure padding is a thing on certain platforms,
+   although apparently it's nott needed for this structure on the STM8
+   (or maybe at all). If it becomes an issue down the line, follow the
+   advice from stackoverflow.com/questions/4306186, namely the
+   suggestion of using __attribute__((__packed__)) */
 struct S {
   uint8_t control_byte;
   uint8_t frame_buffer[BUF_SIZE];
