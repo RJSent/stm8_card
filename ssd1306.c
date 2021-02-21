@@ -31,7 +31,7 @@ char ssd1306_protocol(char protocol_arg) {
 }
 
 /* transmits data depending on what protocol to use */
-char send_data(const uint8_t *data, char size, char address) {
+char send_data(const uint8_t *data, int size, char address) {
   switch(protocol) {
   case SSD1306_I2C:
     return i2c_send_bytes(data, size, address);
