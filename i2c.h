@@ -7,6 +7,6 @@
 
 int i2c_init(uint8_t freq_mhz);
 
-int i2c_send_bytes(uint8_t *data, char size, uint8_t addr);
+int i2c_send_bytes(const uint8_t *data, char size, uint8_t addr);
 
 #endif

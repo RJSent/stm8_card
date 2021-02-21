@@ -57,7 +57,7 @@ void i2c_debug() {
 /* When we get a ACK again, data bytes are not transmitted and SCL remains low indefinitely */
 /* I noticed two address messages with ACKs before SCL is stuck low. */
 /* No stop condition is sent. No data in SDA while SCL is stuck low */
-int i2c_send_bytes(uint8_t *data, char size, uint8_t addr) {
+int i2c_send_bytes(const uint8_t *data, char size, uint8_t addr) {
   volatile uint8_t temp;
   i2c_start_condition();
   I2C_DR = (addr << 1 | TRANSMIT);
