@@ -20,6 +20,9 @@ static char address_mode;
    (or maybe at all). If it becomes an issue down the line, follow the
    advice from stackoverflow.com/questions/4306186, namely the
    suggestion of using __attribute__((__packed__)) */
+/* sourceforge.net/p/sdcc/mailman/sdcc-user/thread/CACBduit4%2Ba08M3X0zaU-1YqEifDqK7sMCxy0wSn9Nq53BM8SHw%40mail.gmail.com/
+   shows that packing is not support or traditionally necessary with
+   8-bit processors */
 struct S {
   uint8_t control_byte;
   uint8_t frame_buffer[BUF_SIZE];
