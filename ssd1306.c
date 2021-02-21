@@ -82,6 +82,7 @@ char clear_buffer() {
   for (int i = 0; i < (int)(sizeof(frame_buffer) / sizeof(frame_buffer[0])); i++) {
     frame_buffer[i] = 0;
   }
+  return 0;
 }
 
 char draw_pixel(char x, char y) {
