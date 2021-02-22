@@ -32,7 +32,7 @@ problem is 2Mhz / 0x682 (my divider) should give a baud rate of 1200,
 but what I actually got was 120. When I removed the prescaler, it
 worked as expected, 9600 baud rate with a fmaster of 16Mhz and divider
 of 0x682. */
-char clk_hsi_prescaler(int divider) {
+char clk_hsi_prescaler(char divider) {
   char bits;
   switch(divider) {
   case 1:
@@ -54,7 +54,7 @@ char clk_hsi_prescaler(int divider) {
   return 0;
 }
 
-char clk_cpu_prescaler(int divider) {
+char clk_cpu_prescaler(unsigned char divider) {
   char bits = 0;
   switch(divider) {
   case 1:

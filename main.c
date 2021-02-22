@@ -23,7 +23,14 @@ int main() {
   const int baud_rate = 9600;
   const long fmaster = 16000000;
 
-  clk_hsi_prescaler(1);
+  /* Similar issue to one I had before came up again! I changed the
+     argument to hsi_prescaler to a char and recompiled. However,
+     main.c had no changes and wasn't recompiled. This means an int
+     was being sent to an argument expecting a char without any
+     casting or similar, causing undefined behavior. In my case, I'm
+     pretty sure the prescaler was just returning -1 and not setting
+     the CLK_CKDIVR register */
+  clk_hsi_prescaler(1); 
   uart_init(baud_rate, fmaster);
   ssd1306_protocol(SSD1306_I2C); /* TODO: Move into ssd1306_init */
   i2c_init(2);

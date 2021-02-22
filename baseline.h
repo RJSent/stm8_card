@@ -16,8 +16,8 @@ char random_upto(int max);
 
 uint8_t reverse_byte(uint8_t byte);
 
-char clk_hsi_prescaler(int divider); /* 1, 2, 4, or 8. Both CPU and peripherals */
+char clk_hsi_prescaler(char divider); /* 1, 2, 4, or 8. Both CPU and peripherals */
 
-char clk_cpu_prescaler(int divider); /* Powers of 2. <= 128. [1, 2, 4, 8, ... 128]*/
+char clk_cpu_prescaler(unsigned char divider); /* Powers of 2. <= 128. [1, 2, 4, 8, ... 128]*/
 
 #endif
