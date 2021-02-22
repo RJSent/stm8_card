@@ -1,7 +1,8 @@
-#include "registers.h"
-
 #ifndef BASELINE_H
 #define BASELINE_H
+
+#include <stdint.h>
+#include "registers.h"
 
 #define COUNT_PER_60HZ 670
 #define COUNT_PER_1MS 59        /* Oddly not 670 / 16.66 */

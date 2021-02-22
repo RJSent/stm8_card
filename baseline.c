@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdint.h>
 
 #include "baseline.h"
 
@@ -14,7 +13,6 @@ int random() {
 }
 
 int random_upto(int max) {
-  return random() % (max + 1);
   return random() % (max);
 }
 
