@@ -150,7 +150,7 @@ int main() {
     delay(50000);
     if (smile_state == 0 && reverse == 0) {
       delay(500000);
-      while (random_upto(8) < 7) {
+      while (random_upto(4) < 3) {
 	delay(500000);
       }
     }
