@@ -167,6 +167,14 @@ char clear_pixel(char x, char y) {
   return 0;
 }
 
+char flip_pixel(char x, char y) {
+  /* Since we split screen into two halves */
+  if (x >= WIDTH / 2 || y >= HEIGHT) return INVALID;
+  SSD1306_Data.frame_buffer[x + ((y / 8) * (WIDTH / 2))] ^= (1 << (y % 8)); 
+  
+  return 0;
+}
+
 char clear_display() {
   clear_buffer();
   draw_right_half();

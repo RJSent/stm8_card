@@ -150,6 +150,8 @@ char set_pixel(char x, char y);
 
 char clear_pixel(char x, char y);
 
+char flip_pixel(char x, char y);
+
 char draw_right_half();
 
 char draw_left_half();
