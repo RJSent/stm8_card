@@ -25,6 +25,11 @@ work with a framebuffer smaller than the number of pixels.]]
 [[file:media/draw_pixel_demo.mp4][A demonstration of the draw_pixel code, showcasing a smiling blinky
 face. (Pixel art is not my strong suit...)]]
 
+[[file:media/mirror_demo.mp4][A demonstration of the invert and mirror_buffer functions. The
+mirror_buffer can mirror in the x axis, the y axis, or both via an
+optimzed method (as opposed to the slower route of mirroring in the x
+and then the y).]]
+
 * License
 
 This project is available under the terms of the [[https://opensource.org/licenses/MIT][MIT License]].
