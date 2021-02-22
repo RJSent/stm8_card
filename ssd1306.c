@@ -58,13 +58,12 @@ char send_data(const uint8_t *data, int size, char address) {
   }
 }
 
-/* TODO: Speedup by minimizing redundant start conditions and function calls */
 char draw_frame_buffer() {
-  uart_printf("%d\n\r", sizeof(struct S));
   send_data(&SSD1306_Data.control_byte, sizeof(struct S), SSD1306_I2C_ADDR);
   return 0;
 }
 
+/* TODO: Condense right_half and left_half into 1 function */
 char draw_right_half() {
   const uint8_t change_start[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
     CMD_ADDR_COL, WIDTH / 2, WIDTH - 1,
