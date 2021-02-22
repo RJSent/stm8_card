@@ -135,7 +135,9 @@ int main() {
     }
     draw_left_half();
     invert_buffer();
-    mirror_buffer(X_AXIS_MIRROR);
+    /* mirror_buffer(X_AXIS_MIRROR); */
+    /* mirror_buffer(Y_AXIS_MIRROR); */
+    mirror_buffer(BOTH_AXIS_MIRROR);
     draw_right_half();
     clear_buffer();
     delay(50000);
