@@ -15,6 +15,9 @@
 #define INVALID                                         (-1)
 #define NOT_IMPLEMENTED                                 (-2)
 
+#define Y_AXIS_MIRROR                                   (1)
+#define X_AXIS_MIRROR                                   (2)
+
 #define PAGE0                                           (0x0)
 #define PAGE1                                           (0x1)
 #define PAGE2                                           (0x2)
@@ -153,6 +156,8 @@ char draw_left_half();
 char clear_buffer();
 
 char invert_buffer();
+
+char mirror_buffer(char axis);
 
 char clear_display();
 

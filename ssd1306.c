@@ -4,9 +4,11 @@
 #include "i2c.h"
 #include "uart.h"
 
-#define WIDTH    (128)
-#define HEIGHT   (32)
-#define BUF_SIZE (WIDTH * HEIGHT / (8 * 2))
+#define WIDTH      (128)
+#define HEIGHT     (32)
+#define BUF_WIDTH  (WIDTH / 2)
+#define BUF_HEIGHT (HEIGHT)
+#define BUF_SIZE   (BUF_WIDTH * BUF_HEIGHT / (8))
 
 /* Notice that char != signed char. Implementation defined so it might act like either
    stackoverflow.com/questions/451375 */
@@ -100,6 +102,30 @@ char invert_buffer() {
     SSD1306_Data.frame_buffer[i] = ~(SSD1306_Data.frame_buffer[i]);
   }
   return 0;
+}
+
+/* 64 paired with 127
+ i = 1, j = 0 */
+/* 66 paired with 125
+ i = 1, j = 2 */
+char mirror_buffer(char axis) {
+  switch (axis) {
+  case Y_AXIS_MIRROR:
+    for (int i = 0; i < BUF_HEIGHT / 8; i++) {
+      for (int j = 0; j < BUF_WIDTH / 2; j++) {
+	char temp = SSD1306_Data.frame_buffer[i * BUF_WIDTH + j];
+	SSD1306_Data.frame_buffer[i * BUF_WIDTH + j] = SSD1306_Data.frame_buffer[i * BUF_WIDTH + BUF_WIDTH - 1 - j];
+	SSD1306_Data.frame_buffer[i * BUF_WIDTH + BUF_WIDTH - 1 - j] = temp;
+      }
+    }
+    break;
+  case X_AXIS_MIRROR:
+    return NOT_IMPLEMENTED;
+    break;
+  default:
+    return INVALID;
+  }
+  return 0; 
 }
 
 char draw_pixel(char x, char y) {
