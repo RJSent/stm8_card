@@ -139,7 +139,11 @@ char mirror_buffer(char axis) {
     }
     break;
   case BOTH_AXIS_MIRROR:        /* faster to do this then mirror y & mirror x */
-    return NOT_IMPLEMENTED;
+    for (int i = 0; i < BUF_SIZE / 2; i++) {
+      char temp = reverse_byte(SSD1306_Data.frame_buffer[i]);
+      SSD1306_Data.frame_buffer[i] = reverse_byte(SSD1306_Data.frame_buffer[BUF_SIZE - i]);
+      SSD1306_Data.frame_buffer[BUF_SIZE - i] = temp;
+    }
     break;
   default:
     return INVALID;
