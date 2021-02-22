@@ -151,7 +151,7 @@ char mirror_buffer(char axis) {
   return 0; 
 }
 
-char draw_pixel(char x, char y) {
+char set_pixel(char x, char y) {
   /* Since we split screen into two halves */
   if (x >= WIDTH / 2 || y >= HEIGHT) return INVALID;
   SSD1306_Data.frame_buffer[x + ((y / 8) * (WIDTH / 2))] |= (1 << (y % 8)); 

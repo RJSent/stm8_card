@@ -146,7 +146,7 @@ char ssd1306_protocol(char protocol);
    the screen into two halves. The calling function / source code
    needs to keep track itself as to what half we're on. */
 /* (0,0) refers to top-left corner for the half */
-char draw_pixel(char x, char y);
+char set_pixel(char x, char y);
 
 char clear_pixel(char x, char y);
 
