@@ -144,11 +144,15 @@ char ssd1306_protocol(char protocol);
 /* (0,0) refers to top-left corner for the half */
 char draw_pixel(char x, char y);
 
+char clear_pixel(char x, char y);
+
 char draw_right_half();
 
 char draw_left_half();
 
 char clear_buffer();
+
+char invert_buffer();
 
 char clear_display();
 
