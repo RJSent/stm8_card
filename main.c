@@ -67,7 +67,7 @@ int main() {
     draw_pixel(20, 20);
     draw_pixel(21, 21);
     /* Mouth */
-    for (int i = 1; i <= 13; i++) {
+    for (int i = 0; i <= 13; i++) {
       draw_pixel(i + 22, 22);
     }
     /* Right smile line */
@@ -86,7 +86,6 @@ int main() {
       for (int i = 4; i <= 11; i++) {
 	draw_pixel(23, i);
       }
-      delay(50000);
       break;
     case 1:
       for (int i = 5; i <= 10; i++) {
@@ -135,8 +134,13 @@ int main() {
       }
     }
     draw_left_half();
+    invert_buffer();
+    draw_right_half();
     clear_buffer();
     delay(50000);
+    if (smile_state == 0 && reverse == 0) {
+      delay(500000);
+    }
   }
 }
 
