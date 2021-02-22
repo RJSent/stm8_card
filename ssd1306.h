@@ -17,6 +17,7 @@
 
 #define Y_AXIS_MIRROR                                   (1)
 #define X_AXIS_MIRROR                                   (2)
+#define BOTH_AXIS_MIRROR                                (3)
 
 #define PAGE0                                           (0x0)
 #define PAGE1                                           (0x1)

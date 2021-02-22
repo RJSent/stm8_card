@@ -15,6 +15,16 @@ int random() {
 
 int random_upto(int max) {
   return random() % (max + 1);
+  return random() % (max);
+}
+
+/* Code from https://stackoverflow.com/questions/2602823/, should be
+   simple enough that copyright doesn't apply but still sourced */
+uint8_t reverse_byte(uint8_t byte) {
+  byte = (byte & 0xF0) >> 4 | (byte & 0x0F) << 4;
+  byte = (byte & 0xCC) >> 2 | (byte & 0x33) << 2;
+  byte = (byte & 0xAA) >> 1 | (byte & 0x55) << 1;
+  return byte;
 }
 
 /* This method will eliminate the fHSI = fHSI / 8 prescaler. (So

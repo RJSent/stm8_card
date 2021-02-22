@@ -4,6 +4,8 @@
 #include "i2c.h"
 #include "uart.h"
 
+#include "baseline.h"
+
 #define WIDTH      (128)
 #define HEIGHT     (32)
 #define BUF_WIDTH  (WIDTH / 2)
@@ -104,13 +106,15 @@ char invert_buffer() {
   return 0;
 }
 
-/* 64 paired with 127
- i = 1, j = 0 */
-/* 66 paired with 125
- i = 1, j = 2 */
 char mirror_buffer(char axis) {
   switch (axis) {
   case Y_AXIS_MIRROR:
+    /* 0 paired with BUF_WIDTH     */
+    /* 1 paired with BUF_WIDTH - 1 */
+    /* 2 paired with BUF_WIDTH - 2 */
+    /* ... */
+    /* BUF_WIDTH / 2 paired with BUF_WIDTH - BUF_WIDTH / 2 - 1 = BUF_WIDTH / 2 + 1 */
+    /* Repeat for however many rows */
     for (int i = 0; i < BUF_HEIGHT / 8; i++) {
       for (int j = 0; j < BUF_WIDTH / 2; j++) {
 	char temp = SSD1306_Data.frame_buffer[i * BUF_WIDTH + j];
@@ -120,6 +124,21 @@ char mirror_buffer(char axis) {
     }
     break;
   case X_AXIS_MIRROR:
+    /* 0 paired with 192 */
+    /* 1 paired with 193 */
+    /* 2 paired with 194 */
+    /* ... */
+    /* 63 paired with 255 */
+    /* 64 paired with 128 */
+    for (int i = 0; i < BUF_HEIGHT / 16; i++) {
+      for (int j = 0; j < BUF_WIDTH; j++) {
+	char temp = reverse_byte(SSD1306_Data.frame_buffer[i * BUF_WIDTH + j]);
+	SSD1306_Data.frame_buffer[i * BUF_WIDTH + j] = reverse_byte(SSD1306_Data.frame_buffer[BUF_WIDTH * (3 - i) + j]);
+	SSD1306_Data.frame_buffer[BUF_WIDTH * (3 - i) + j] = temp;
+      }
+    }
+    break;
+  case BOTH_AXIS_MIRROR:        /* faster to do this then mirror y & mirror x */
     return NOT_IMPLEMENTED;
     break;
   default:
