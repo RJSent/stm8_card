@@ -26,5 +26,8 @@ flash: $(final_exe)
 dump:
 	stm8flash -s $(dump) -c $(programmer) -p $(part) -r $(dump).dump
 
+graph_deps:
+	codeviz -r
+
 clean:
-	rm -f *.asm *.cdb *.lk *.lst *.map *.rel *.rst *.sym *.mem *.ihx *.elf *.s19 *.dump
+	rm -f *.asm *.cdb *.lk *.lst *.map *.rel *.rst *.sym *.mem *.ihx *.elf *.s19 *.dump codeviz.*
