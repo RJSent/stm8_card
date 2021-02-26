@@ -185,12 +185,14 @@ char clear_display() {
 
 char draw_image(struct DrawableImage *image) {
   char need_redraw = 0;         /* flag for if some pixels of image were outside bounds of buffer*/
-  for (int i = 0; i < image->images[image->state]->height; i++) {
+  char height = image->images[image->state]->height;
+  char width = image->images[image->state]->width;
+  for (int i = 0; i < height; i++) {
     for (int j = 0; j < image->images[image->state]->width; j++) {
       unsigned char subscript = i + j / 8;
       unsigned char bit_num = j % 8;
       if ((image->images[image->state]->pixels[subscript] & (1 << (bit_num))) != 0) {
-	if (set_pixel(image->x + j, image->y + i) == INVALID) need_redraw = REDRAW_OTHER_HALF;	
+	if (set_pixel(image->x + width - j, image->y + i) == INVALID) need_redraw = REDRAW_OTHER_HALF;	
       }
     }
   }

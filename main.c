@@ -67,7 +67,7 @@ int main() {
 
   /* temporary for testing ssd1306.h/draw_image */
 /* drawn horizontally */
-const uint8_t smile_image_data[7] = {0x23, 0x24, 0x24, 0x00, 0x81, 0x42, 0x3C};
+const uint8_t smile_image_data[7] = {0x24, 0x24, 0x24, 0x00, 0x81, 0x42, 0x3C};
 const struct Image smile_image = {.width = 8, .height = 7, .pixels = smile_image_data};
 struct DrawableImage smile_drawable = {.x = 1, .y = 1, .state = 0, .images = {&smile_image} };
 
