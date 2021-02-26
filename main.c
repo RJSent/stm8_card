@@ -4,6 +4,7 @@
 #include "i2c.h"
 #include "uart.h"
 #include "ssd1306.h"
+#include "image.h"
 
 /* Note that the dev board that I am using has a button meant to help
    quickly power cycle for testing. This power cycle seems to only
@@ -62,98 +63,22 @@ int main() {
   }
   /* Funny story with (char) cast. Originally send_bytes took an int in that spot, but I changed it to char in i2c.c/h for memory concerns. I then noticed that addr wasn't being sent correctly after that. Turns out I needed to recompile main.c as well! */
 
-  int smile_state = 0;
-  int reverse = 0;
   clear_display();
 
+  /* temporary for testing ssd1306.h/draw_image */
+/* drawn horizontally */
+const uint8_t smile_image_data[7] = {0x23, 0x23, 0x23, 0x00, 0x81, 0x42, 0x3C};
+const struct Image smile_image = {.width = 8, .height = 7, .pixels = smile_image_data};
+struct DrawableImage smile_drawable = {.x = 4, .y = 2, .state = 0, .images = {&smile_image} };
+
+
   while (1) {
-    /* Left smile line */
-    set_pixel(17, 17);
-    set_pixel(18, 18);
-    set_pixel(19, 19);
-    set_pixel(20, 20);
-    set_pixel(21, 21);
-    /* Mouth */
-    for (int i = 0; i <= 13; i++) {
-      set_pixel(i + 22, 22);
-    }
-    /* Right smile line */
-    set_pixel(36, 21);
-    set_pixel(37, 20);
-    set_pixel(38, 19);
-    set_pixel(39, 18);
-    set_pixel(40, 17);
-    /* right eye */
-    for (int i = 4; i <= 11; i++) {
-      set_pixel(35, i);
-    }
-    /* left eye */
-    switch (smile_state) {
-    case 0:
-      for (int i = 4; i <= 11; i++) {
-	set_pixel(23, i);
-      }
-      break;
-    case 1:
-      for (int i = 5; i <= 10; i++) {
-	set_pixel(23, i);
-      }
-      break;
-    case 2:
-      for (int i = 6; i <= 9; i++) {
-	set_pixel(23, i);
-      }
-      break;
-    case 3:
-      for (int i = 7; i <= 8; i++) {
-	set_pixel(23, i);
-      }
-      break;
-    case 4:
-      for (int i = 22; i <= 24; i++) {
-	set_pixel(i, 7);
-      }
-      break;
-    case 5:
-      for (int i = 21; i <= 25; i++) {
-	set_pixel(i, 7);
-      }
-      break;
-    case 6:
-      for (int i = 20; i <= 26; i++) {
-	set_pixel(i, 7);
-      }
-      break;
-    default:
-      smile_state = 0;
-    }
-    if (reverse == 0) {
-      if (smile_state < 6) {
-	smile_state++;
-      } else {
-	reverse = 1;
-      }
-    } else {
-      if (smile_state > 0) {
-	smile_state--;
-      } else {
-	reverse = 0;
-      }
-    }
+    draw_image(smile_drawable.x, smile_drawable.y, smile_drawable.images[0]);
     draw_left_half();
-    invert_buffer();
-    /* mirror_buffer(X_AXIS_MIRROR); */
-    /* mirror_buffer(Y_AXIS_MIRROR); */
-    mirror_buffer(BOTH_AXIS_MIRROR);
-    draw_right_half();
     clear_buffer();
-    delay(50000);
-    if (smile_state == 0 && reverse == 0) {
-      delay(500000);
-      while (random_upto(4) < 3) {
-	delay(500000);
-      }
-    }
+    /* draw_right_half(); */
+    clear_buffer();
+    delay(500000);
   }
 }
 

@@ -151,7 +151,7 @@ char mirror_buffer(char axis) {
   return 0; 
 }
 
-char set_pixel(char x, char y) {
+signed char set_pixel(char x, char y) {
   /* Since we split screen into two halves */
   if (x >= WIDTH / 2 || y >= HEIGHT) return INVALID;
   SSD1306_Data.frame_buffer[x + ((y / 8) * (WIDTH / 2))] |= (1 << (y % 8)); 
@@ -159,7 +159,7 @@ char set_pixel(char x, char y) {
   return 0;
 }
 
-char clear_pixel(char x, char y) {
+signed char clear_pixel(char x, char y) {
   /* Since we split screen into two halves */
   if (x >= WIDTH / 2 || y >= HEIGHT) return INVALID;
   SSD1306_Data.frame_buffer[x + ((y / 8) * (WIDTH / 2))] &= ~(1 << (y % 8)); 
@@ -167,7 +167,7 @@ char clear_pixel(char x, char y) {
   return 0;
 }
 
-char flip_pixel(char x, char y) {
+signed char invert_pixel(char x, char y) {
   /* Since we split screen into two halves */
   if (x >= WIDTH / 2 || y >= HEIGHT) return INVALID;
   SSD1306_Data.frame_buffer[x + ((y / 8) * (WIDTH / 2))] ^= (1 << (y % 8)); 
@@ -183,3 +183,15 @@ char clear_display() {
   return 0;
 }
 
+char draw_image(const char x, const char y, const struct Image *image) {
+  char need_redraw = 0;         /* 1 if some pixels of image were outside bounds of buffer*/
+  for (int i = 0; i < image->height; i++) {
+    for (int j = 0; j < image->width; j++) {
+      if ((image->pixels[(i + j) / 8] & (i + j % 8)) != 0) {
+	if (set_pixel(x + j, y + i) == INVALID) need_redraw = REDRAW_OTHER_HALF;	
+      }
+    }
+  }
+  
+  return need_redraw;
+}

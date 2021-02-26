@@ -2,6 +2,8 @@
 #ifndef SSD1306_H
 #define SSD1306_H
 
+#include "image.h"
+
 #define SSD1306_I2C_ADDR                                (0x3C)  /* 0x3C xor 0x3D for SSD1306 and SSD1306B. Determined by D/C# pin */
 
 #define SSD1306_I2C                                     (1)
@@ -27,6 +29,9 @@
 #define PAGE5                                           (0x5)
 #define PAGE6                                           (0x6)
 #define PAGE7                                           (0x7)
+
+/* Returned by draw_image if there were pixels on the other half of the frame buffer */
+#define REDRAW_OTHER_HALF                         (1)
 
 /* Control byte format: CO_DC_000000 */
 /* CO = continuation bit */
@@ -146,11 +151,11 @@ char ssd1306_protocol(char protocol);
    the screen into two halves. The calling function / source code
    needs to keep track itself as to what half we're on. */
 /* (0,0) refers to top-left corner for the half */
-char set_pixel(char x, char y);
+signed char set_pixel(char x, char y);
 
-char clear_pixel(char x, char y);
+signed char clear_pixel(char x, char y);
 
-char flip_pixel(char x, char y);
+signed char invert_pixel(char x, char y);
 
 char draw_right_half();
 
@@ -163,6 +168,8 @@ char invert_buffer();
 char mirror_buffer(char axis);
 
 char clear_display();
+
+char draw_image(const char x, const char y, const struct Image *image);
 
 
 #endif
