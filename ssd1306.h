@@ -169,7 +169,7 @@ char mirror_buffer(char axis);
 
 char clear_display();
 
-char draw_image(struct DrawableImage *image);
+signed char draw_image(struct DrawableImage *image);
 
 
 #endif
