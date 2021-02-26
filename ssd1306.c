@@ -183,12 +183,14 @@ char clear_display() {
   return 0;
 }
 
-char draw_image(const char x, const char y, const struct Image *image) {
-  char need_redraw = 0;         /* 1 if some pixels of image were outside bounds of buffer*/
-  for (int i = 0; i < image->height; i++) {
-    for (int j = 0; j < image->width; j++) {
-      if ((image->pixels[(i + j) / 8] & (i + j % 8)) != 0) {
-	if (set_pixel(x + j, y + i) == INVALID) need_redraw = REDRAW_OTHER_HALF;	
+char draw_image(struct DrawableImage *image) {
+  char need_redraw = 0;         /* flag for if some pixels of image were outside bounds of buffer*/
+  for (int i = 0; i < image->images[image->state]->height; i++) {
+    for (int j = 0; j < image->images[image->state]->width; j++) {
+      unsigned char subscript = i + j / 8;
+      unsigned char bit_num = j % 8;
+      if ((image->images[image->state]->pixels[subscript] & (1 << (bit_num))) != 0) {
+	if (set_pixel(image->x + j, image->y + i) == INVALID) need_redraw = REDRAW_OTHER_HALF;	
       }
     }
   }

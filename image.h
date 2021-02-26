@@ -12,9 +12,9 @@ struct Image {
 };
 
 struct DrawableImage {
-  char x;
-  char y;
-  char state;
+  unsigned char x;
+  unsigned char y;
+  unsigned char state;
   const struct Image *images[MAX_FRAMES];
 };
 
