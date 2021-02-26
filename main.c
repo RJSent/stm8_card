@@ -113,8 +113,11 @@ int main() {
     draw_left_half();
     spaceship.x++;
     spaceship.state++;
-    if (spaceship.x == 32) spaceship.x = 0;
     if (spaceship.state == 3) spaceship.state = 0;
+    if (spaceship.x == SSD1306_WIDTH / 2 + 4 - spaceship.images[spaceship.state]->width) spaceship.x = 0;
+    invert_buffer();
+    mirror_buffer(Y_AXIS_MIRROR);
+    draw_right_half();
     clear_buffer();
     delay(50000);
   }

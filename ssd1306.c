@@ -6,10 +6,8 @@
 
 #include "baseline.h"
 
-#define WIDTH      (128)
-#define HEIGHT     (32)
-#define BUF_WIDTH  (WIDTH / 2)
-#define BUF_HEIGHT (HEIGHT)
+#define BUF_WIDTH  (SSD1306_WIDTH / 2)
+#define BUF_HEIGHT (SSD1306_HEIGHT)
 #define BUF_SIZE   (BUF_WIDTH * BUF_HEIGHT / (8))
 
 /* Notice that char != signed char. Implementation defined so it might act like either
@@ -70,7 +68,7 @@ char draw_frame_buffer() {
 /* TODO: Condense right_half and left_half into 1 function */
 char draw_right_half() {
   const uint8_t change_start[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
-    CMD_ADDR_COL, WIDTH / 2, WIDTH - 1,
+    CMD_ADDR_COL, SSD1306_WIDTH / 2, SSD1306_WIDTH - 1,
     CMD_ADDR_PAGE, 0, 3};
   int err = send_data(change_start, 7, SSD1306_I2C_ADDR);
   if (err != 0) return err;
@@ -82,7 +80,7 @@ char draw_right_half() {
 
 char draw_left_half() {
   const uint8_t change_start[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
-    CMD_ADDR_COL, 0, WIDTH / 2 - 1,
+    CMD_ADDR_COL, 0, SSD1306_WIDTH / 2 - 1,
     CMD_ADDR_PAGE, 0, 3};
   int err = send_data(change_start, 7, SSD1306_I2C_ADDR);
   if (err != 0) return err;
@@ -153,24 +151,24 @@ char mirror_buffer(char axis) {
 
 signed char set_pixel(char x, char y) {
   /* Since we split screen into two halves */
-  if (x >= WIDTH / 2 || y >= HEIGHT) return INVALID;
-  SSD1306_Data.frame_buffer[x + ((y / 8) * (WIDTH / 2))] |= (1 << (y % 8)); 
+  if (x >= SSD1306_WIDTH / 2 || y >= SSD1306_HEIGHT) return INVALID;
+  SSD1306_Data.frame_buffer[x + ((y / 8) * (SSD1306_WIDTH / 2))] |= (1 << (y % 8)); 
 
   return 0;
 }
 
 signed char clear_pixel(char x, char y) {
   /* Since we split screen into two halves */
-  if (x >= WIDTH / 2 || y >= HEIGHT) return INVALID;
-  SSD1306_Data.frame_buffer[x + ((y / 8) * (WIDTH / 2))] &= ~(1 << (y % 8)); 
+  if (x >= SSD1306_WIDTH / 2 || y >= SSD1306_HEIGHT) return INVALID;
+  SSD1306_Data.frame_buffer[x + ((y / 8) * (SSD1306_WIDTH / 2))] &= ~(1 << (y % 8)); 
   
   return 0;
 }
 
 signed char invert_pixel(char x, char y) {
   /* Since we split screen into two halves */
-  if (x >= WIDTH / 2 || y >= HEIGHT) return INVALID;
-  SSD1306_Data.frame_buffer[x + ((y / 8) * (WIDTH / 2))] ^= (1 << (y % 8)); 
+  if (x >= SSD1306_WIDTH / 2 || y >= SSD1306_HEIGHT) return INVALID;
+  SSD1306_Data.frame_buffer[x + ((y / 8) * (SSD1306_WIDTH / 2))] ^= (1 << (y % 8)); 
   
   return 0;
 }

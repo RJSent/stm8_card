@@ -6,6 +6,9 @@
 
 #define SSD1306_I2C_ADDR                                (0x3C)  /* 0x3C xor 0x3D for SSD1306 and SSD1306B. Determined by D/C# pin */
 
+#define SSD1306_WIDTH      (128)
+#define SSD1306_HEIGHT     (32)
+
 #define SSD1306_I2C                                     (1)
 #define SSD1306_UART                                    (2)
 #define SSD1306_SPI                                     (3)
