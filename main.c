@@ -118,11 +118,11 @@ int main() {
     draw_image(&smile_drawable, side);
     draw_image(&odd_width_drawable, side);
     draw_image(&spaceship, side);
-    draw_left_half();           /* change to take ssd1306_side_t arg */
+    draw_half(side);
     side = RIGHT;
     clear_buffer();
     draw_image(&spaceship, side);
-    draw_right_half();
+    draw_half(side);
     side = LEFT;
     spaceship.x++;
     spaceship.state++;
