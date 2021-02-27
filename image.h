@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-#define MAX_FRAMES (6) /* up to 6 frames of animation */
+#define MAX_FRAMES    (6) /* up to 6 frames of animation */
+#define UNINITIALIZED (-1)
 
 struct Image {
   const char width;
@@ -12,8 +13,8 @@ struct Image {
 };
 
 struct DrawableImage {
-  unsigned char x;
-  unsigned char y;
+  signed char x;
+  signed char y;
   unsigned char state;
   const struct Image *images[MAX_FRAMES];
 };

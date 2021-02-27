@@ -91,7 +91,8 @@ int main() {
     0x11, 0x80, 0x00,
     0x11, 0x00, 0x00
   };
-  const uint8_t spaceship_frame_2[24] = {0x21, 0x00, 0x00,
+  const uint8_t spaceship_frame_2[24] = {
+    0x21, 0x00, 0x00,
     0x41, 0x80, 0x00,
     0x21, 0xC1, 0x80,
     0x8F, 0xFF, 0xF0,
@@ -108,10 +109,10 @@ int main() {
   const struct Image odd_width_image = {.width = 7, .height = 3, .pixels = odd_width_grid};
   struct DrawableImage odd_width_drawable = {.x = 16, .y = 8, .state = 0, .images = {&odd_width_image}};
 
-  struct Image spaceship_image_0 = {.width = 24, .height = 8, .pixels = spaceship_frame_0};
-  struct Image spaceship_image_1 = {.width = 24, .height = 8, .pixels = spaceship_frame_1};
-  struct Image spaceship_image_2 = {.width = 24, .height = 8, .pixels = spaceship_frame_2};
-  struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2}};
+const struct Image spaceship_image_0 = {.width = 24, .height = 8, .pixels = spaceship_frame_0};
+const struct Image spaceship_image_1 = {.width = 24, .height = 8, .pixels = spaceship_frame_1};
+const struct Image spaceship_image_2 = {.width = 24, .height = 8, .pixels = spaceship_frame_2};
+struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2}};
 
   while (1) {
     ssd1306_side_t side = LEFT;
