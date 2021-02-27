@@ -8,6 +8,8 @@
 #define COUNT_PER_1MS 59        /* Oddly not 670 / 16.66 */
 #define CLOCK_MEASUREMENT       /* Clock used for COUNT_PER measurements */
 
+typedef enum Boolean { FALSE, TRUE } boolean_t;
+
 char delay(unsigned long num);
 
 char random();
