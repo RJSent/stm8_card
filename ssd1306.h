@@ -20,6 +20,7 @@
 #define INVALID                                         (-1)
 #define NOT_IMPLEMENTED                                 (-2)
 
+/* Change this to enum??? */
 #define Y_AXIS_MIRROR                                   (1)
 #define X_AXIS_MIRROR                                   (2)
 #define BOTH_AXIS_MIRROR                                (3)
@@ -165,14 +166,15 @@ signed char clear_pixel(char x, char y);
 
 signed char invert_pixel(char x, char y);
 
-signed char draw_right_half();
+/* Draw the frame buffer to the selected side */
+signed char draw_half(ssd1306_side_t side);
 
-signed char draw_left_half();
-
+/* User probably should manually call after every draw_half */
 void clear_buffer();
 
 void invert_buffer();
 
+/* Change to enum?? */
 char mirror_buffer(char axis);
 
 void clear_display();

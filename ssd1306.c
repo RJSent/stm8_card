@@ -66,28 +66,22 @@ signed char draw_frame_buffer() {
   return send_data(&SSD1306_Data.control_byte, sizeof(struct S), SSD1306_I2C_ADDR);
 }
 
-/* TODO: Condense right_half and left_half into 1 function */
-signed char draw_right_half() {
-  const uint8_t change_start[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
+signed char draw_half(ssd1306_side_t side) {
+  const uint8_t change_start_right[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
     CMD_ADDR_COL, SSD1306_WIDTH / 2, SSD1306_WIDTH - 1,
     CMD_ADDR_PAGE, 0, 3};
-  int err = send_data(change_start, 7, SSD1306_I2C_ADDR);
-  if (err != 0) return err;
-
-  draw_frame_buffer();
-
-  return 0;
-}
-
-signed char draw_left_half() {
-  const uint8_t change_start[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
+  const uint8_t change_start_left[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
     CMD_ADDR_COL, 0, SSD1306_WIDTH / 2 - 1,
     CMD_ADDR_PAGE, 0, 3};
-  int err = send_data(change_start, 7, SSD1306_I2C_ADDR);
+  int err;
+  if (side == RIGHT) {
+    err = send_data(change_start_right, sizeof(change_start_right) / sizeof(change_start_right[0]));
+  } else {
+    err = send_data(change_start_left, sizeof(change_start_left) / sizeof(change_start_left[0]));
+  }
   if (err != 0) return err;
 
   draw_frame_buffer();
-
   return 0;
 }
 
@@ -173,14 +167,18 @@ signed char invert_pixel(char x, char y) {
 }
 
 void clear_display() {
+  ssd1306_side_t side = RIGHT;
   clear_buffer();
-  draw_right_half();
-  draw_left_half();
+  draw_half(side);
+  side = LEFT;
+  draw_half(side);
 }
 
 signed char draw_image(struct DrawableImage *image, ssd1306_side_t side) {
-  char need_redraw = 0;         /* flag for if some pixels of image were outside bounds of buffer */
   char width = image->images[image->state]->width;
+  char need_redraw = 0;         /* flag for if some pixels of image were outside bounds of buffer */
+  if (side == LEFT && image->x > BUF_WIDTH) return need_redraw; /* don't waste time drawing images that don't appear */
+  if (side == RIGHT && image->x + width < BUF_WIDTH) return need_redraw;
   for (int i = 0; i < image->images[image->state]->height; i++) {
     for (int j = 0; j < width; j++) {
       unsigned char subscript = (i * width + j) / 8;
