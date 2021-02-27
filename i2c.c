@@ -1,6 +1,5 @@
 #include "i2c.h"
 #include "registers.h"
-#include "uart.h"
 #include "baseline.h"
 
 #define PERIPH_ENABLE 1
@@ -43,12 +42,6 @@ void i2c_start_condition() {
 
 void i2c_stop_condition() {
   I2C_CR2 |= STOP_GEN;
-}
-
-void i2c_debug() {
-  uart_printf("SR1: 0b%b\n\r", I2C_SR1);
-  uart_printf("SR2: 0b%b\n\r", I2C_SR2);
-  uart_printf("SR3: 0b%b\n\r", I2C_SR3);
 }
 
 /* FIXME: Issue in consistency */
