@@ -114,17 +114,20 @@ int main() {
   struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2}};
 
   while (1) {
-    draw_image(&smile_drawable);
-    draw_image(&odd_width_drawable);
-    draw_image(&spaceship);
-    draw_left_half();
+    ssd1306_side_t side = LEFT;
+    draw_image(&smile_drawable, side);
+    draw_image(&odd_width_drawable, side);
+    draw_image(&spaceship, side);
+    draw_left_half();           /* change to take ssd1306_side_t arg */
+    side = RIGHT;
+    clear_buffer();
+    draw_image(&spaceship, side);
+    draw_right_half();
+    side = LEFT;
     spaceship.x++;
     spaceship.state++;
     if (spaceship.state == 3) spaceship.state = 0;
-    if (spaceship.x == SSD1306_WIDTH / 2 + 4 - spaceship.images[spaceship.state]->width) spaceship.x = 0;
-    invert_buffer();
-    mirror_buffer(Y_AXIS_MIRROR);
-    draw_right_half();
+    if (spaceship.x == SSD1306_WIDTH - spaceship.images[spaceship.state]->width) spaceship.x = 0;
     clear_buffer();
     delay(50000);
   }

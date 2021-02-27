@@ -178,7 +178,7 @@ void clear_display() {
   draw_left_half();
 }
 
-signed char draw_image(struct DrawableImage *image) {
+signed char draw_image(struct DrawableImage *image, ssd1306_side_t side) {
   char need_redraw = 0;         /* flag for if some pixels of image were outside bounds of buffer */
   char width = image->images[image->state]->width;
   for (int i = 0; i < image->images[image->state]->height; i++) {
@@ -186,7 +186,9 @@ signed char draw_image(struct DrawableImage *image) {
       unsigned char subscript = (i * width + j) / 8;
       unsigned char bit_num = 7 - (i * width + j) % 8; /* this calculation is the problem */
       if ((image->images[image->state]->pixels[subscript] & (1 << (bit_num))) != 0) {
-	if (set_pixel(image->x + j, image->y + i) == INVALID) need_redraw = REDRAW_OTHER_HALF;
+	signed char xcord = image->x + j, ycord = image->y + i;
+	if (side == RIGHT) xcord -= SSD1306_WIDTH / 2;
+	if (set_pixel(xcord, ycord) == INVALID) need_redraw = REDRAW_OTHER_HALF;
       }
     }
   }

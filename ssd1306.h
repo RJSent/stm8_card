@@ -36,6 +36,9 @@
 /* Returned by draw_image if there were pixels on the other half of the frame buffer */
 #define REDRAW_OTHER_HALF                         (1)
 
+/* I dunno if an enum is the best way to do this, but I'm doing it! */
+typedef enum { RIGHT, LEFT } ssd1306_side_t;
+
 /* Control byte format: CO_DC_000000 */
 /* CO = continuation bit */
 /* DC = Data/command selection bit */
@@ -174,7 +177,7 @@ char mirror_buffer(char axis);
 
 void clear_display();
 
-signed char draw_image(struct DrawableImage *image);
+signed char draw_image(struct DrawableImage *image, ssd1306_side_t side);
 
 
 #endif
