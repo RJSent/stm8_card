@@ -148,7 +148,7 @@ struct MultiCommand cmd_zoom(char enable);
 struct MultiCommand cmd_pump_setting();
 
 /* display functions */
-char ssd1306_protocol(char protocol);
+signed char ssd1306_protocol(char protocol);
 
 signed char ssd1306_init();
 

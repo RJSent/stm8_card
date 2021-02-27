@@ -30,7 +30,7 @@ struct S {
   uint8_t frame_buffer[BUF_SIZE];
 } SSD1306_Data = {.control_byte = CONTROL_BYTE(CO_DATA, DC_DATA)};
 
-char ssd1306_protocol(char protocol_arg) {
+signed char ssd1306_protocol(char protocol_arg) {
   switch (protocol_arg) {
   case SSD1306_I2C:
     protocol = SSD1306_I2C;
@@ -47,8 +47,10 @@ char ssd1306_protocol(char protocol_arg) {
   return 0;
 }
 
+
+
 /* transmits data depending on what protocol to use */
-char send_data(const uint8_t *data, int size, char address) {
+signed char send_data(const uint8_t *data, int size, char address) {
   switch(protocol) {
   case SSD1306_I2C:
     return i2c_send_bytes(data, size, address);
@@ -60,9 +62,8 @@ char send_data(const uint8_t *data, int size, char address) {
   }
 }
 
-char draw_frame_buffer() {
-  send_data(&SSD1306_Data.control_byte, sizeof(struct S), SSD1306_I2C_ADDR);
-  return 0;
+signed char draw_frame_buffer() {
+  return send_data(&SSD1306_Data.control_byte, sizeof(struct S), SSD1306_I2C_ADDR);
 }
 
 /* TODO: Condense right_half and left_half into 1 function */
