@@ -186,8 +186,8 @@ signed char draw_image(struct DrawableImage *image) {
   char width = image->images[image->state]->width;
   for (int i = 0; i < image->images[image->state]->height; i++) {
     for (int j = 0; j < width; j++) {
-      unsigned char subscript = i * width / 8 + j / 8;
-      unsigned char bit_num = 7 - j % 8;
+      unsigned char subscript = (i * width + j) / 8;
+      unsigned char bit_num = 7 - (i * width + j) % 8; /* this calculation is the problem */
       if ((image->images[image->state]->pixels[subscript] & (1 << (bit_num))) != 0) {
 	if (set_pixel(image->x + j, image->y + i) == INVALID) need_redraw = REDRAW_OTHER_HALF;
       }
