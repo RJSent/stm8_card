@@ -50,10 +50,10 @@ signed char ssd1306_protocol(char protocol_arg) {
 
 
 /* transmits data depending on what protocol to use */
-signed char send_data(const uint8_t *data, int size, char address) {
+signed char send_data(const uint8_t *data, int size) {
   switch(protocol) {
   case SSD1306_I2C:
-    return i2c_send_bytes(data, size, address);
+    return i2c_send_bytes(data, size, SSD1306_I2C_ADDR);
   case SSD1306_UART:
   case SSD1306_SPI:
     return NOT_IMPLEMENTED;
@@ -63,7 +63,7 @@ signed char send_data(const uint8_t *data, int size, char address) {
 }
 
 signed char draw_frame_buffer() {
-  return send_data(&SSD1306_Data.control_byte, sizeof(struct S), SSD1306_I2C_ADDR);
+  return send_data(&SSD1306_Data.control_byte, sizeof(struct S));
 }
 
 signed char draw_half(ssd1306_side_t side) {
