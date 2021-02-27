@@ -66,7 +66,7 @@ char draw_frame_buffer() {
 }
 
 /* TODO: Condense right_half and left_half into 1 function */
-char draw_right_half() {
+signed char draw_right_half() {
   const uint8_t change_start[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
     CMD_ADDR_COL, SSD1306_WIDTH / 2, SSD1306_WIDTH - 1,
     CMD_ADDR_PAGE, 0, 3};
@@ -78,7 +78,7 @@ char draw_right_half() {
   return 0;
 }
 
-char draw_left_half() {
+signed char draw_left_half() {
   const uint8_t change_start[7] = {CONTROL_BYTE(CO_DATA, DC_COMMAND),
     CMD_ADDR_COL, 0, SSD1306_WIDTH / 2 - 1,
     CMD_ADDR_PAGE, 0, 3};
@@ -90,18 +90,16 @@ char draw_left_half() {
   return 0;
 }
 
-char clear_buffer() {
+void clear_buffer() {
   for (int i = 0; i < BUF_SIZE; i++) {
     SSD1306_Data.frame_buffer[i] = 0;
   }
-  return 0;
 }
 
-char invert_buffer() {
+void invert_buffer() {
   for (int i = 0; i < BUF_SIZE; i++) {
     SSD1306_Data.frame_buffer[i] = ~(SSD1306_Data.frame_buffer[i]);
   }
-  return 0;
 }
 
 char mirror_buffer(char axis) {
@@ -173,12 +171,10 @@ signed char invert_pixel(char x, char y) {
   return 0;
 }
 
-char clear_display() {
+void clear_display() {
   clear_buffer();
   draw_right_half();
   draw_left_half();
-  
-  return 0;
 }
 
 signed char draw_image(struct DrawableImage *image) {

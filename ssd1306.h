@@ -150,6 +150,8 @@ struct MultiCommand cmd_pump_setting();
 /* display functions */
 char ssd1306_protocol(char protocol);
 
+signed char ssd1306_init();
+
 /* x < WIDTH / 2 and y < HEIGHT / 2. This is needed because we split
    the screen into two halves. The calling function / source code
    needs to keep track itself as to what half we're on. */
@@ -160,17 +162,17 @@ signed char clear_pixel(char x, char y);
 
 signed char invert_pixel(char x, char y);
 
-char draw_right_half();
+signed char draw_right_half();
 
-char draw_left_half();
+signed char draw_left_half();
 
-char clear_buffer();
+void clear_buffer();
 
-char invert_buffer();
+void invert_buffer();
 
 char mirror_buffer(char axis);
 
-char clear_display();
+void clear_display();
 
 signed char draw_image(struct DrawableImage *image);
 
