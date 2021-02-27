@@ -160,7 +160,7 @@ signed char ssd1306_init();
    the screen into two halves. The calling function / source code
    needs to keep track itself as to what half we're on. */
 /* (0,0) refers to top-left corner for the half */
-signed char set_pixel(char x, char y);
+signed char draw_pixel(char x, char y);
 
 signed char clear_pixel(char x, char y);
 

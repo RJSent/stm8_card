@@ -47,8 +47,6 @@ signed char ssd1306_protocol(char protocol_arg) {
   return 0;
 }
 
-
-
 /* transmits data depending on what protocol to use */
 signed char send_data(const uint8_t *data, int size) {
   switch(protocol) {
@@ -142,7 +140,7 @@ char mirror_buffer(char axis) {
   return 0; 
 }
 
-signed char set_pixel(char x, char y) {
+signed char draw_pixel(char x, char y) {
   /* Since we split screen into two halves */
   if (x >= SSD1306_WIDTH / 2 || y >= SSD1306_HEIGHT) return INVALID;
   SSD1306_Data.frame_buffer[x + ((y / 8) * (SSD1306_WIDTH / 2))] |= (1 << (y % 8)); 
@@ -167,26 +165,24 @@ signed char invert_pixel(char x, char y) {
 }
 
 void clear_display() {
-  ssd1306_side_t side = RIGHT;
   clear_buffer();
-  draw_half(side);
-  side = LEFT;
-  draw_half(side);
+  draw_half(RIGHT);
+  draw_half(LEFT);
 }
 
 signed char draw_image(struct DrawableImage *image, ssd1306_side_t side) {
   char width = image->images[image->state]->width;
-  char need_redraw = 0;         /* flag for if some pixels of image were outside bounds of buffer */
+  char need_redraw = 0;                                         /* flag for if any pixels outside bounds of buffer */
   if (side == LEFT && image->x > BUF_WIDTH) return need_redraw; /* don't waste time drawing images that don't appear */
   if (side == RIGHT && image->x + width < BUF_WIDTH) return need_redraw;
   for (int i = 0; i < image->images[image->state]->height; i++) {
     for (int j = 0; j < width; j++) {
       unsigned char subscript = (i * width + j) / 8;
-      unsigned char bit_num = 7 - (i * width + j) % 8; /* this calculation is the problem */
+      unsigned char bit_num = 7 - (i * width + j) % 8;
       if ((image->images[image->state]->pixels[subscript] & (1 << (bit_num))) != 0) {
 	signed char xcord = image->x + j, ycord = image->y + i;
 	if (side == RIGHT) xcord -= SSD1306_WIDTH / 2;
-	if (set_pixel(xcord, ycord) == INVALID) need_redraw = REDRAW_OTHER_HALF;
+	if (draw_pixel(xcord, ycord) == INVALID) need_redraw = REDRAW_OTHER_HALF;
       }
     }
   }
