@@ -16,7 +16,7 @@
 #define ENEMY_LASER_VELOCITY (game_width / 32)
 
 #define MAX_VELOCITY      (game_height / 8)
-#define VELOCITY_GAIN_PER_TICK (2)
+#define VELOCITY_GAIN_PER_TICK (1)
 #define VELOCITY_LOSS_PER_TICK (3)
 
 struct PlayerLaser {
@@ -85,10 +85,20 @@ static unsigned char game_width, game_height;
 
 
 signed char ship_tick(invader_movecmd_t movement) {
+  static boolean_t gained_v_last_tick = FALSE;
   /* Change speed based on direction, also decrease mag so it stops naturally */
-  if (movement == UP) player_ship.velocity -= VELOCITY_GAIN_PER_TICK;
-  if (movement == DOWN) player_ship.velocity += VELOCITY_GAIN_PER_TICK;
-  if (movement == NOP) player_ship.velocity = math_mag_decrease(player_ship.velocity, VELOCITY_LOSS_PER_TICK);
+  if (movement == UP && gained_v_last_tick == FALSE) {
+    player_ship.velocity -= VELOCITY_GAIN_PER_TICK;
+    gained_v_last_tick = TRUE;
+  }
+  else if (movement == DOWN && gained_v_last_tick == FALSE) {
+    player_ship.velocity += VELOCITY_GAIN_PER_TICK; 
+  } else if (movement == NOP) {
+    player_ship.velocity = math_mag_decrease(player_ship.velocity, VELOCITY_LOSS_PER_TICK);
+    gained_v_last_tick = FALSE;
+  } else {
+    gained_v_last_tick = FALSE;
+  }
   /* Ensure |velocity| <= MAX_VELOCITY */
   if (math_absolute(player_ship.velocity) > MAX_VELOCITY) player_ship.velocity = math_mag_set(player_ship.velocity, MAX_VELOCITY);
 
