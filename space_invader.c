@@ -2,7 +2,6 @@
 
 #include "space_invader.h"
 #include "baseline.h"
-#include "uart.h"               /* debugging remove later */
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
@@ -11,6 +10,9 @@
 
 #define MAX_PLAYER_LASERS (3)
 #define MAX_ENEMY_LASERS  (3)
+
+#define PLAYER_LASER_VELOCITY (game_width / 32)
+#define ENEMY_LASER_VELOCITY (game_width / 32)
 
 #define MAX_VELOCITY      (game_height / 8)
 #define VELOCITY_GAIN_PER_TICK (2)
@@ -81,21 +83,13 @@ static struct PlayerLaser player_lasers[MAX_PLAYER_LASERS];
 static unsigned char game_width, game_height;
 
 
-signed char check_collisions() {
-
-  return 0;
-}
-
-signed char ship_tick(signed char movement) {
+signed char ship_tick(invader_movecmd_t movement) {
   /* Change speed based on direction, also decrease mag so it stops naturally */
   if (movement == UP) player_ship.velocity -= VELOCITY_GAIN_PER_TICK;
   if (movement == DOWN) player_ship.velocity += VELOCITY_GAIN_PER_TICK;
   if (movement == NOP) player_ship.velocity = math_mag_decrease(player_ship.velocity, VELOCITY_LOSS_PER_TICK);
-  uart_printf("Vel: %d\n\r", player_ship.velocity);
-  uart_printf("Veldec: %d\n\r", math_mag_decrease(player_ship.velocity, VELOCITY_LOSS_PER_TICK));
   /* Ensure |velocity| <= MAX_VELOCITY */
   if (math_absolute(player_ship.velocity) > MAX_VELOCITY) player_ship.velocity = math_mag_set(player_ship.velocity, MAX_VELOCITY);
-  uart_printf("Velassign: %d\n\r", player_ship.velocity);
 
   /* Change y position based on speed */
   player_ship.ship.y += player_ship.velocity;
@@ -114,10 +108,48 @@ signed char ship_tick(signed char movement) {
   return 0;
 }
 
+/* Mark first empty laser as active and shoot it */
+signed char shoot_player_laser(invader_shootcmd_t shoot) {
+  if (shoot == TRUE) {
+    for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
+      if (player_lasers[i].active == FALSE) {
+	player_lasers[i].active = TRUE;
+	player_lasers[i].laser.x = player_ship.ship.x + player_ship.ship.images[player_ship.ship.state]->width;
+	player_lasers[i].laser.y = player_ship.ship.y + player_ship.ship.images[player_ship.ship.state]->height / 2;
+	break;
+      }
+    }
+  }
+
+  return 0;
+}
+
+signed char check_player_laser_collisions() {
+
+  return 0;
+}
+
+signed char player_laser_tick() {
+  for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
+      if (player_lasers[i].active == TRUE) {
+	player_lasers[i].laser.x += PLAYER_LASER_VELOCITY;
+      }
+      if ((int)player_lasers[i].laser.x > game_width) {
+	player_lasers[i].active = FALSE;
+      }
+    }
+
+  check_player_laser_collisions();
+  
+  return 0;
+}
+
 /* SDCC 4.0.0 doesn't support passing structures directly, despite that
    being part of the C standard. Page 25 of sddcman.pdf. I cry every time. */
 signed char invader_game_tick(struct InvaderCommands *commands) {
   ship_tick(commands->movement);
+  shoot_player_laser(commands->shoot);
+  player_laser_tick();
   
   return 0;
 }
@@ -137,7 +169,7 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
   player_ship.ship = spaceship_init;
   
   /* Initialize player laser structs */
-  for (int i = 0; i < MAX_PLAYER_LASERS; i++) {
+  for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
     player_lasers[i].active = FALSE;
     struct DrawableImage player_laser_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
       .images = {&player_laser_image_0, &player_laser_image_1, &player_laser_image_2, &player_laser_image_3}};
@@ -151,4 +183,10 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
 /* remove, debugging */
 struct DrawableImage* debug_drawableimage_spaceship() {
   return &player_ship.ship;
+}
+
+/* remove, debugging */
+struct DrawableImage* debug_playerlaser(unsigned char i) {
+  if (player_lasers[i].active == TRUE) return &player_lasers[i].laser;
+  return 0;
 }

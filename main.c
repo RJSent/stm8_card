@@ -138,7 +138,6 @@ struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&space
 
     char loops = 24;
     for (int i = 0; i < loops; i++) {
-      uart_printf("---\n\r");
       if (i < loops / 3) {
 	invader_commands.movement = DOWN;
       } else if (i < 2 * loops / 3) {
@@ -151,7 +150,7 @@ struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&space
       draw_image(invader_ship, side);
       draw_half(side);
       clear_buffer();
-      delay(20000);
+      delay(40000);
     }
 
     /* uart_printf("-----END-----\n\r"); */
