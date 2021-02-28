@@ -21,4 +21,6 @@ signed char invader_game_tick(struct InvaderCommands *commands);
 
 struct DrawableImage * debug_drawableimage_spaceship();
 
+struct DrawableImage * debug_drawableimage_playerlaser(unsigned char i);
+
 #endif

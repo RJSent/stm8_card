@@ -145,12 +145,29 @@ struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&space
       } else {
 	invader_commands.movement = NOP;
       }
-      struct DrawableImage *invader_ship = debug_drawableimage_spaceship();
+      if (random_upto(16) > 14) {
+	invader_commands.shoot = TRUE;
+      }
+      struct DrawableImage *spaceship = debug_drawableimage_spaceship();
       invader_game_tick(&invader_commands);
-      draw_image(invader_ship, side);
+      draw_image(spaceship, LEFT);
+      struct DrawableImage *lasers[3];
+      char redrawlasers[3];
+      for (int i = 0; i < 3; i++) {
+	lasers[i] = debug_drawableimage_playerlaser(i);
+	redrawlasers[i] = draw_image(lasers[i], LEFT);
+      }
       draw_half(side);
       clear_buffer();
-      delay(40000);
+      for (int i = 0; i < 3; i++) {
+	if (redrawlasers[i] != 0) {
+	  redrawlasers[i] = 0;
+	  draw_image(lasers[i], RIGHT);
+	}
+      }
+      clear_buffer();
+      invader_commands.shoot = FALSE;
+      delay(100000);
     }
 
     /* uart_printf("-----END-----\n\r"); */

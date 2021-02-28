@@ -6,7 +6,8 @@
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
 /* TODO: Find safe way to calculate this */
-#define NUM_SHIP_FRAMES   (3)
+#define NUM_SHIP_FRAMES         (3)
+#define NUM_PLAYER_LASER_FRAMES (4)
 
 #define MAX_PLAYER_LASERS (3)
 #define MAX_ENEMY_LASERS  (3)
@@ -133,10 +134,17 @@ signed char player_laser_tick() {
   for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
       if (player_lasers[i].active == TRUE) {
 	player_lasers[i].laser.x += PLAYER_LASER_VELOCITY;
+	/* Adjust state so ship is animated */
+	if (player_lasers[i].laser.state < NUM_PLAYER_LASER_FRAMES - 1) {
+	  player_lasers[i].laser.state++;
+	} else {
+	  player_lasers[i].laser.state = 0;
+	}
       }
       if ((int)player_lasers[i].laser.x > game_width) {
 	player_lasers[i].active = FALSE;
       }
+
     }
 
   check_player_laser_collisions();
@@ -186,7 +194,7 @@ struct DrawableImage* debug_drawableimage_spaceship() {
 }
 
 /* remove, debugging */
-struct DrawableImage* debug_playerlaser(unsigned char i) {
+struct DrawableImage* debug_drawableimage_playerlaser(unsigned char i) {
   if (player_lasers[i].active == TRUE) return &player_lasers[i].laser;
   return 0;
 }
