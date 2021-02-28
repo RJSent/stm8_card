@@ -2,14 +2,15 @@
 
 #include "space_invader.h"
 #include "baseline.h"
+#include "uart.h"               /* debugging remove later */
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
 #define MAX_PLAYER_LASERS (3)
 #define MAX_ENEMY_LASERS  (3)
 
-#define MAX_ACCELERATION  (game_height / 4) /* play around with these values */
-#define MAX_VELOCITY      (game_height / 6)
+#define MAX_ACCELERATION  (game_height / 8) /* play around with these values */
+#define MAX_VELOCITY      (game_height / 8)
 #define ACCEL_PER_TICK    (1)
 #define VELOCITY_LOSS_PER_TICK (1)
 
@@ -108,10 +109,17 @@ signed char ship_tick(signed char movement) {
   if (player_ship.ship.y < 0) player_ship.ship.y = 0;
   if (player_ship.ship.y + ship_height > game_height) player_ship.ship.y = game_height - ship_height;
 
+  /* Adjust state so ship is animated */
+  if (player_ship.ship.state < SIZEOFARRAY(player_ship.ship.images)) {
+    player_ship.ship.state++;
+  } else {
+    player_ship.ship.state = 0;
+  }
+
   return 0;
 }
 
-/* SDCC doesn't support passing structures directly, despite that
+/* SDCC 4.0.0 doesn't support passing structures directly, despite that
    being part of the C standard. Page 25 of sddcman.pdf. I cry every time. */
 signed char invader_game_tick(struct InvaderCommands *commands) {
   ship_tick(commands->movement);
@@ -145,7 +153,7 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
   return 0;
 }
 
-/* remove */
+/* remove, debugging */
 struct DrawableImage* debug_drawableimage_spaceship() {
   return &player_ship.ship;
 }
