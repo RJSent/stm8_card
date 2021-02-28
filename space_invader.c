@@ -6,13 +6,15 @@
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
+/* TODO: Find safe way to calculate this */
+#define NUM_SHIP_FRAMES   (3)
+
 #define MAX_PLAYER_LASERS (3)
 #define MAX_ENEMY_LASERS  (3)
 
-#define MAX_ACCELERATION  (game_height / 8) /* play around with these values */
 #define MAX_VELOCITY      (game_height / 8)
-#define ACCEL_PER_TICK    (1)
-#define VELOCITY_LOSS_PER_TICK (1)
+#define VELOCITY_GAIN_PER_TICK (2)
+#define VELOCITY_LOSS_PER_TICK (3)
 
 struct PlayerLaser {
   boolean_t active;
@@ -21,7 +23,7 @@ struct PlayerLaser {
 
 struct PlayerShip {
   boolean_t alive;
-  signed char acceleration, velocity;
+  signed char velocity;
   struct DrawableImage ship;
   struct DrawableImage explosion;
 };
@@ -85,22 +87,15 @@ signed char check_collisions() {
 }
 
 signed char ship_tick(signed char movement) {
-  /* Adjust acceleration of ship */
-  if (movement == DOWN && player_ship.acceleration < MAX_ACCELERATION) {
-    player_ship.acceleration += ACCEL_PER_TICK;
-  } else if (movement == UP && math_absolute(player_ship.acceleration) < MAX_ACCELERATION) {
-    player_ship.acceleration -= ACCEL_PER_TICK;
-  } else {                      /* NOP */
-    player_ship.acceleration = math_mag_decrease(player_ship.acceleration, ACCEL_PER_TICK);
-  }
-  /* Ensure |acceleration| <= MAX_ACCELERATION */
-  if (math_absolute(player_ship.acceleration) > MAX_ACCELERATION) player_ship.acceleration = math_mag_set(player_ship.acceleration, MAX_ACCELERATION);
-
-  /* Change speed based on acceleration, also decrease mag so it stops naturally */
-  player_ship.velocity += player_ship.acceleration;
-  player_ship.velocity = math_mag_decrease(player_ship.velocity, VELOCITY_LOSS_PER_TICK); /* decrease velocity by constant amount per tick */
+  /* Change speed based on direction, also decrease mag so it stops naturally */
+  if (movement == UP) player_ship.velocity -= VELOCITY_GAIN_PER_TICK;
+  if (movement == DOWN) player_ship.velocity += VELOCITY_GAIN_PER_TICK;
+  if (movement == NOP) player_ship.velocity = math_mag_decrease(player_ship.velocity, VELOCITY_LOSS_PER_TICK);
+  uart_printf("Vel: %d\n\r", player_ship.velocity);
+  uart_printf("Veldec: %d\n\r", math_mag_decrease(player_ship.velocity, VELOCITY_LOSS_PER_TICK));
   /* Ensure |velocity| <= MAX_VELOCITY */
   if (math_absolute(player_ship.velocity) > MAX_VELOCITY) player_ship.velocity = math_mag_set(player_ship.velocity, MAX_VELOCITY);
+  uart_printf("Velassign: %d\n\r", player_ship.velocity);
 
   /* Change y position based on speed */
   player_ship.ship.y += player_ship.velocity;
@@ -110,7 +105,7 @@ signed char ship_tick(signed char movement) {
   if (player_ship.ship.y + ship_height > game_height) player_ship.ship.y = game_height - ship_height;
 
   /* Adjust state so ship is animated */
-  if (player_ship.ship.state < SIZEOFARRAY(player_ship.ship.images)) {
+  if (player_ship.ship.state < NUM_SHIP_FRAMES - 1) {
     player_ship.ship.state++;
   } else {
     player_ship.ship.state = 0;

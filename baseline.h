@@ -9,6 +9,7 @@
 #define CLOCK_MEASUREMENT       /* Clock used for COUNT_PER measurements */
 
 /* Macro for sizeof array */
+/* Be VERY careful with that, as it won't work if the array is > number of useful elements (e.g. has unused elements) */
 #define SIZEOFARRAY(x) (sizeof(x) / sizeof(x[0]))
 
 typedef enum Boolean { FALSE, TRUE } boolean_t;

@@ -136,10 +136,12 @@ struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&space
     /* if (spaceship.x == SSD1306_WIDTH - spaceship.images[spaceship.state]->width) spaceship.x = 0; */
     /* clear_buffer(); */
 
-    for (int i = 0; i < 9; i++) {
-      if (i < 3) {
+    char loops = 24;
+    for (int i = 0; i < loops; i++) {
+      uart_printf("---\n\r");
+      if (i < loops / 3) {
 	invader_commands.movement = DOWN;
-      } else if (i > 3 && i < 7){
+      } else if (i < 2 * loops / 3) {
 	invader_commands.movement = UP;
       } else {
 	invader_commands.movement = NOP;
@@ -148,15 +150,15 @@ struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&space
       invader_game_tick(&invader_commands);
       draw_image(invader_ship, side);
       draw_half(side);
-      clear_buffer();    
-      delay(500000);
+      clear_buffer();
+      delay(20000);
     }
 
-
+    /* uart_printf("-----END-----\n\r"); */
+    /* while(1) {}; */
 
     
     clear_buffer();    
-    delay(500000);
   }
 }
 
