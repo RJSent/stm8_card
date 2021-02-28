@@ -2,7 +2,6 @@
 
 #include "space_invader.h"
 #include "baseline.h"
-#include "uart.h"               /* debugging remove */
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
@@ -133,33 +132,34 @@ signed char check_player_laser_collisions() {
 
 signed char player_laser_tick() {
   for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
-      if (player_lasers[i].active == TRUE) {
-	player_lasers[i].laser.x += PLAYER_LASER_VELOCITY;
-	/* Adjust state so laser is animated */
-	if (player_lasers[i].laser.state < NUM_PLAYER_LASER_FRAMES - 1) {
-	  player_lasers[i].laser.state++;
-	} else {
-	  player_lasers[i].laser.state = 0;
-	}
+    if (player_lasers[i].active == TRUE) {
+      player_lasers[i].laser.x += PLAYER_LASER_VELOCITY;
+      /* Adjust state so laser is animated */
+      if (player_lasers[i].laser.state < NUM_PLAYER_LASER_FRAMES - 1) {
+	player_lasers[i].laser.state++;
+      } else {
+	player_lasers[i].laser.state = 0;
       }
-      /* ISSUE: x is a signed character, max val of 127. Rolls over
-	 into negative values (-128 specifically), then counts back
-	 up. I didn't want to change x into an int (too much memory),
-	 so instead I implemented a check to mark the laser as
-	 inactive if x < 0 as well. Promoting it to int will hide the
-	 warning, but not the actual problem + symptoms, so I'll leave
-	 it. */
-      /* Kinda odd, you'd think promoting one/both sides to int would
-	 fix the problem but that's not what's happening. I'm pretty
-	 sure int is signed with sdcc, but just in case I also tried
-	 with (signed int), no effect. */
-      if (player_lasers[i].laser.x < 0 || player_lasers[i].laser.x > game_width) {
-	player_lasers[i].active = FALSE;
-      }
-      /* uart_printf("%d Active: %d\n\r", i, player_lasers[i].active); */
-      /* uart_printf("%d x: %d\n\r", i, player_lasers[i].laser.x); */
-      /* uart_printf("---\n\r"); */
     }
+    /* ISSUE: x is a signed character, max val of 127. Rolls over
+       into negative values (-128 specifically), then counts back
+       up. I didn't want to change x into an int (too much memory),
+       so instead I implemented a check to mark the laser as
+       inactive if x < 0 as well. Promoting it to int will hide the
+       warning, but not the actual problem + symptoms, so I'll leave
+       it. */
+    /* Kinda odd, you'd think promoting one/both sides to int would
+       fix the problem but that's not what's happening. I'm pretty
+       sure int is signed with sdcc, but just in case I also tried
+       with (signed int), no effect. */
+    /* Actually that makes sense since the overflow occurs before the
+       casting. I can always move this above the +=
+       PLAYER_LASER_VELOCITY and cast before overflow occurs. Might be
+       worth considering. */
+    if (player_lasers[i].laser.x < 0 || player_lasers[i].laser.x > game_width) {
+      player_lasers[i].active = FALSE;
+    }
+  }
 
   check_player_laser_collisions();
   
