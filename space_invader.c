@@ -83,7 +83,9 @@ static struct PlayerLaser player_lasers[MAX_PLAYER_LASERS];
 
 static unsigned char game_width, game_height;
 
-
+/* FIXME: Visually it seems like it's faster for the ship to move down
+   than up. Test with print statements if that's accurate, and if so,
+   fix it. */
 signed char ship_tick(invader_movecmd_t movement) {
   static boolean_t gained_v_last_tick = FALSE;
   /* Change speed based on direction, also decrease mag so it stops naturally */
