@@ -110,13 +110,13 @@ int main() {
   const struct Image odd_width_image = {.width = 7, .height = 3, .pixels = odd_width_grid};
   struct DrawableImage odd_width_drawable = {.x = 16, .y = 8, .state = 0, .images = {&odd_width_image}};
 
-const struct Image spaceship_image_0 = {.width = 24, .height = 8, .pixels = spaceship_frame_0};
-const struct Image spaceship_image_1 = {.width = 24, .height = 8, .pixels = spaceship_frame_1};
-const struct Image spaceship_image_2 = {.width = 24, .height = 8, .pixels = spaceship_frame_2};
-struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2}};
+  const struct Image spaceship_image_0 = {.width = 24, .height = 8, .pixels = spaceship_frame_0};
+  const struct Image spaceship_image_1 = {.width = 24, .height = 8, .pixels = spaceship_frame_1};
+  const struct Image spaceship_image_2 = {.width = 24, .height = 8, .pixels = spaceship_frame_2};
+  struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2}};
 
- invader_game_init(SSD1306_WIDTH, SSD1306_HEIGHT);
- struct InvaderCommands invader_commands = {.movement = DOWN};
+  invader_game_init(SSD1306_WIDTH, SSD1306_HEIGHT);
+  struct InvaderCommands invader_commands = {.movement = DOWN};
  
 
   while (1) {
@@ -136,38 +136,33 @@ struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&space
     /* if (spaceship.x == SSD1306_WIDTH - spaceship.images[spaceship.state]->width) spaceship.x = 0; */
     /* clear_buffer(); */
 
-    char loops = 24;
+    char loops = 30;
     for (int i = 0; i < loops; i++) {
-      if (i < loops / 3) {
+      if (i < loops / 2) {
 	invader_commands.movement = DOWN;
-      } else if (i < 2 * loops / 3) {
-	invader_commands.movement = UP;
       } else {
-	invader_commands.movement = NOP;
+	invader_commands.movement = UP;
       }
-      if (random_upto(16) > 14) {
+      if (random_upto(16) > 13) {
 	invader_commands.shoot = TRUE;
       }
       struct DrawableImage *spaceship = debug_drawableimage_spaceship();
       invader_game_tick(&invader_commands);
       draw_image(spaceship, LEFT);
       struct DrawableImage *lasers[3];
-      char redrawlasers[3];
       for (int i = 0; i < 3; i++) {
 	lasers[i] = debug_drawableimage_playerlaser(i);
-	redrawlasers[i] = draw_image(lasers[i], LEFT);
+	draw_image(lasers[i], LEFT);
       }
       draw_half(side);
       clear_buffer();
       for (int i = 0; i < 3; i++) {
-	if (redrawlasers[i] != 0) {
-	  redrawlasers[i] = 0;
-	  draw_image(lasers[i], RIGHT);
-	}
+	draw_image(lasers[i], RIGHT);
       }
+      draw_half(RIGHT);
       clear_buffer();
       invader_commands.shoot = FALSE;
-      delay(100000);
+      delay(30000);
     }
 
     /* uart_printf("-----END-----\n\r"); */

@@ -2,6 +2,7 @@
 
 #include "space_invader.h"
 #include "baseline.h"
+#include "uart.h"               /* debugging remove */
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
@@ -110,7 +111,7 @@ signed char ship_tick(invader_movecmd_t movement) {
 }
 
 /* Mark first empty laser as active and shoot it */
-signed char shoot_player_laser(invader_shootcmd_t shoot) {
+signed char player_laser_shoot(invader_shootcmd_t shoot) {
   if (shoot == TRUE) {
     for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
       if (player_lasers[i].active == FALSE) {
@@ -134,17 +135,26 @@ signed char player_laser_tick() {
   for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
       if (player_lasers[i].active == TRUE) {
 	player_lasers[i].laser.x += PLAYER_LASER_VELOCITY;
-	/* Adjust state so ship is animated */
+	/* Adjust state so laser is animated */
 	if (player_lasers[i].laser.state < NUM_PLAYER_LASER_FRAMES - 1) {
 	  player_lasers[i].laser.state++;
 	} else {
 	  player_lasers[i].laser.state = 0;
 	}
       }
-      if ((int)player_lasers[i].laser.x > game_width) {
+      /* ISSUE: x is a signed character, max val of 127. Rolls over
+	 into negative values (-128 specifically), then counts back
+	 up. I didn't want to change x into an int (too much memory),
+	 so instead I implemented a check to mark the laser as
+	 inactive if x < 0 as well. Promoting it to int will hide the
+	 warning, but not the actual problem + symptoms, so I'll leave
+	 it. */
+      if (player_lasers[i].laser.x < 0 || player_lasers[i].laser.x > game_width) {
 	player_lasers[i].active = FALSE;
       }
-
+      /* uart_printf("%d Active: %d\n\r", i, player_lasers[i].active); */
+      /* uart_printf("%d x: %d\n\r", i, player_lasers[i].laser.x); */
+      /* uart_printf("---\n\r"); */
     }
 
   check_player_laser_collisions();
@@ -156,7 +166,7 @@ signed char player_laser_tick() {
    being part of the C standard. Page 25 of sddcman.pdf. I cry every time. */
 signed char invader_game_tick(struct InvaderCommands *commands) {
   ship_tick(commands->movement);
-  shoot_player_laser(commands->shoot);
+  player_laser_shoot(commands->shoot);
   player_laser_tick();
   
   return 0;
