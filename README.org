@@ -4,14 +4,17 @@
 * Overview
 
 This is a work-in-progress project for an STM8 microcontroller powered
-business card. I will use an STM8 alongside a OLED with a SSD1306
+business card. I am using an STM8 alongside a OLED with a SSD1306
 controller.
 
-I am currently implementing some basic functionality to assist with
-development. For instance, using UART to send debug messages. =main.c=
-might look more than a little rough in the meantime.
+I've finished implementing most basic functionality (UART, I2C, etc)
+and have begun working on the business card proper. There's still a
+fair amount of work left to do. In particular, I need to implement
+timers (instead of ~delay~), user input (debounced buttons), and a
+low-power mode using interrupts. Of course, there's also more to be
+done regarding the display itself!
 
-I plan on keeping most of my code generic enough that I can reuse it
+I working to keep most of my code generic enough that I can reuse it
 in future projects without needing to rework everything. It will act
 as a miniature library of sorts for me to use. When that happens I
 might move that to a different git project, and leave business card
@@ -19,19 +22,13 @@ specific code here.
 
 [[file:media/20210215_153346_scaled.jpg]]
 
-[[file:media/independent_movement.mp4][A demonstration of the use of draw_left_half and draw_right_half to
-work with a framebuffer smaller than the number of pixels.]]
+[[file:media/lasers_scaled.jpg]]
 
-[[file:media/draw_pixel_demo.mp4][A demonstration of the draw_pixel code, showcasing a smiling blinky
-face. (Pixel art is not my strong suit...)]]
+[[file:media/working_lasers.mp4][Here's a demonstration of a work in progress space invaders game!]] We
+can see that the player ship and lasers are functional and fully
+animated. If you want to see the work that led up to this so far,
+check out the media folder!
 
-[[file:media/mirror_demo.mp4][A demonstration of the invert and
-mirror_buffer functions. The mirror_buffer can mirror in the x axis,
-the y axis, or both via an optimzed method (as opposed to the slower
-route of mirroring in the x and then the y).]]
-
-[[file:media/spaceship.mp4][A demonstration of a spaceship animation created by using the
-draw_image() method, along with the DrawableImage and Image structs!]]
 
 * License
 
