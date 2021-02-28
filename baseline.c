@@ -16,6 +16,31 @@ char random_upto(int max) {
   return random() % (max);
 }
 
+unsigned int math_absolute(int val) {
+  if (val < 0) return -1 * val;
+  return val;
+}
+
+/* Returns 0 if |amount| > |val| */
+int math_mag_decrease(int val, int amount) {
+  if (math_absolute(val) < math_absolute(amount)) return 0;
+  if (val < 0) return val + amount;
+  return val - amount;
+}
+
+/* Increases val by amount */
+int math_mag_increase(int val, int amount) {
+  if (val < 0) return val - amount;
+  return val + amount;
+}
+
+/* set |val| to |amount| while maintaining sign */
+int math_mag_set(int val, const unsigned int amount) {
+  if (val < 0) val = -1 * math_absolute(amount);
+  if (val > 0) val = math_absolute(amount);
+  return val;
+}
+
 /* Code from https://stackoverflow.com/questions/2602823/, should be
    simple enough that copyright doesn't apply but still sourced */
 uint8_t reverse_byte(uint8_t byte) {
