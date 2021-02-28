@@ -17,6 +17,6 @@ struct DrawableImage* get_spaceship_image();
 
 signed char game_setup();
 
-signed char game_tick(struct InvaderCommands commands);
+signed char game_tick(struct InvaderCommands *commands);
 
 #endif

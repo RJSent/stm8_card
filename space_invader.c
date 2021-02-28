@@ -68,26 +68,37 @@ const struct Image player_laser_image_3 = {.width = 8, .height = 2, .pixels = pl
 static struct PlayerShip  player_ship;
 static struct PlayerLaser player_lasers[MAX_PLAYER_LASERS];
 
+
 signed char check_collisions() {
 
   return 0;
 }
 
-signed char game_tick(struct InvaderCommands commands) {
+/* SDCC doesn't support passing structures directly, despite that
+   being part of the C standard. Page 25 of sddcman.pdf. I cry every time. */
+signed char game_tick(struct InvaderCommands *commands) {
   
   return 0;
 }
 
+/* Initializes the structs */
 signed char game_setup() {
   /* Initialize player ship */
-  player_ship = (struct PlayerShip){.alive = TRUE, .ship = (struct DrawableImage){.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0, .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2}} };
+  /* SDCC doesn't support compound literals so I need to create a
+     temporary structure variable, then assign that. I am saddened. */
+  const struct DrawableImage spaceship_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
+    .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2} };
+  /* Another case where compound literals not being supported sucks. */
+  player_ship.alive = TRUE;
+  player_ship.ship = spaceship_init;
   
   /* Initialize player laser structs */
   for (int i = 0; i < MAX_PLAYER_LASERS; i++) {
     player_lasers[i].active = FALSE;
-    // struct DrawableImage player_laser_init =
-    player_lasers[i].laser = (struct DrawableImage){.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
+    const struct DrawableImage player_laser_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
       .images = {&player_laser_image_0, &player_laser_image_1, &player_laser_image_2, &player_laser_image_3}};
+
+    player_lasers[i].laser = player_laser_init;
   }
 
   
