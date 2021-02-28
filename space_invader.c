@@ -149,6 +149,10 @@ signed char player_laser_tick() {
 	 inactive if x < 0 as well. Promoting it to int will hide the
 	 warning, but not the actual problem + symptoms, so I'll leave
 	 it. */
+      /* Kinda odd, you'd think promoting one/both sides to int would
+	 fix the problem but that's not what's happening. I'm pretty
+	 sure int is signed with sdcc, but just in case I also tried
+	 with (signed int), no effect. */
       if (player_lasers[i].laser.x < 0 || player_lasers[i].laser.x > game_width) {
 	player_lasers[i].active = FALSE;
       }
