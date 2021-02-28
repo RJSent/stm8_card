@@ -5,6 +5,7 @@
 #include "uart.h"
 #include "ssd1306.h"
 #include "image.h"
+#include "space_invader.h"
 
 /* Note that the dev board that I am using has a button meant to help
    quickly power cycle for testing. This power cycle seems to only
@@ -114,23 +115,46 @@ const struct Image spaceship_image_1 = {.width = 24, .height = 8, .pixels = spac
 const struct Image spaceship_image_2 = {.width = 24, .height = 8, .pixels = spaceship_frame_2};
 struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2}};
 
+ invader_game_init(SSD1306_WIDTH, SSD1306_HEIGHT);
+ struct InvaderCommands invader_commands = {.movement = DOWN};
+ 
+
   while (1) {
-    ssd1306_side_t side = LEFT;
-    draw_image(&smile_drawable, side);
-    draw_image(&odd_width_drawable, side);
-    draw_image(&spaceship, side);
-    draw_half(side);
-    side = RIGHT;
-    clear_buffer();
-    draw_image(&spaceship, side);
-    draw_half(side);
-    side = LEFT;
-    spaceship.x++;
-    spaceship.state++;
-    if (spaceship.state == 3) spaceship.state = 0;
-    if (spaceship.x == SSD1306_WIDTH - spaceship.images[spaceship.state]->width) spaceship.x = 0;
-    clear_buffer();
-    delay(50000);
+    ssd1306_side_t side = LEFT; /*  */
+    /* draw_image(&smile_drawable, side); */
+    /* draw_image(&odd_width_drawable, side); */
+    /* draw_image(&spaceship, side); */
+    /* draw_half(side); */
+    /* side = RIGHT; */
+    /* clear_buffer(); */
+    /* draw_image(&spaceship, side); */
+    /* draw_half(side); */
+    /* side = LEFT; */
+    /* spaceship.x++; */
+    /* spaceship.state++; */
+    /* if (spaceship.state == 3) spaceship.state = 0; */
+    /* if (spaceship.x == SSD1306_WIDTH - spaceship.images[spaceship.state]->width) spaceship.x = 0; */
+    /* clear_buffer(); */
+
+    for (int i = 0; i < 6; i++) {
+      if (i < 4) {
+	invader_commands.movement = DOWN;
+      } else {
+	invader_commands.movement = UP;
+      }
+      struct DrawableImage *invader_ship = debug_drawableimage_spaceship();
+      invader_game_tick(&invader_commands);
+      draw_image(invader_ship, side);
+      draw_half(side);
+      clear_buffer();    
+      delay(500000);
+    }
+
+
+
+    
+    clear_buffer();    
+    delay(500000);
   }
 }
 

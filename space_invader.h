@@ -4,7 +4,7 @@
 #include "image.h"
 #include "baseline.h"
 
-typedef enum Movement {UP, DOWN} invader_movecmd_t;
+typedef enum Movement {UP, DOWN, NOP} invader_movecmd_t;
 typedef boolean_t invader_shootcmd_t;
 
 /* Provide each gametick */
@@ -15,8 +15,10 @@ struct InvaderCommands {
 
 struct DrawableImage* get_spaceship_image();
 
-signed char game_setup();
+signed char invader_game_init(unsigned char width, unsigned char height);
 
-signed char game_tick(struct InvaderCommands *commands);
+signed char invader_game_tick(struct InvaderCommands *commands);
+
+struct DrawableImage * debug_drawableimage_spaceship();
 
 #endif

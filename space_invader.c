@@ -1,11 +1,17 @@
 #include <stdint.h>
 
 #include "space_invader.h"
+#include "baseline.h"
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
-#define MAX_PLAYER_LASERS 3
-#define MAX_ENEMY_LASERS 3
+#define MAX_PLAYER_LASERS (3)
+#define MAX_ENEMY_LASERS  (3)
+
+#define MAX_ACCELERATION  (game_height / 4) /* play around with these values */
+#define MAX_VELOCITY      (game_height / 6)
+#define ACCEL_PER_TICK    (1)
+#define VELOCITY_LOSS_PER_TICK (1)
 
 struct PlayerLaser {
   boolean_t active;
@@ -14,6 +20,7 @@ struct PlayerLaser {
 
 struct PlayerShip {
   boolean_t alive;
+  signed char acceleration, velocity;
   struct DrawableImage ship;
   struct DrawableImage explosion;
 };
@@ -68,25 +75,59 @@ const struct Image player_laser_image_3 = {.width = 8, .height = 2, .pixels = pl
 static struct PlayerShip  player_ship;
 static struct PlayerLaser player_lasers[MAX_PLAYER_LASERS];
 
+static unsigned char game_width, game_height;
+
 
 signed char check_collisions() {
 
   return 0;
 }
 
+signed char ship_tick(signed char movement) {
+  /* Adjust acceleration of ship */
+  if (movement == DOWN && player_ship.acceleration < MAX_ACCELERATION) {
+    player_ship.acceleration += ACCEL_PER_TICK;
+  } else if (movement == UP && math_absolute(player_ship.acceleration) < MAX_ACCELERATION) {
+    player_ship.acceleration -= ACCEL_PER_TICK;
+  } else {                      /* NOP */
+    player_ship.acceleration = math_mag_decrease(player_ship.acceleration, ACCEL_PER_TICK);
+  }
+  /* Ensure |acceleration| <= MAX_ACCELERATION */
+  if (math_absolute(player_ship.acceleration) > MAX_ACCELERATION) player_ship.acceleration = math_mag_set(player_ship.acceleration, MAX_ACCELERATION);
+
+  /* Change speed based on acceleration, also decrease mag so it stops naturally */
+  player_ship.velocity += player_ship.acceleration;
+  player_ship.velocity = math_mag_decrease(player_ship.velocity, VELOCITY_LOSS_PER_TICK); /* decrease velocity by constant amount per tick */
+  /* Ensure |velocity| <= MAX_VELOCITY */
+  if (math_absolute(player_ship.velocity) > MAX_VELOCITY) player_ship.velocity = math_mag_set(player_ship.velocity, MAX_VELOCITY);
+
+  /* Change y position based on speed */
+  player_ship.ship.y += player_ship.velocity;
+  /* Ensure the ship stays on screen */
+  char ship_height = player_ship.ship.images[player_ship.ship.state]->height;
+  if (player_ship.ship.y < 0) player_ship.ship.y = 0;
+  if (player_ship.ship.y + ship_height > game_height) player_ship.ship.y = game_height - ship_height;
+
+  return 0;
+}
+
 /* SDCC doesn't support passing structures directly, despite that
    being part of the C standard. Page 25 of sddcman.pdf. I cry every time. */
-signed char game_tick(struct InvaderCommands *commands) {
+signed char invader_game_tick(struct InvaderCommands *commands) {
+  ship_tick(commands->movement);
   
   return 0;
 }
 
 /* Initializes the structs */
-signed char game_setup() {
+signed char invader_game_init(unsigned char width, unsigned char height) {
+  game_width = width;
+  game_height = height;
+  
   /* Initialize player ship */
   /* SDCC doesn't support compound literals so I need to create a
      temporary structure variable, then assign that. I am saddened. */
-  const struct DrawableImage spaceship_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
+  struct DrawableImage spaceship_init = {.x = game_width / 16, .y = game_height / 2, .state = 0,
     .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2} };
   /* Another case where compound literals not being supported sucks. */
   player_ship.alive = TRUE;
@@ -95,12 +136,16 @@ signed char game_setup() {
   /* Initialize player laser structs */
   for (int i = 0; i < MAX_PLAYER_LASERS; i++) {
     player_lasers[i].active = FALSE;
-    const struct DrawableImage player_laser_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
+    struct DrawableImage player_laser_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
       .images = {&player_laser_image_0, &player_laser_image_1, &player_laser_image_2, &player_laser_image_3}};
-
     player_lasers[i].laser = player_laser_init;
   }
 
   
   return 0;
+}
+
+/* remove */
+struct DrawableImage* debug_drawableimage_spaceship() {
+  return &player_ship.ship;
 }
