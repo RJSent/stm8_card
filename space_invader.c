@@ -2,6 +2,7 @@
 
 #include "space_invader.h"
 #include "baseline.h"
+#include "uart.h"
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
@@ -13,11 +14,12 @@
 #define MAX_ENEMY_LASERS  (3)
 
 #define PLAYER_LASER_VELOCITY (game_width / 32)
-#define ENEMY_LASER_VELOCITY (game_width / 32)
+#define ENEMY_LASER_VELOCITY  (game_width / 32)
 
-#define MAX_VELOCITY      (game_height / 8)
-#define VELOCITY_GAIN_PER_TICK (1)
-#define VELOCITY_LOSS_PER_TICK (3)
+#define PLAYER_MAX_VELOCITY            (game_height / 8)
+#define PLAYER_VELOCITY_TICKS_PER_GAIN (2)
+#define PLAYER_VELOCITY_GAIN_PER_TICK  (1)
+#define PLAYER_VELOCITY_LOSS_PER_TICK  (3)
 
 struct PlayerLaser {
   boolean_t active;
@@ -83,28 +85,49 @@ static struct PlayerLaser player_lasers[MAX_PLAYER_LASERS];
 
 static unsigned char game_width, game_height;
 
+#ifdef UART_H
+void _debug_ship_tick(invader_movecmd_t movement, char ticks_until_gain) {
+  static char tick_num = 0;
+  uart_printf("---\n\r");
+  uart_printf("tick: %d\n\r", tick_num++);
+  if (movement == UP) {
+    uart_printf("UP\n\r");
+  } else if (movement == DOWN) {
+    uart_printf("DOWN\n\r");
+  } else if (movement == NOP) {
+    uart_printf("NOP\n\r");
+  } else {
+    uart_printf("Invalid movement cmd\n\r");
+  }
+  uart_printf("vel: %d\n\r", player_ship.velocity);
+  uart_printf("tug: %d\n\r", ticks_until_gain);
+  uart_printf("pos: %d\n\r", player_ship.ship.y);
+}
+#endif
+
 /* FIXME: Visually it seems like it's faster for the ship to move down
    than up. Test with print statements if that's accurate, and if so,
    fix it. */
 signed char ship_tick(invader_movecmd_t movement) {
-  static boolean_t gained_v_last_tick = FALSE;
-  /* Change speed based on direction, also decrease mag so it stops naturally */
-  if (movement == UP && gained_v_last_tick == FALSE) {
-    player_ship.velocity -= VELOCITY_GAIN_PER_TICK;
-    gained_v_last_tick = TRUE;
+  static char ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
+  /* Change velocity based on direction cmd, also decrease mag if NOP so it stops naturally */
+  if (movement == UP && ticks_until_gain <= 1) {
+    player_ship.velocity -= PLAYER_VELOCITY_GAIN_PER_TICK;
+    ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
   }
-  else if (movement == DOWN && gained_v_last_tick == FALSE) {
-    player_ship.velocity += VELOCITY_GAIN_PER_TICK; 
+  else if (movement == DOWN && ticks_until_gain <= 1) {
+    player_ship.velocity += PLAYER_VELOCITY_GAIN_PER_TICK;
+    ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
   } else if (movement == NOP) {
-    player_ship.velocity = math_mag_decrease(player_ship.velocity, VELOCITY_LOSS_PER_TICK);
-    gained_v_last_tick = FALSE;
+    player_ship.velocity = math_mag_decrease(player_ship.velocity, PLAYER_VELOCITY_LOSS_PER_TICK);
+    ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
   } else {
-    gained_v_last_tick = FALSE;
+    ticks_until_gain--;
   }
   /* Ensure |velocity| <= MAX_VELOCITY */
-  if (math_absolute(player_ship.velocity) > MAX_VELOCITY) player_ship.velocity = math_mag_set(player_ship.velocity, MAX_VELOCITY);
+  if (math_absolute(player_ship.velocity) > PLAYER_MAX_VELOCITY) player_ship.velocity = math_mag_set(player_ship.velocity, PLAYER_MAX_VELOCITY);
 
-  /* Change y position based on speed */
+  /* Change y position based on velocity */
   player_ship.ship.y += player_ship.velocity;
   /* Ensure the ship stays on screen */
   char ship_height = player_ship.ship.images[player_ship.ship.state]->height;
@@ -117,6 +140,8 @@ signed char ship_tick(invader_movecmd_t movement) {
   } else {
     player_ship.ship.state = 0;
   }
+
+  _debug_ship_tick(movement, ticks_until_gain);
 
   return 0;
 }

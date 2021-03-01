@@ -117,7 +117,7 @@ int main() {
 
   invader_game_init(SSD1306_WIDTH, SSD1306_HEIGHT);
   struct InvaderCommands invader_commands = {.movement = DOWN};
- 
+  char cycle_num;
 
   while (1) {
     ssd1306_side_t side = LEFT; /*  */
@@ -135,6 +135,8 @@ int main() {
     /* if (spaceship.state == 3) spaceship.state = 0; */
     /* if (spaceship.x == SSD1306_WIDTH - spaceship.images[spaceship.state]->width) spaceship.x = 0; */
     /* clear_buffer(); */
+
+    uart_printf("-----CYCLE %d-----", cycle_num);
 
     char loops = 30;
     for (int i = 0; i < loops; i++) {
@@ -165,9 +167,12 @@ int main() {
       delay(30000);
     }
 
-    /* uart_printf("-----END-----\n\r"); */
-    /* while(1) {}; */
+    cycle_num++;
 
+    if (cycle_num == 4) {
+      uart_printf("-----END-----\n\r");
+      while(1) {};
+    }
     
     clear_buffer();    
   }
