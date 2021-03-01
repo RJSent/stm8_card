@@ -66,76 +66,12 @@ int main() {
 
   clear_display();
 
-  /* temporary for testing ssd1306.h/draw_image */
-  /* drawn horizontally */
-  const uint8_t smile_image_data[7] = {0x24, 0x24, 0x24, 0x00, 0x81, 0x42, 0x3C};
-  const struct Image smile_image = {.width = 8, .height = 7, .pixels = smile_image_data};
-  struct DrawableImage smile_drawable = {.x = 1, .y = 1, .state = 0, .images = {&smile_image} };
-
-  const uint8_t spaceship_frame_0[24] = {
-    0x01, 0x00, 0x00,
-    0x01, 0x80, 0x00,
-    0x41, 0xC1, 0x80,
-    0x6F, 0xFF, 0xF0,
-    0x0F, 0xFF, 0xF0,
-    0x81, 0xC1, 0x80,
-    0x11, 0x80, 0x00,
-    0x41, 0x00, 0x00
-  };
-  const uint8_t spaceship_frame_1[24] = {
-    0x01, 0x00, 0x00,
-    0xC1, 0x80, 0x00,
-    0x01, 0xC1, 0x80,
-    0x8F, 0xFF, 0xF0,
-    0x2F, 0xFF, 0xF0,
-    0x21, 0xC1, 0x80,
-    0x11, 0x80, 0x00,
-    0x11, 0x00, 0x00
-  };
-  const uint8_t spaceship_frame_2[24] = {
-    0x21, 0x00, 0x00,
-    0x41, 0x80, 0x00,
-    0x21, 0xC1, 0x80,
-    0x8F, 0xFF, 0xF0,
-    0x0F, 0xFF, 0xF0,
-    0x81, 0xC1, 0x80,
-    0x41, 0x80, 0x00,
-    0x61, 0x00, 0x00
-  };
-
-  const uint8_t odd_width_grid[3] = {
-    0xAB, 0xDE, 0xA8
-  };
-
-  const struct Image odd_width_image = {.width = 7, .height = 3, .pixels = odd_width_grid};
-  struct DrawableImage odd_width_drawable = {.x = 16, .y = 8, .state = 0, .images = {&odd_width_image}};
-
-  const struct Image spaceship_image_0 = {.width = 24, .height = 8, .pixels = spaceship_frame_0};
-  const struct Image spaceship_image_1 = {.width = 24, .height = 8, .pixels = spaceship_frame_1};
-  const struct Image spaceship_image_2 = {.width = 24, .height = 8, .pixels = spaceship_frame_2};
-  struct DrawableImage spaceship = {.x = 0, .y = 16, .state = 0, .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2}};
-
   invader_game_init(SSD1306_WIDTH, SSD1306_HEIGHT);
   struct InvaderCommands invader_commands = {.movement = DOWN};
-  char cycle_num;
+  char cycle_num = 0;
+  const char max_cycles = 4;
 
   while (1) {
-    ssd1306_side_t side = LEFT; /*  */
-    /* draw_image(&smile_drawable, side); */
-    /* draw_image(&odd_width_drawable, side); */
-    /* draw_image(&spaceship, side); */
-    /* draw_half(side); */
-    /* side = RIGHT; */
-    /* clear_buffer(); */
-    /* draw_image(&spaceship, side); */
-    /* draw_half(side); */
-    /* side = LEFT; */
-    /* spaceship.x++; */
-    /* spaceship.state++; */
-    /* if (spaceship.state == 3) spaceship.state = 0; */
-    /* if (spaceship.x == SSD1306_WIDTH - spaceship.images[spaceship.state]->width) spaceship.x = 0; */
-    /* clear_buffer(); */
-
     uart_printf("-----CYCLE %d-----", cycle_num);
 
     char loops = 30;
@@ -156,7 +92,7 @@ int main() {
 	lasers[i] = debug_drawableimage_playerlaser(i);
 	draw_image(lasers[i], LEFT);
       }
-      draw_half(side);
+      draw_half(LEFT);
       clear_buffer();
       for (int i = 0; i < 3; i++) {
 	draw_image(lasers[i], RIGHT);
@@ -169,7 +105,7 @@ int main() {
 
     cycle_num++;
 
-    if (cycle_num == 4) {
+    if (cycle_num == max_cycles) {
       uart_printf("-----END-----\n\r");
       while(1) {};
     }
