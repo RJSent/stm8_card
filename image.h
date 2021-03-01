@@ -19,5 +19,7 @@ struct DrawableImage {
   const struct Image *images[MAX_FRAMES];
 };
 
+/* TODO create struct with size + array of pointers to return when drawing images */
+
 
 #endif
