@@ -8,6 +8,7 @@ typedef enum Movement {UP, DOWN, NOP} invader_movecmd_t;
 typedef boolean_t invader_shootcmd_t;
 
 /* Provide each gametick */
+/* TODO typedef this */
 struct InvaderCommands {
   invader_movecmd_t movement;
   invader_shootcmd_t shoot;
