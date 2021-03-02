@@ -92,10 +92,18 @@ int main() {
 	lasers[i] = debug_drawableimage_playerlaser(i);
 	draw_image(lasers[i], LEFT);
       }
+      struct DrawableImage *invaders[3];
+      for (int ii = 0; ii < 3; ii++) {
+	invaders[ii] = debug_drawableimage_invader(i);
+	draw_image(invaders[ii], LEFT);
+      }
       draw_half(LEFT);
       clear_buffer();
-      for (int i = 0; i < 3; i++) {
-	draw_image(lasers[i], RIGHT);
+      for (int iii = 0; iii < 3; iii++) {
+	draw_image(lasers[iii], RIGHT);
+      }
+      for (int iii = 0; iii < 3; iii++) {
+	draw_image(invaders[iii], RIGHT);
       }
       draw_half(RIGHT);
       clear_buffer();

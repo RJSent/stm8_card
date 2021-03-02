@@ -10,16 +10,23 @@
 #define NUM_SHIP_FRAMES         (3)
 #define NUM_PLAYER_LASER_FRAMES (4)
 
+#define MAX_INVADERS      (3)
 #define MAX_PLAYER_LASERS (3)
 #define MAX_ENEMY_LASERS  (3)
 
 #define PLAYER_LASER_VELOCITY (game_width / 32)
-#define ENEMY_LASER_VELOCITY  (game_width / 32)
+#define INVADER_LASER_VELOCITY  (game_width / 32)
 
 #define PLAYER_MAX_VELOCITY            (game_height / 8)
-#define PLAYER_VELOCITY_TICKS_PER_GAIN (2)
+#define PLAYER_VELOCITY_TICKS_PER_GAIN (2) /* TODO: adjust in terms of game_height */
 #define PLAYER_VELOCITY_GAIN_PER_TICK  (1)
 #define PLAYER_VELOCITY_LOSS_PER_TICK  (3)
+#define INVADER_Y_SPEED                (game_height / 8)
+#define INVADER_X_SPEED                (game_width / 8)
+
+#define INVADER_SPAWN_CHANCE (15) /* percentage out of 100 per tick */
+#define INVADER_SHOOT_CHANCE (15)
+
 
 struct PlayerLaser {
   boolean_t active;
@@ -30,6 +37,14 @@ struct PlayerShip {
   boolean_t alive;
   signed char velocity;
   struct DrawableImage ship;
+  struct DrawableImage explosion;
+};
+
+/* TODO: Support different types of invaders. Maybe by different DrawableImage structs + a invader_num variable? Memory intensive... */
+struct InvaderMob {
+  boolean_t alive;
+  enum InvaderDirection {INVADERDIRECTION_UP, INVADERDIRECTION_DOWN} direction;
+  struct DrawableImage invader;
   struct DrawableImage explosion;
 };
 
@@ -69,6 +84,17 @@ const uint8_t player_laser_frame_1[2] = { 0xDF, 0xBF };
 const uint8_t player_laser_frame_2[2] = { 0x7F, 0x1F };
 const uint8_t player_laser_frame_3[2] = { 0x9F, 0x3F };
 
+const uint8_t invader_1_frame_0[11] = {
+  0x60, 0x18, 0x7C, 0xB6,       /* top half */
+  0xAC, 0x2C, 0xAC,             /* middle part */
+  0xB6, 0x7C, 0x18, 0x60        /* bottom part */
+};
+const uint8_t invader_1_frame_1[11] = {
+  0x20, 0x19, 0x7C, 0xB6,       /* top half */
+  0x2C, 0x2C, 0x2C,             /* middle part */
+  0xB6, 0x7C, 0x19, 0x20        /* bottom part */
+};
+
 
 const struct Image spaceship_image_0 = {.width = 24, .height = 8, .pixels = spaceship_frame_0};
 const struct Image spaceship_image_1 = {.width = 24, .height = 8, .pixels = spaceship_frame_1};
@@ -79,9 +105,13 @@ const struct Image player_laser_image_1 = {.width = 8, .height = 2, .pixels = pl
 const struct Image player_laser_image_2 = {.width = 8, .height = 2, .pixels = player_laser_frame_2};
 const struct Image player_laser_image_3 = {.width = 8, .height = 2, .pixels = player_laser_frame_3};
 
+const struct Image invader_1_image_0 = {.width = 8, .height = 11, .pixels = invader_1_frame_0};
+const struct Image invader_1_image_1 = {.width = 8, .height = 11, .pixels = invader_1_frame_1};
+
 
 static struct PlayerShip  player_ship;
 static struct PlayerLaser player_lasers[MAX_PLAYER_LASERS];
+static struct InvaderMob invader_mobs[MAX_INVADERS];
 
 static unsigned char game_width, game_height;
 
@@ -141,7 +171,10 @@ signed char ship_tick(invader_movecmd_t movement) {
     player_ship.ship.state = 0;
   }
 
+  /* Debugging ship movement. */
+  #ifdef UART_H
   _debug_ship_tick(movement, ticks_until_gain);
+  #endif
 
   return 0;
 }
@@ -203,12 +236,104 @@ signed char player_laser_tick() {
   return 0;
 }
 
+signed char invader_spawn() {
+  /* determine if we would overlap with another invader if we spawn*/
+  /* if (invader_spawn_collision_check) { */
+  for (unsigned char i = 0; i < MAX_INVADERS; i++) {
+    if (invader_mobs[i].alive == FALSE) {
+      invader_mobs[i].alive = TRUE;
+      /* spawn on right side (high x) fully on screen at top */
+      invader_mobs[i].invader.x = game_width - invader_mobs[i].invader.images[invader_mobs[i].invader.state]->width;
+      invader_mobs[i].invader.y = 0;
+      invader_mobs[i].direction = INVADERDIRECTION_DOWN;
+      break;                  /* only spawn 1 */
+    }
+  }
+  /* } */
+
+  return 0;
+}
+
+signed char invader_shoot() {
+
+  return 0;
+}
+
+/* decides if we should spawn invader + initializes position */
+signed char invader_tick() {
+  /* randomly spawn invaders */
+  if (random_upto(100) > 100 - INVADER_SPAWN_CHANCE) {
+    invader_spawn();
+  }
+
+  /* determine if spawned invaders should shoot */
+  for (unsigned char i = 0; i < MAX_INVADERS; i++) {
+    if (random_upto(100) > 100 - INVADER_SHOOT_CHANCE && invader_mobs[i].alive == TRUE) {
+      /* invader_shoot(i); */
+    }
+  }
+
+  /* update invader y positions (vertical) */
+  for (unsigned char i = 0; i < MAX_INVADERS; i++) {
+    if (invader_mobs[i].alive == TRUE) {
+      if (invader_mobs[i].direction == INVADERDIRECTION_DOWN) {
+	invader_mobs[i].invader.y += INVADER_Y_SPEED;
+      } else if (invader_mobs[i].direction == INVADERDIRECTION_UP) {
+	invader_mobs[i].invader.y -= INVADER_Y_SPEED;
+      } else {
+	/* shouldn't be possible */
+#ifdef UART_H                   /* are preprocessor directives really the best way to handle this? */
+	uart_printf("err invader %d\n\r", i);
+#endif
+      }
+    }
+  }
+
+  /* verify positions are within valid bounds. If not, we should update x and direction */
+  for (unsigned char i = 0; i < MAX_INVADERS; i++) {
+    if (invader_mobs[i].alive == TRUE) {
+      if (invader_mobs[i].invader.y + invader_mobs[i].invader.images[invader_mobs[i].invader.state]->width > game_width) {
+	/* too far down */
+	invader_mobs[i].invader.y = game_width - invader_mobs[i].invader.images[invader_mobs[i].invader.state]->width;
+	invader_mobs[i].direction = INVADERDIRECTION_UP;
+	invader_mobs[i].invader.x -= INVADER_X_SPEED;
+      } else if (invader_mobs[i].invader.y < 0) {
+	/* too far up */
+	invader_mobs[i].invader.y = 0;
+	invader_mobs[i].direction = INVADERDIRECTION_DOWN;
+	invader_mobs[i].invader.x -= INVADER_X_SPEED;
+      } else {
+	/* shouldn't be possible */
+#ifdef UART_H
+	uart_printf("err invader %d\n\r", i);
+#endif
+      }
+    }
+  }
+
+  /* "kill" invaders as needed  */
+
+  /* kill invader if it goes off the left side of screen (x = 0). Shouldn't happen in practice */
+  
+  return 0;
+}
+
+signed char invader_laser_tick() {
+
+  return 0;
+}
+
 /* SDCC 4.0.0 doesn't support passing structures directly, despite that
    being part of the C standard. Page 25 of sddcman.pdf. I cry every time. */
+/* A "recent" (2020) revision in changelog said they removed some
+   barriers regarding this. */
 signed char invader_game_tick(struct InvaderCommands *commands) {
-  ship_tick(commands->movement);
+  ship_tick(commands->movement); /* should this be combined with player_laser_shoot and player_laser_tick? */
   player_laser_shoot(commands->shoot);
   player_laser_tick();
+  
+  invader_tick();               /* combine??? */
+  invader_laser_tick();
   
   return 0;
 }
@@ -235,6 +360,15 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
     player_lasers[i].laser = player_laser_init;
   }
 
+  /* initialize invader structs */
+  for (unsigned char i = 0; i < MAX_INVADERS; i++) {
+    invader_mobs[i].alive = FALSE;
+    /* TODO: Support different invader "skins" by initializing to different .images, or with another trick */
+    struct DrawableImage invader_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
+      .images = {&invader_1_image_0, &invader_1_image_1}};
+    invader_mobs[i].invader = invader_init;
+  }
+
   
   return 0;
 }
@@ -247,5 +381,11 @@ struct DrawableImage* debug_drawableimage_spaceship() {
 /* remove, debugging */
 struct DrawableImage* debug_drawableimage_playerlaser(unsigned char i) {
   if (player_lasers[i].active == TRUE) return &player_lasers[i].laser;
+  return 0;
+}
+
+/* remove, debugging */
+struct DrawableImage* debug_drawableimage_invader(unsigned char i) {
+  if (invader_mobs[i].alive == TRUE) return &invader_mobs[i].invader;
   return 0;
 }
