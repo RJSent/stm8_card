@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "baseline.h"
 
-#define MAX_FRAMES    (6) /* up to 6 frames of animation */
+#define MAX_FRAMES    (4) /* up to 4 frames of animation */
 #define UNINITIALIZED (-1)
 
 struct Image {
