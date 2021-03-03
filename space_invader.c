@@ -12,8 +12,9 @@
 #define NUM_INVADER_FRAMES         (2)
 #define NUM_INVADER_LASER_FRAMES  (2)
 
-#define PLAYER_SHIP_TICKS_PER_FRAME  (2)
-#define INVADER_TICKS_PER_FRAME      (26)
+#define PLAYER_SHIP_TICKS_PER_FRAME   (2)
+#define INVADER_TICKS_PER_FRAME       (26)
+#define INVADER_LASER_TICKS_PER_FRAME (6)
 
 #define MAX_INVADERS      (3)
 #define MAX_PLAYER_LASERS (3)
@@ -358,8 +359,8 @@ signed char invader_tick() {
   /* adjust state so invader is animated */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
     static char ticks_until_state_change = INVADER_TICKS_PER_FRAME;
-    if (invader_mobs[i].alive == TRUE) {
-      if (ticks_until_state_change <= 1) {
+    if (ticks_until_state_change <= 1) {
+      if (invader_mobs[i].alive == TRUE) {
 	if (invader_mobs[i].invader.state < NUM_INVADER_FRAMES - 1) {
 	  invader_mobs[i].invader.state++;
 	} else {
@@ -398,12 +399,20 @@ signed char invader_laser_tick() {
       invader_lasers[i].laser.x -= INVADER_LASER_VELOCITY;
 
       /* Adjust state so laser is animated */
-      if (invader_lasers[i].laser.state < NUM_INVADER_LASER_FRAMES - 1) {
-	invader_lasers[i].laser.state++;
+      static char ticks_until_state_change = INVADER_LASER_TICKS_PER_FRAME;
+      if (ticks_until_state_change <= 1) {
+	if (invader_lasers[i].laser.state < NUM_INVADER_LASER_FRAMES - 1) {
+	  invader_lasers[i].laser.state++;
+	} else {
+	  invader_lasers[i].laser.state = 0;
+	}
+	ticks_until_state_change = INVADER_LASER_TICKS_PER_FRAME;
       } else {
-	invader_lasers[i].laser.state = 0;
+	ticks_until_state_change--;
       }
     }
+
+    /* remove lasers that go offscreen */
     if (invader_lasers[i].laser.x < 0) {
       invader_lasers[i].active = FALSE;
     }
