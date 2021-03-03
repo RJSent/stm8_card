@@ -480,18 +480,21 @@ struct DrawableImage* debug_drawableimage_spaceship() {
 
 /* remove, debugging */
 struct DrawableImage* debug_drawableimage_playerlaser(unsigned char i) {
+  if (i >= MAX_PLAYER_LASERS) return 0;
   if (player_lasers[i].active == TRUE) return &player_lasers[i].laser;
   return 0;
 }
 
 /* remove, debugging */
 struct DrawableImage* debug_drawableimage_invader(unsigned char i) {
+  if (i >= MAX_INVADERS) return 0;
   if (invader_mobs[i].alive == TRUE) return &invader_mobs[i].invader;
   return 0;
 }
 
 /* remove, debugging */
 struct DrawableImage* debug_drawableimage_invaderlaser(unsigned char i) {
+  if (i >= MAX_INVADER_LASERS) return 0;
   if (invader_lasers[i].active == TRUE) return &invader_lasers[i].laser;
   return 0;
 }

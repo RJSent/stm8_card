@@ -89,29 +89,25 @@ int main() {
       draw_image(spaceship, LEFT);
       struct DrawableImage *lasers[3];
       struct DrawableImage *invader_lasers[3];
+      struct DrawableImage *invaders[3];
       for (int i = 0; i < 3; i++) {
 	lasers[i] = debug_drawableimage_playerlaser(i);
+	invader_lasers[i] = debug_drawableimage_invaderlaser(i);
+	invaders[i] = debug_drawableimage_invader(i);
 	draw_image(lasers[i], LEFT);
+	draw_image(invader_lasers[i], LEFT);
+	draw_image(invaders[i], LEFT);
       }
-      for (int iiii = 0; iiii < 3; iiii++) {
-	invader_lasers[iiii] = debug_drawableimage_invaderlaser(iiii);
-	draw_image(invader_lasers[iiii], LEFT);
-      }
-      struct DrawableImage *invaders[3];
-      for (int ii = 0; ii < 3; ii++) {
-	invaders[ii] = debug_drawableimage_invader(ii); /* fack, spent an hour chasing down bug because I typed debug_drawableimage_invader(i) instead of (ii). (Also sdcc was suddenly complaining about reusing i now but not before?) */
-	draw_image(invaders[ii], LEFT);
-      }
+      /* for (int ii = 0; ii < 3; ii++) { */
+      /* 	invaders[ii] = debug_drawableimage_invader(ii); /\* fack, spent an hour chasing down bug because I typed debug_drawableimage_invader(i) instead of (ii). (Also sdcc was suddenly complaining about reusing i now but not before?) *\/ */
+      /* 	draw_image(invaders[ii], LEFT); */
+      /* } */
       draw_half(LEFT);
       clear_buffer();
-      for (int iii = 0; iii < 3; iii++) {
-	draw_image(lasers[iii], RIGHT);
-      }
-      for (int iii = 0; iii < 3; iii++) {
-	draw_image(invaders[iii], RIGHT);
-      }
-      for (int iii = 0; iii < 3; iii++) {
-	draw_image(invader_lasers[iii], RIGHT);
+      for (int i = 0; i < 3; i++) {
+	draw_image(lasers[i], RIGHT);
+	draw_image(invader_lasers[i], RIGHT);
+	draw_image(invaders[i], RIGHT);
       }
       draw_half(RIGHT);
       clear_buffer();
