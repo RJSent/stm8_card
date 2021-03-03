@@ -71,6 +71,8 @@ int main() {
   char cycle_num = 0;
   const char max_cycles = 2;
 
+  uart_printf("addr main: %x", main);
+
   while (1) {
     uart_printf("-----CYCLE %d-----\n\r", cycle_num);
 
@@ -94,6 +96,7 @@ int main() {
 	lasers[i] = debug_drawableimage_playerlaser(i);
 	invader_lasers[i] = debug_drawableimage_invaderlaser(i);
 	invaders[i] = debug_drawableimage_invader(i);
+	uart_printf("addr: %x\n\r", invader_lasers[i]);
 	draw_image(lasers[i], LEFT);
 	draw_image(invader_lasers[i], LEFT);
 	draw_image(invaders[i], LEFT);
@@ -117,10 +120,10 @@ int main() {
 
     cycle_num++;
 
-    /* if (cycle_num == max_cycles) { */
-    /*   uart_printf("-----END-----\n\r"); */
-    /*   while(1) {}; */
-    /* } */
+    if (cycle_num == max_cycles) {
+      uart_printf("-----END-----\n\r");
+      while(1) {};
+    }
     
     clear_buffer();    
   }
