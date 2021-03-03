@@ -405,7 +405,7 @@ signed char invader_laser_tick() {
       }
     }
     if (invader_lasers[i].laser.x < 0) {
-      player_lasers[i].active = FALSE;
+      invader_lasers[i].active = FALSE;
     }
   }
   
@@ -466,7 +466,7 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
     invader_lasers[i].active = FALSE;
     struct DrawableImage invader_laser_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
       .images = {&invader_laser_image_0, &invader_laser_image_1}};
-    player_lasers[i].laser = invader_laser_init;
+    invader_lasers[i].laser = invader_laser_init;
   }
 
   
