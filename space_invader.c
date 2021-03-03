@@ -333,12 +333,10 @@ signed char invader_tick() {
   }
 
   /* adjust state so invader is animated */
-  /* adjust order of if statements if I want invaders to change states in sync or not. Pretty sure I do. */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
     static char ticks_until_state_change = INVADER_TICKS_PER_FRAME;
-    if (ticks_until_state_change <= 1) {
-      if (invader_mobs[i].alive == TRUE) {
-	/* Adjust state so laser is animated */
+    if (invader_mobs[i].alive == TRUE) {
+      if (ticks_until_state_change <= 1) {
 	if (invader_mobs[i].invader.state < NUM_INVADER_FRAMES - 1) {
 	  invader_mobs[i].invader.state++;
 	} else {
