@@ -88,9 +88,14 @@ int main() {
       invader_game_tick(&invader_commands);
       draw_image(spaceship, LEFT);
       struct DrawableImage *lasers[3];
+      struct DrawableImage *invader_lasers[3];
       for (int i = 0; i < 3; i++) {
 	lasers[i] = debug_drawableimage_playerlaser(i);
 	draw_image(lasers[i], LEFT);
+      }
+      for (int iiii = 0; iiii < 3; iiii++) {
+	invader_lasers[iiii] = debug_drawableimage_invaderlaser(iiii);
+	draw_image(invader_lasers[iiii], LEFT);
       }
       struct DrawableImage *invaders[3];
       for (int ii = 0; ii < 3; ii++) {
@@ -104,6 +109,9 @@ int main() {
       }
       for (int iii = 0; iii < 3; iii++) {
 	draw_image(invaders[iii], RIGHT);
+      }
+      for (int iii = 0; iii < 3; iii++) {
+	draw_image(invader_lasers[iii], RIGHT);
       }
       draw_half(RIGHT);
       clear_buffer();

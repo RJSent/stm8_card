@@ -26,4 +26,6 @@ struct DrawableImage * debug_drawableimage_playerlaser(unsigned char i);
 
 struct DrawableImage * debug_drawableimage_invader(unsigned char i);
 
+struct DrawableImage * debug_drawableimage_invaderlaser(unsigned char i);
+
 #endif
