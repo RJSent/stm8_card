@@ -7,16 +7,17 @@
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
 /* TODO: Find safe way to calculate this */
-#define NUM_SHIP_FRAMES         (3)
-#define NUM_PLAYER_LASER_FRAMES (4)
-#define NUM_INVADER_FRAMES      (2)
+#define NUM_SHIP_FRAMES            (3)
+#define NUM_PLAYER_LASER_FRAMES    (4)
+#define NUM_INVADER_FRAMES         (2)
+#define NUM_INVAVDER_LASER_FRAMES  (2)
 
 #define PLAYER_SHIP_TICKS_PER_FRAME  (2)
 #define INVADER_TICKS_PER_FRAME      (26)
 
 #define MAX_INVADERS      (3)
 #define MAX_PLAYER_LASERS (3)
-#define MAX_ENEMY_LASERS  (3)
+#define MAX_INVADER_LASERS  (3)
 
 #define PLAYER_LASER_VELOCITY   (game_width / 32)
 #define INVADER_LASER_VELOCITY  (game_width / 32)
@@ -50,6 +51,11 @@ struct InvaderMob {
   enum InvaderDirection {INVADERDIRECTION_UP, INVADERDIRECTION_DOWN} direction;
   struct DrawableImage invader;
   struct DrawableImage explosion;
+};
+
+struct InvaderLaser {
+  boolean_t active;
+  struct DrawableImage laser;
 };
 
 const uint8_t spaceship_frame_0[24] = {
@@ -99,6 +105,9 @@ const uint8_t invader_1_frame_1[11] = {
   0xB6, 0x7C, 0x19, 0x20        /* bottom part */
 };
 
+const uint8_t invader_laser_frame_0[3] = { 0x2A, 0xFF, 0x2A};
+const uint8_t invader_laser_frame_1[3] = { 0x66, 0xFF, 0x66};
+
 
 const struct Image spaceship_image_0 = {.width = 24, .height = 8, .pixels = spaceship_frame_0};
 const struct Image spaceship_image_1 = {.width = 24, .height = 8, .pixels = spaceship_frame_1};
@@ -112,10 +121,14 @@ const struct Image player_laser_image_3 = {.width = 8, .height = 2, .pixels = pl
 const struct Image invader_1_image_0 = {.width = 8, .height = 11, .pixels = invader_1_frame_0};
 const struct Image invader_1_image_1 = {.width = 8, .height = 11, .pixels = invader_1_frame_1};
 
+const struct Image invader_laser_image_0 = {.width = 8, .height = 3, .pixels = invader_laser_frame_0};
+const struct Image invader_laser_image_1 = {.width = 8, .height = 3, .pixels = invader_laser_frame_1};
+
 
 static struct PlayerShip  player_ship;
 static struct PlayerLaser player_lasers[MAX_PLAYER_LASERS];
 static struct InvaderMob  invader_mobs[MAX_INVADERS];
+static struct InvaderLaser invader_lasers[MAX_INVADER_LASERS];
 
 static unsigned char game_width, game_height;
 
@@ -418,6 +431,14 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
     struct DrawableImage invader_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
       .images = {&invader_1_image_0, &invader_1_image_1}};
     invader_mobs[i].invader = invader_init;
+  }
+
+  /* initialize invader laser structs */
+  for (unsigned char i = 0; i < MAX_INVADER_LASERS; i++) {
+    invader_lasers[i].active = FALSE;
+    struct DrawableImage invader_laser_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
+      .images = {&invader_laser_image_0, &invader_laser_image_1}};
+    player_lasers[i].laser = invader_laser_init;
   }
 
   
