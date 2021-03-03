@@ -1,5 +1,6 @@
 # http://web.mit.edu/gnu/doc/html/make_4.html
 # Use -m$(family) in both compiling and linking stage
+# FIXME: It seems like files aren't always recompiled when they should be. Maybe only when I change the header? Not sure.
 CC = sdcc
 CFLAGS = -m$(family)
 LDFLAGS = -m$(family) --out-fmt-$(bin_fmt)
