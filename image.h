@@ -2,6 +2,7 @@
 #define IMAGE_H
 
 #include <stdint.h>
+#include "baseline.h"
 
 #define MAX_FRAMES    (6) /* up to 6 frames of animation */
 #define UNINITIALIZED (-1)
@@ -18,6 +19,10 @@ struct DrawableImage {
   unsigned char state;
   const struct Image *images[MAX_FRAMES];
 };
+
+/* returns TRUE if two drawable images overlap. */
+/* TODO: Test this */
+boolean_t drawable_overlap(const struct DrawableImage* img1, const struct DrawableImage* img2);
 
 /* TODO create struct with size + array of pointers to return when drawing images */
 
