@@ -10,7 +10,7 @@
 #define NUM_SHIP_FRAMES            (3)
 #define NUM_PLAYER_LASER_FRAMES    (4)
 #define NUM_INVADER_FRAMES         (2)
-#define NUM_INVAVDER_LASER_FRAMES  (2)
+#define NUM_INVADER_LASER_FRAMES  (2)
 
 #define PLAYER_SHIP_TICKS_PER_FRAME  (2)
 #define INVADER_TICKS_PER_FRAME      (26)
@@ -293,8 +293,18 @@ signed char invader_spawn() {
   return 0;
 }
 
-signed char invader_shoot() {
-
+signed char invader_laser_shoot(unsigned char invader_num) {
+  /* Mark first empty laser as active and shoot it */
+  for (unsigned char i = 0; i < MAX_INVADER_LASERS; i++) {
+    if (invader_lasers[i].active == FALSE) {
+      invader_lasers[i].active = TRUE;
+      invader_lasers[i].laser.x = invader_mobs[invader_num].invader.x - 1;
+      signed char invader_height = invader_mobs[invader_num].invader.images[invader_mobs[invader_num].invader.state]->height;
+      invader_lasers[i].laser.y = invader_mobs[invader_num].invader.y + invader_height / 2;
+      break;
+    }
+  }
+  
   return 0;
 }
 
@@ -308,7 +318,7 @@ signed char invader_tick() {
   /* determine if spawned invaders should shoot */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
     if (random_upto(100) > 100 - INVADER_SHOOT_CHANCE && invader_mobs[i].alive == TRUE) {
-      /* invader_shoot(i); */
+      invader_laser_shoot(i);
     }
   }
 
@@ -382,7 +392,25 @@ signed char invader_tick() {
 }
 
 signed char invader_laser_tick() {
+  for (unsigned char i = 0; i < MAX_INVADER_LASERS; i++) {
+    if (invader_lasers[i].active == TRUE) {
+      /* adjust position based on velocity */
+      invader_lasers[i].laser.x -= INVADER_LASER_VELOCITY;
 
+      /* Adjust state so laser is animated */
+      if (invader_lasers[i].laser.state < NUM_INVADER_LASER_FRAMES - 1) {
+	invader_lasers[i].laser.state++;
+      } else {
+	invader_lasers[i].laser.state = 0;
+      }
+    }
+    if (invader_lasers[i].laser.x < 0) {
+      player_lasers[i].active = FALSE;
+    }
+  }
+  
+  /* moving to check_collisions function that checks all collisions at once */
+  /* check_invader_laser_collisions(); */
   return 0;
 }
 
