@@ -22,10 +22,10 @@
 #define PLAYER_VELOCITY_TICKS_PER_GAIN (2) /* TODO: adjust in terms of game_height */
 #define PLAYER_VELOCITY_GAIN_PER_TICK  (1)
 #define PLAYER_VELOCITY_LOSS_PER_TICK  (3)
-#define INVADER_Y_SPEED                (game_height / 8)
-#define INVADER_X_SPEED                (game_width / 8)
+#define INVADER_Y_SPEED                (game_height / 16)
+#define INVADER_X_SPEED                (game_width / 32)
 
-#define INVADER_SPAWN_CHANCE (15) /* percentage out of 100 per tick */
+#define INVADER_SPAWN_CHANCE (3) /* percentage out of 100 per tick */
 #define INVADER_SHOOT_CHANCE (15)
 
 
@@ -134,9 +134,7 @@ void _debug_ship_tick(invader_movecmd_t movement, char ticks_until_gain) {
   uart_printf("tug: %d\n\r", ticks_until_gain);
   uart_printf("pos: %d\n\r", player_ship.ship.y);
 }
-#endif
 
-#ifdef UART_H
 void _debug_invader_tick() {
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
     if (invader_mobs[i].alive == TRUE) {
@@ -309,9 +307,9 @@ signed char invader_tick() {
   /* verify positions are within valid bounds. If not, we should update x and direction */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
     if (invader_mobs[i].alive == TRUE) {
-      if (invader_mobs[i].invader.y + invader_mobs[i].invader.images[invader_mobs[i].invader.state]->width > game_width) {
+      if (invader_mobs[i].invader.y + invader_mobs[i].invader.images[invader_mobs[i].invader.state]->height > game_height) {
 	/* too far down */
-	invader_mobs[i].invader.y = game_width - invader_mobs[i].invader.images[invader_mobs[i].invader.state]->width;
+	invader_mobs[i].invader.y = game_height - invader_mobs[i].invader.images[invader_mobs[i].invader.state]->height;
 	invader_mobs[i].direction = INVADERDIRECTION_UP;
 	invader_mobs[i].invader.x -= INVADER_X_SPEED;
       } else if (invader_mobs[i].invader.y < 0) {

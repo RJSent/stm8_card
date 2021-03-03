@@ -84,7 +84,6 @@ int main() {
       if (random_upto(16) > 13) {
 	invader_commands.shoot = TRUE;
       }
-      draw_pixel(0,0);
       struct DrawableImage *spaceship = debug_drawableimage_spaceship();
       invader_game_tick(&invader_commands);
       draw_image(spaceship, LEFT);
@@ -95,7 +94,7 @@ int main() {
       }
       struct DrawableImage *invaders[3];
       for (int ii = 0; ii < 3; ii++) {
-	invaders[ii] = debug_drawableimage_invader(ii); /* fack, spent an hour chasing down  bug because I typed debug_drawableimage_invader(i) instead of (ii). (Also sdcc was suddenly complaining about reusing i now but not before?) */
+	invaders[ii] = debug_drawableimage_invader(ii); /* fack, spent an hour chasing down bug because I typed debug_drawableimage_invader(i) instead of (ii). (Also sdcc was suddenly complaining about reusing i now but not before?) */
 	draw_image(invaders[ii], LEFT);
       }
       draw_half(LEFT);
@@ -114,10 +113,10 @@ int main() {
 
     cycle_num++;
 
-    if (cycle_num == max_cycles) {
-      uart_printf("-----END-----\n\r");
-      while(1) {};
-    }
+    /* if (cycle_num == max_cycles) { */
+    /*   uart_printf("-----END-----\n\r"); */
+    /*   while(1) {}; */
+    /* } */
     
     clear_buffer();    
   }
