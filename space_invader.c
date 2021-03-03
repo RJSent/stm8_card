@@ -11,6 +11,9 @@
 #define NUM_PLAYER_LASER_FRAMES (4)
 #define NUM_INVADER_FRAMES      (2)
 
+#define PLAYER_SHIP_TICKS_PER_FRAME  (2)
+#define INVADER_TICKS_PER_FRAME      (26)
+
 #define MAX_INVADERS      (3)
 #define MAX_PLAYER_LASERS (3)
 #define MAX_ENEMY_LASERS  (3)
@@ -180,16 +183,22 @@ signed char ship_tick(invader_movecmd_t movement) {
   if (player_ship.ship.y + ship_height > game_height) player_ship.ship.y = game_height - ship_height;
 
   /* Adjust state so ship is animated */
-  if (player_ship.ship.state < NUM_SHIP_FRAMES - 1) {
-    player_ship.ship.state++;
+  static char ticks_until_state_change = PLAYER_SHIP_TICKS_PER_FRAME;
+  if (ticks_until_state_change <= 1) {
+    if (player_ship.ship.state < NUM_SHIP_FRAMES - 1) {
+      player_ship.ship.state++;
+    } else {
+      player_ship.ship.state = 0;
+    }
+    ticks_until_state_change = PLAYER_SHIP_TICKS_PER_FRAME;
   } else {
-    player_ship.ship.state = 0;
+    ticks_until_state_change--;
   }
 
   /* Debugging ship movement. */
-  #ifdef UART_H
+#ifdef UART_H
   /* _debug_ship_tick(movement, ticks_until_gain); */
-  #endif
+#endif
 
   return 0;
 }
@@ -218,7 +227,9 @@ signed char check_player_laser_collisions() {
 signed char player_laser_tick() {
   for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
     if (player_lasers[i].active == TRUE) {
+      /* adjust position based on velocity */
       player_lasers[i].laser.x += PLAYER_LASER_VELOCITY;
+
       /* Adjust state so laser is animated */
       if (player_lasers[i].laser.state < NUM_PLAYER_LASER_FRAMES - 1) {
 	player_lasers[i].laser.state++;
@@ -322,14 +333,21 @@ signed char invader_tick() {
   }
 
   /* adjust state so invader is animated */
+  /* adjust order of if statements if I want invaders to change states in sync or not. Pretty sure I do. */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
-    if (invader_mobs[i].alive == TRUE) {
-      /* Adjust state so laser is animated */
-      if (invader_mobs[i].invader.state < NUM_INVADER_FRAMES - 1) {
-	invader_mobs[i].invader.state++;
-      } else {
-	invader_mobs[i].invader.state = 0;
+    static char ticks_until_state_change = INVADER_TICKS_PER_FRAME;
+    if (ticks_until_state_change <= 1) {
+      if (invader_mobs[i].alive == TRUE) {
+	/* Adjust state so laser is animated */
+	if (invader_mobs[i].invader.state < NUM_INVADER_FRAMES - 1) {
+	  invader_mobs[i].invader.state++;
+	} else {
+	  invader_mobs[i].invader.state = 0;
+	}
+	ticks_until_state_change = INVADER_TICKS_PER_FRAME;
       }
+    } else {
+      ticks_until_state_change--;
     }
   }
 
@@ -346,7 +364,7 @@ signed char invader_tick() {
   }
 
 #ifdef UART_H
-    _debug_invader_tick();
+  _debug_invader_tick();
 #endif
   
   return 0;
