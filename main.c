@@ -69,10 +69,10 @@ int main() {
   invader_game_init(SSD1306_WIDTH, SSD1306_HEIGHT);
   struct InvaderCommands invader_commands = {.movement = DOWN};
   char cycle_num = 0;
-  const char max_cycles = 4;
+  const char max_cycles = 2;
 
   while (1) {
-    uart_printf("-----CYCLE %d-----", cycle_num);
+    uart_printf("-----CYCLE %d-----\n\r", cycle_num);
 
     char loops = 30;
     for (int i = 0; i < loops; i++) {
@@ -84,6 +84,7 @@ int main() {
       if (random_upto(16) > 13) {
 	invader_commands.shoot = TRUE;
       }
+      draw_pixel(0,0);
       struct DrawableImage *spaceship = debug_drawableimage_spaceship();
       invader_game_tick(&invader_commands);
       draw_image(spaceship, LEFT);
@@ -94,7 +95,7 @@ int main() {
       }
       struct DrawableImage *invaders[3];
       for (int ii = 0; ii < 3; ii++) {
-	invaders[ii] = debug_drawableimage_invader(i);
+	invaders[ii] = debug_drawableimage_invader(ii); /* fack, spent an hour chasing down  bug because I typed debug_drawableimage_invader(i) instead of (ii). (Also sdcc was suddenly complaining about reusing i now but not before?) */
 	draw_image(invaders[ii], LEFT);
       }
       draw_half(LEFT);

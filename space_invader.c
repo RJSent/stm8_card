@@ -2,19 +2,20 @@
 
 #include "space_invader.h"
 #include "baseline.h"
-#include "uart.h"
+/* #include "uart.h" */
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
 /* TODO: Find safe way to calculate this */
 #define NUM_SHIP_FRAMES         (3)
 #define NUM_PLAYER_LASER_FRAMES (4)
+#define NUM_INVADER_FRAMES      (2)
 
 #define MAX_INVADERS      (3)
 #define MAX_PLAYER_LASERS (3)
 #define MAX_ENEMY_LASERS  (3)
 
-#define PLAYER_LASER_VELOCITY (game_width / 32)
+#define PLAYER_LASER_VELOCITY   (game_width / 32)
 #define INVADER_LASER_VELOCITY  (game_width / 32)
 
 #define PLAYER_MAX_VELOCITY            (game_height / 8)
@@ -111,7 +112,7 @@ const struct Image invader_1_image_1 = {.width = 8, .height = 11, .pixels = inva
 
 static struct PlayerShip  player_ship;
 static struct PlayerLaser player_lasers[MAX_PLAYER_LASERS];
-static struct InvaderMob invader_mobs[MAX_INVADERS];
+static struct InvaderMob  invader_mobs[MAX_INVADERS];
 
 static unsigned char game_width, game_height;
 
@@ -134,6 +135,22 @@ void _debug_ship_tick(invader_movecmd_t movement, char ticks_until_gain) {
   uart_printf("pos: %d\n\r", player_ship.ship.y);
 }
 #endif
+
+#ifdef UART_H
+void _debug_invader_tick() {
+  for (unsigned char i = 0; i < MAX_INVADERS; i++) {
+    if (invader_mobs[i].alive == TRUE) {
+      uart_printf("---\n\r");
+      uart_printf("invader: %d\n\r", i);
+      uart_printf("ypos: %d\t", invader_mobs[i].invader.y);
+      uart_printf("xpos: %d\n\r", invader_mobs[i].invader.x);
+      uart_printf("alive: %d\n\r", invader_mobs[i].alive);
+    }
+  }
+  uart_printf("-----END TICK-----\n\r");
+}
+#endif
+
 
 /* FIXME: Visually it seems like it's faster for the ship to move down
    than up. Test with print statements if that's accurate, and if so,
@@ -173,7 +190,7 @@ signed char ship_tick(invader_movecmd_t movement) {
 
   /* Debugging ship movement. */
   #ifdef UART_H
-  _debug_ship_tick(movement, ticks_until_gain);
+  /* _debug_ship_tick(movement, ticks_until_gain); */
   #endif
 
   return 0;
@@ -238,7 +255,7 @@ signed char player_laser_tick() {
 
 signed char invader_spawn() {
   /* determine if we would overlap with another invader if we spawn*/
-  /* if (invader_spawn_collision_check) { */
+  /* if (invader_spawn_collision_check()) { */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
     if (invader_mobs[i].alive == FALSE) {
       invader_mobs[i].alive = TRUE;
@@ -283,7 +300,7 @@ signed char invader_tick() {
       } else {
 	/* shouldn't be possible */
 #ifdef UART_H                   /* are preprocessor directives really the best way to handle this? */
-	uart_printf("err invader %d\n\r", i);
+	uart_printf("err invader y pos %d\n\r", i);
 #endif
       }
     }
@@ -302,18 +319,37 @@ signed char invader_tick() {
 	invader_mobs[i].invader.y = 0;
 	invader_mobs[i].direction = INVADERDIRECTION_DOWN;
 	invader_mobs[i].invader.x -= INVADER_X_SPEED;
+      } 
+    }
+  }
+
+  /* adjust state so invader is animated */
+  for (unsigned char i = 0; i < MAX_INVADERS; i++) {
+    if (invader_mobs[i].alive == TRUE) {
+      /* Adjust state so laser is animated */
+      if (invader_mobs[i].invader.state < NUM_INVADER_FRAMES - 1) {
+	invader_mobs[i].invader.state++;
       } else {
-	/* shouldn't be possible */
-#ifdef UART_H
-	uart_printf("err invader %d\n\r", i);
-#endif
+	invader_mobs[i].invader.state = 0;
       }
     }
   }
 
-  /* "kill" invaders as needed  */
+  /* "kill" invaders as needed in collisions */
 
   /* kill invader if it goes off the left side of screen (x = 0). Shouldn't happen in practice */
+  for (unsigned char i = 0; i < MAX_INVADERS; i++) {
+    if (invader_mobs[i].alive == TRUE) {
+      /* if fully off-screen */
+      if (invader_mobs[i].invader.x + invader_mobs[i].invader.images[invader_mobs[i].invader.state]->width < 0) {
+	invader_mobs[i].alive = FALSE;
+      }
+    }
+  }
+
+#ifdef UART_H
+    _debug_invader_tick();
+#endif
   
   return 0;
 }
@@ -331,7 +367,8 @@ signed char invader_game_tick(struct InvaderCommands *commands) {
   ship_tick(commands->movement); /* should this be combined with player_laser_shoot and player_laser_tick? */
   player_laser_shoot(commands->shoot);
   player_laser_tick();
-  
+
+  /* _debug_invader_tick(); */
   invader_tick();               /* combine??? */
   invader_laser_tick();
   
