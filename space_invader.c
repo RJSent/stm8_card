@@ -233,11 +233,6 @@ signed char player_laser_shoot(invader_shootcmd_t shoot) {
   return 0;
 }
 
-signed char check_player_laser_collisions() {
-
-  return 0;
-}
-
 signed char player_laser_tick() {
   for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
     if (player_lasers[i].active == TRUE) {
@@ -271,8 +266,6 @@ signed char player_laser_tick() {
     }
   }
 
-  check_player_laser_collisions();
-  
   return 0;
 }
 
@@ -373,8 +366,6 @@ signed char invader_tick() {
     }
   }
 
-  /* "kill" invaders as needed in collisions */
-
   /* kill invader if it goes off the left side of screen (x = 0). Shouldn't happen in practice */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
     if (invader_mobs[i].alive == TRUE) {
@@ -418,8 +409,32 @@ signed char invader_laser_tick() {
     }
   }
   
-  /* moving to check_collisions function that checks all collisions at once */
-  /* check_invader_laser_collisions(); */
+  return 0;
+}
+
+/* iterate through player_lasers and invader_mobs, setting invader_mobs as dead. Return # of collisions  */
+signed char check_player_laser_collisions() {
+
+  return 0;
+}
+
+/* iterate through invader_mobs and see if any hit the player ship. Return 1 if collided, else 0 */
+signed char check_invader_body_collisions() {
+
+  return 0;
+}
+
+/* iterate through invader_lasers and see if any hit player ship. Return 1 if collided, else 0 */
+signed char check_invader_laser_collisions() {
+
+  return 0;
+}
+
+/* TODO: Best way to update statuses to have stuff explode? Maybe just "exploding" state var in structs? */
+signed char check_collisions() {
+  check_player_laser_collisions();
+  check_invader_laser_collisions();
+
   return 0;
 }
 
@@ -435,6 +450,8 @@ signed char invader_game_tick(struct InvaderCommands *commands) {
   /* _debug_invader_tick(); */
   invader_tick();               /* combine??? */
   invader_laser_tick();
+
+  check_collisions();
   
   return 0;
 }
