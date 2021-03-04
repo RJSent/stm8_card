@@ -25,6 +25,9 @@ static char address_mode;
 /* sourceforge.net/p/sdcc/mailman/sdcc-user/thread/CACBduit4%2Ba08M3X0zaU-1YqEifDqK7sMCxy0wSn9Nq53BM8SHw%40mail.gmail.com/
    shows that packing is not support or traditionally necessary with
    8-bit processors */
+/* According to main.map, this is 262 bytes long. Why isn't it 257?
+   (Or 264 if there's 8-bit padding, but there shouldn't be).
+   sizeof(SSD1306_Data) is returning 257... Hmm... */
 struct S {
   uint8_t control_byte;
   uint8_t frame_buffer[BUF_SIZE];
