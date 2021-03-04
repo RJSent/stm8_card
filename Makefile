@@ -20,6 +20,9 @@ $(final_exe): $(objects)
 %.rel : %.c %.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
+main.rel: main.c
+	$(CC) -c $(CFLAGS) $< -o $@
+
 flash: $(final_exe)
 	stm8flash -c $(programmer) -p $(part) -w $(final_exe)
 
