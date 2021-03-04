@@ -17,7 +17,7 @@ all: $(final_exe)
 $(final_exe): $(objects)
 	$(CC) $(LDFLAGS) -o $(final_exe) $(objects)
 
-%.rel : %.c 
+%.rel : %.c %.h
 	$(CC) -c $(CFLAGS) $< -o $@
 
 flash: $(final_exe)
