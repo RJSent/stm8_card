@@ -1,0 +1,97 @@
+#+AUTHOR: Richard Sent
+
+
+* Problem
+
+So I have a struct that looks like this
+
+#+begin_src C
+struct S {
+  uint8_t control_byte;
+  uint8_t frame_buffer[BUF_SIZE];
+} SSD1306_Data = {.control_byte = CONTROL_BYTE(CO_DATA, DC_DATA)};
+#+end_src
+
+where BUF_SIZE is 256 bytes. Unsurprisingly, the size of the total
+struct is 257 bytes, confirmed with sizeof(). However, when I look in
+my memory map, I see:
+
+#+begin_src
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+INITIALIZED                         000000C0    00000106 =         262. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     000000C1  _SSD1306_Data                      ssd1306
+#+end_src
+
+So it seems to be 262 bytes long instead. Is this just metadata or
+something added by the compiler? There shouldn't be any padding going
+on (and if there was, wouldn't sizeof() detect it?)
+
+Or maybe I'm just dumb and messing with stuff that I have no idea about.
+
+* Suggestions by Others
+
+** Alignment?
+
+#+begin_quote
+Maybe it's an alignment thing, but that's just a guess. I really don't know
+#+end_quote
+
+- Probably not. That would be some weird alignment with it ending at
+  0xC0 + 262 = 0x1C6, since 0x1C6 / 8 is 56.75.
+
+- [[https://sourceforge.net/p/sdcc/mailman/sdcc-user/thread/CACBduit4%2Ba08M3X0zaU-1YqEifDqK7sMCxy0wSn9Nq53BM8SHw%40mail.gmail.com/][This]] answer on the SDCC forums shows that the issue isn't with
+  padding the struct
+
+** Malloc?
+#+begin_quote
+https://stackoverflow.com/questions/1518711/how-does-free-know-how-much-to-free
+
+this might be relevant?
+the accepted answer mentions metadata that malloc creates
+#+end_quote
+
+- Doubtful. I'm not using dynamic memory allocation.
+
+- ~0x80_00_00_01~ has no relation I can tell to the size. It's constant
+  regardless of what I put for buffer size.
+
+
+* Data
+
+- I made a mistake and accidentally forgot to account for
+  ~sizeof(protocol)~ initialially. Fortunately didn't require me to
+  adjust the data, just remove ~0x00~ from the start of
+  ~INITIALIZED_PADDING_DATA~
+  
+| BUF_SIZE | sizeof(struct) | sizeof(protocol) | INITIALIZED_SIZE | INITIALIZED_START | INITIALIZED_END | INITIALIZED_PADDING_START | INITIALIZED_PADDING_DATA |
+|      256 |            257 |                1 |            0x106 |              0xC0 |           0x1C6 |                     0x1C2 | 0x80_00_00_01            |
+|      255 |            256 |                1 |            0x105 |              0xC0 |           0x1C5 |                     0x1C1 | 0x80_00_00_01            |
+|        1 |              2 |                1 |              0x7 |              0xC0 |            0xC7 |                      0xC3 | 0x80_00_00_01            |
+
+** Observations
+
+- The padding (assuming it's that) is always ~0x80_00_00_01~, which
+  rules out it referring to the size of the ~INITIALIZED~ area
+
+- ~0x80_00_00_01~ = ~2147483649~
+
+  - This is the same as ~2**32 / 2 + 1~
+
+    - This *CAN'T* be a coincidence. Magic number?
+
+    - Granted it's hex, could just be the nature of hex that it has
+      that relation. The relation itself might be meaningless. So it
+      might be a coincidence...
+
+- Could this somehow refer to the program memory that uses this area?
+
+  - Program memory (area ~HOME~) starts at ~0x80_00~, it's at least sorta close
+
+  - Wouldn't explain 2 middle bytes
+
+  - Also there's nothing in =memory.map= that refers to ~0x8001~, only ~0x8000~
+
