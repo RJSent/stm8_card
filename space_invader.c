@@ -388,6 +388,8 @@ signed char invader_tick() {
 	  invader_mobs[i].invader.state = 0;
 	}
 	ticks_until_state_change = INVADER_TICKS_PER_FRAME;
+      } else if (invader_mobs[i].status == STATUS_EXPLODING) {
+	
       }
     } else {
       ticks_until_state_change--;
@@ -440,13 +442,22 @@ signed char invader_laser_tick() {
   return 0;
 }
 
+/* code to explode the invader located at num */
+signed char invader_explode(unsigned char num) {
+  if (num >= MAX_INVADERS) return 1;
+  invader_mobs[num].status = STATUS_EXPLODING;
+  invader_mobs[num].explosion.x = invader_mobs[num].invader.x;
+  invader_mobs[num].explosion.y = invader_mobs[num].invader.y;
+  return 0;
+}
+
 /* iterate through player_lasers and invader_mobs, setting invader_mobs as dead. Return # of collisions  */
 signed char check_player_laser_collisions() {
   char hits = 0;
   for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
     for (unsigned char j = 0; j < MAX_INVADERS; j++) {
       if (drawable_overlap(&player_lasers[i].laser, &invader_mobs[j].invader) == TRUE) {
-	invader_mobs[j].status = STATUS_EXPLODING;
+	invader_explode(j);
 	player_lasers[i].active = FALSE;
 	hits++;
 	uart_printf("bug\n\r");
