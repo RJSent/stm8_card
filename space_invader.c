@@ -2,7 +2,7 @@
 
 #include "space_invader.h"
 #include "baseline.h"
-/* #include "uart.h" */
+#include "uart.h"
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
@@ -10,14 +10,14 @@
 #define NUM_SHIP_FRAMES            (3)
 #define NUM_PLAYER_LASER_FRAMES    (4)
 #define NUM_INVADER_FRAMES         (2)
-#define NUM_INVADER_LASER_FRAMES  (2)
+#define NUM_INVADER_LASER_FRAMES   (2)
 
 #define PLAYER_SHIP_TICKS_PER_FRAME   (2)
 #define INVADER_TICKS_PER_FRAME       (26)
 #define INVADER_LASER_TICKS_PER_FRAME (6)
 
-#define MAX_INVADERS      (3)
-#define MAX_PLAYER_LASERS (3)
+#define MAX_INVADERS        (3)
+#define MAX_PLAYER_LASERS   (3)
 #define MAX_INVADER_LASERS  (3)
 
 #define PLAYER_LASER_VELOCITY   (game_width / 32)
@@ -30,7 +30,7 @@
 #define INVADER_Y_SPEED                (game_height / 16)
 #define INVADER_X_SPEED                (game_width / 32)
 
-#define INVADER_SPAWN_CHANCE (3) /* percentage out of 100 per tick */
+#define INVADER_SPAWN_CHANCE (10) /* percentage out of 100 per tick */
 #define INVADER_SHOOT_CHANCE (15)
 
 typedef enum {STATUS_ALIVE, STATUS_EXPLODING, STATUS_DEAD} ship_status_t;
@@ -91,6 +91,7 @@ const uint8_t spaceship_frame_2[24] = {
   0x61, 0x00, 0x00
 };
 
+
 const uint8_t player_laser_frame_0[2] = { 0x3F, 0xDF };
 const uint8_t player_laser_frame_1[2] = { 0xDF, 0xBF };
 const uint8_t player_laser_frame_2[2] = { 0x7F, 0x1F };
@@ -107,6 +108,28 @@ const uint8_t invader_1_frame_1[11] = {
   0xB6, 0x7C, 0x19, 0x20        /* bottom part */
 };
 
+const uint8_t invader_explosion_frame_0[11] = {
+  0x00, 0x00, 0x00, 0x18,
+  0x24, 0x24, 0x24,
+  0x18, 0x00, 0x00, 0x00
+};
+const uint8_t invader_explosion_frame_1[11] = {
+  0x00, 0x00, 0x18,
+  0x24, 0x42, 0x42, 0x42, 0x24,
+  0x18, 0x00, 0x00
+};
+const uint8_t invader_explosion_frame_2[11] = {
+  0x10, 0x24, 0x42,
+  0x81, 0x01, 0x81, 0x80, 0x81,
+  0x02, 0x24, 0x08
+};
+const uint8_t invader_explosion_frame_3[11] = {
+  0x08, 0x24, 0x00,
+  0x01, 0x80, 0x81, 0x01, 0x80,
+  0x02, 0x00, 0x08
+};
+
+
 const uint8_t invader_laser_frame_0[3] = { 0x2A, 0xFF, 0x2A};
 const uint8_t invader_laser_frame_1[3] = { 0x66, 0xFF, 0x66};
 
@@ -122,6 +145,11 @@ const struct Image player_laser_image_3 = {.width = 8, .height = 2, .pixels = pl
 
 const struct Image invader_1_image_0 = {.width = 8, .height = 11, .pixels = invader_1_frame_0};
 const struct Image invader_1_image_1 = {.width = 8, .height = 11, .pixels = invader_1_frame_1};
+
+const struct Image invader_explosion_image_0 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_0};
+const struct Image invader_explosion_image_1 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_0};
+const struct Image invader_explosion_image_2 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_0};
+const struct Image invader_explosion_image_3 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_0};
 
 const struct Image invader_laser_image_0 = {.width = 8, .height = 3, .pixels = invader_laser_frame_0};
 const struct Image invader_laser_image_1 = {.width = 8, .height = 3, .pixels = invader_laser_frame_1};
@@ -155,12 +183,11 @@ void _debug_ship_tick(invader_movecmd_t movement, char ticks_until_gain) {
 
 void _debug_invader_tick() {
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
-    if (invader_mobs[i].alive == TRUE) {
+    if (invader_mobs[i].status == STATUS_ALIVE) {
       uart_printf("---\n\r");
       uart_printf("invader: %d\n\r", i);
       uart_printf("ypos: %d\t", invader_mobs[i].invader.y);
       uart_printf("xpos: %d\n\r", invader_mobs[i].invader.x);
-      uart_printf("alive: %d\n\r", invader_mobs[i].alive);
     }
   }
   uart_printf("-----END TICK-----\n\r");
@@ -415,8 +442,19 @@ signed char invader_laser_tick() {
 
 /* iterate through player_lasers and invader_mobs, setting invader_mobs as dead. Return # of collisions  */
 signed char check_player_laser_collisions() {
+  char hits = 0;
+  for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
+    for (unsigned char j = 0; j < MAX_INVADERS; j++) {
+      if (drawable_overlap(&player_lasers[i].laser, &invader_mobs[j].invader) == TRUE) {
+	invader_mobs[j].status = STATUS_EXPLODING;
+	player_lasers[i].active = FALSE;
+	hits++;
+	uart_printf("bug\n\r");
+      }
+    }
+  }
 
-  return 0;
+  return hits;
 }
 
 /* iterate through invader_mobs and see if any hit the player ship. Return 1 if collided, else 0 */
@@ -485,7 +523,10 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
     /* TODO: Support different invader "skins" by initializing to different .images, or with another trick */
     struct DrawableImage invader_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
       .images = {&invader_1_image_0, &invader_1_image_1}};
+    struct DrawableImage invader_explosion_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
+      .images = {&invader_explosion_image_0, &invader_explosion_image_1, &invader_explosion_image_2, &invader_explosion_image_3}};
     invader_mobs[i].invader = invader_init;
+    invader_mobs[i].explosion = invader_explosion_init;
   }
 
   /* initialize invader laser structs */
@@ -516,6 +557,7 @@ struct DrawableImage* debug_drawableimage_playerlaser(unsigned char i) {
 struct DrawableImage* debug_drawableimage_invader(unsigned char i) {
   if (i >= MAX_INVADERS) return 0;
   if (invader_mobs[i].status == STATUS_ALIVE) return &invader_mobs[i].invader;
+  if (invader_mobs[i].status == STATUS_EXPLODING) return &invader_mobs[i].explosion;
   return 0;
 }
 
