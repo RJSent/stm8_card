@@ -33,6 +33,7 @@
 #define INVADER_SPAWN_CHANCE (3) /* percentage out of 100 per tick */
 #define INVADER_SHOOT_CHANCE (15)
 
+typedef enum {STATUS_ALIVE, STATUS_EXPLODING, STATUS_DEAD} ship_status_t;
 
 struct PlayerLaser {
   boolean_t active;
@@ -40,7 +41,7 @@ struct PlayerLaser {
 };
 
 struct PlayerShip {
-  boolean_t alive;
+  ship_status_t status;
   signed char velocity;
   struct DrawableImage ship;
   struct DrawableImage explosion;
@@ -48,7 +49,7 @@ struct PlayerShip {
 
 /* TODO: Support different types of invaders. Maybe by different DrawableImage structs + a invader_num variable? Memory intensive... */
 struct InvaderMob {
-  boolean_t alive;
+  ship_status_t status;
   enum InvaderDirection {INVADERDIRECTION_UP, INVADERDIRECTION_DOWN} direction;
   struct DrawableImage invader;
   struct DrawableImage explosion;
@@ -273,8 +274,8 @@ signed char invader_spawn() {
   /* determine if we would overlap with another invader if we spawn*/
   /* if (invader_spawn_collision_check()) { */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
-    if (invader_mobs[i].alive == FALSE) {
-      invader_mobs[i].alive = TRUE;
+    if (invader_mobs[i].status == STATUS_DEAD) {
+      invader_mobs[i].status = STATUS_ALIVE;
       /* spawn on right side (high x) fully on screen at top */
       invader_mobs[i].invader.x = game_width - invader_mobs[i].invader.images[invader_mobs[i].invader.state]->width;
       invader_mobs[i].invader.y = 0;
@@ -311,14 +312,14 @@ signed char invader_tick() {
 
   /* determine if spawned invaders should shoot */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
-    if (random_upto(100) > 100 - INVADER_SHOOT_CHANCE && invader_mobs[i].alive == TRUE) {
+    if (random_upto(100) > 100 - INVADER_SHOOT_CHANCE && invader_mobs[i].status == STATUS_ALIVE) {
       invader_laser_shoot(i);
     }
   }
 
   /* update invader y positions (vertical) */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
-    if (invader_mobs[i].alive == TRUE) {
+    if (invader_mobs[i].status == STATUS_ALIVE) {
       if (invader_mobs[i].direction == INVADERDIRECTION_DOWN) {
 	invader_mobs[i].invader.y += INVADER_Y_SPEED;
       } else if (invader_mobs[i].direction == INVADERDIRECTION_UP) {
@@ -334,7 +335,7 @@ signed char invader_tick() {
 
   /* verify positions are within valid bounds. If not, we should update x and direction */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
-    if (invader_mobs[i].alive == TRUE) {
+    if (invader_mobs[i].status == STATUS_ALIVE) {
       if (invader_mobs[i].invader.y + invader_mobs[i].invader.images[invader_mobs[i].invader.state]->height > game_height) {
 	/* too far down */
 	invader_mobs[i].invader.y = game_height - invader_mobs[i].invader.images[invader_mobs[i].invader.state]->height;
@@ -353,7 +354,7 @@ signed char invader_tick() {
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
     static char ticks_until_state_change = INVADER_TICKS_PER_FRAME;
     if (ticks_until_state_change <= 1) {
-      if (invader_mobs[i].alive == TRUE) {
+      if (invader_mobs[i].status == STATUS_ALIVE) {
 	if (invader_mobs[i].invader.state < NUM_INVADER_FRAMES - 1) {
 	  invader_mobs[i].invader.state++;
 	} else {
@@ -368,10 +369,10 @@ signed char invader_tick() {
 
   /* kill invader if it goes off the left side of screen (x = 0). Shouldn't happen in practice */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
-    if (invader_mobs[i].alive == TRUE) {
+    if (invader_mobs[i].status == STATUS_ALIVE) {
       /* if fully off-screen */
       if (invader_mobs[i].invader.x + invader_mobs[i].invader.images[invader_mobs[i].invader.state]->width < 0) {
-	invader_mobs[i].alive = FALSE;
+	invader_mobs[i].status = STATUS_DEAD;
       }
     }
   }
@@ -467,7 +468,7 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
   struct DrawableImage spaceship_init = {.x = game_width / 16, .y = game_height / 2, .state = 0,
     .images = {&spaceship_image_0, &spaceship_image_1, &spaceship_image_2} };
   /* Another case where compound literals not being supported sucks. */
-  player_ship.alive = TRUE;
+  player_ship.status = STATUS_ALIVE;
   player_ship.ship = spaceship_init;
   
   /* Initialize player laser structs */
@@ -480,7 +481,7 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
 
   /* initialize invader structs */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
-    invader_mobs[i].alive = FALSE;
+    invader_mobs[i].status = STATUS_DEAD;
     /* TODO: Support different invader "skins" by initializing to different .images, or with another trick */
     struct DrawableImage invader_init = {.x = UNINITIALIZED, .y = UNINITIALIZED, .state = 0,
       .images = {&invader_1_image_0, &invader_1_image_1}};
@@ -514,7 +515,7 @@ struct DrawableImage* debug_drawableimage_playerlaser(unsigned char i) {
 /* remove, debugging */
 struct DrawableImage* debug_drawableimage_invader(unsigned char i) {
   if (i >= MAX_INVADERS) return 0;
-  if (invader_mobs[i].alive == TRUE) return &invader_mobs[i].invader;
+  if (invader_mobs[i].status == STATUS_ALIVE) return &invader_mobs[i].invader;
   return 0;
 }
 
