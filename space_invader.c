@@ -2,15 +2,16 @@
 
 #include "space_invader.h"
 #include "baseline.h"
-#include "uart.h"
+/* #include "uart.h" */
 
 /* TODO: Refactor code so that .state is a part of the PlayerLaser and PlayerShip structs */
 
 /* TODO: Find safe way to calculate this */
-#define NUM_SHIP_FRAMES            (3)
-#define NUM_PLAYER_LASER_FRAMES    (4)
-#define NUM_INVADER_FRAMES         (2)
-#define NUM_INVADER_LASER_FRAMES   (2)
+#define NUM_SHIP_FRAMES              (3)
+#define NUM_PLAYER_LASER_FRAMES      (4)
+#define NUM_INVADER_FRAMES           (2)
+#define NUM_INVADER_LASER_FRAMES     (2)
+#define NUM_INVADER_EXPLOSION_FRAMES (4)
 
 #define PLAYER_SHIP_TICKS_PER_FRAME   (2)
 #define INVADER_TICKS_PER_FRAME       (26)
@@ -333,6 +334,7 @@ signed char invader_laser_shoot(unsigned char invader_num) {
 /* decides if we should spawn invader + initializes position */
 signed char invader_tick() {
   /* randomly spawn invaders */
+  /* TODO: Change to < INVADER_SPAWN_CHANCE??? Same with invader_shoot? */
   if (random_upto(100) > 100 - INVADER_SPAWN_CHANCE) {
     invader_spawn();
   }
@@ -351,11 +353,6 @@ signed char invader_tick() {
 	invader_mobs[i].invader.y += INVADER_Y_SPEED;
       } else if (invader_mobs[i].direction == INVADERDIRECTION_UP) {
 	invader_mobs[i].invader.y -= INVADER_Y_SPEED;
-      } else {
-	/* shouldn't be possible */
-#ifdef UART_H                   /* are preprocessor directives really the best way to handle this? */
-	uart_printf("err invader y pos %d\n\r", i);
-#endif
       }
     }
   }
@@ -379,20 +376,19 @@ signed char invader_tick() {
 
   /* adjust state so invader is animated */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
-    static char ticks_until_state_change = INVADER_TICKS_PER_FRAME;
-    if (ticks_until_state_change <= 1) {
-      if (invader_mobs[i].status == STATUS_ALIVE) {
-	if (invader_mobs[i].invader.state < NUM_INVADER_FRAMES - 1) {
-	  invader_mobs[i].invader.state++;
-	} else {
-	  invader_mobs[i].invader.state = 0;
-	}
-	ticks_until_state_change = INVADER_TICKS_PER_FRAME;
-      } else if (invader_mobs[i].status == STATUS_EXPLODING) {
-	
+    if (invader_mobs[i].status == STATUS_ALIVE) {
+      if (invader_mobs[i].invader.state < NUM_INVADER_FRAMES - 1) {
+	invader_mobs[i].invader.state++;
+      } else {
+	invader_mobs[i].invader.state = 0;
       }
-    } else {
-      ticks_until_state_change--;
+    } else if (invader_mobs[i].status == STATUS_EXPLODING) {
+      if (invader_mobs[i].explosion.state < NUM_INVADER_EXPLOSION_FRAMES -1) {
+	invader_mobs[i].explosion.state++;
+      } else {
+	invader_mobs[i].explosion.state = 0;
+	invader_mobs[i].status = STATUS_DEAD;
+      }
     }
   }
 
@@ -420,16 +416,10 @@ signed char invader_laser_tick() {
       invader_lasers[i].laser.x -= INVADER_LASER_VELOCITY;
 
       /* Adjust state so laser is animated */
-      static char ticks_until_state_change = INVADER_LASER_TICKS_PER_FRAME;
-      if (ticks_until_state_change <= 1) {
-	if (invader_lasers[i].laser.state < NUM_INVADER_LASER_FRAMES - 1) {
-	  invader_lasers[i].laser.state++;
-	} else {
-	  invader_lasers[i].laser.state = 0;
-	}
-	ticks_until_state_change = INVADER_LASER_TICKS_PER_FRAME;
+      if (invader_lasers[i].laser.state < NUM_INVADER_LASER_FRAMES - 1) {
+	invader_lasers[i].laser.state++;
       } else {
-	ticks_until_state_change--;
+	invader_lasers[i].laser.state = 0;
       }
     }
 
@@ -456,11 +446,12 @@ signed char check_player_laser_collisions() {
   char hits = 0;
   for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
     for (unsigned char j = 0; j < MAX_INVADERS; j++) {
-      if (drawable_overlap(&player_lasers[i].laser, &invader_mobs[j].invader) == TRUE) {
+      if (drawable_overlap(&player_lasers[i].laser, &invader_mobs[j].invader) == TRUE
+	  && invader_mobs[j].status == STATUS_ALIVE
+	  && player_lasers[i].active == TRUE) {
 	invader_explode(j);
 	player_lasers[i].active = FALSE;
 	hits++;
-	uart_printf("bug\n\r");
       }
     }
   }
