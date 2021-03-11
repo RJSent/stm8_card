@@ -83,7 +83,7 @@ int main() {
       } else {
 	invader_commands.movement = UP;
       }
-      if (random_upto(16) > 14) {
+      if (random_upto(32) > 30) {
 	invader_commands.shoot = TRUE;
       }
       struct DrawableImage *spaceship = debug_drawableimage_spaceship();

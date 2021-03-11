@@ -16,6 +16,7 @@
 #define PLAYER_SHIP_TICKS_PER_FRAME   (2)
 #define INVADER_TICKS_PER_FRAME       (26)
 #define INVADER_LASER_TICKS_PER_FRAME (6)
+#define INVADER_TICKS_BETWEEN_SPAWN   (32)
 
 #define MAX_INVADERS        (3)
 #define MAX_PLAYER_LASERS   (3)
@@ -31,8 +32,8 @@
 #define INVADER_Y_SPEED                (game_height / 16)
 #define INVADER_X_SPEED                (game_width / 32)
 
-#define INVADER_SPAWN_CHANCE (5) /* percentage out of 100 per tick */
-#define INVADER_SHOOT_CHANCE (5)
+#define INVADER_SPAWN_CHANCE (8) /* percentage out of 100 per tick */
+#define INVADER_SHOOT_CHANCE (3)
 
 typedef enum {STATUS_ALIVE, STATUS_EXPLODING, STATUS_DEAD} ship_status_t;
 
@@ -335,10 +336,14 @@ signed char invader_laser_shoot(unsigned char invader_num) {
 signed char invader_tick() {
   /* randomly spawn invaders */
   /* TODO: Change to < INVADER_SPAWN_CHANCE??? Same with invader_shoot? */
-  if (random_upto(100) > 100 - INVADER_SPAWN_CHANCE) {
-    invader_spawn();
+  static unsigned char ticks_since_spawn = 0;
+  if (ticks_since_spawn++ >= INVADER_TICKS_BETWEEN_SPAWN) {
+    if (random_upto(100) > 100 - INVADER_SPAWN_CHANCE) {
+      invader_spawn();
+      ticks_since_spawn = 0;
+    }
   }
-
+  
   /* determine if spawned invaders should shoot */
   for (unsigned char i = 0; i < MAX_INVADERS; i++) {
     if (random_upto(100) > 100 - INVADER_SHOOT_CHANCE && invader_mobs[i].status == STATUS_ALIVE) {
