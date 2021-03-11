@@ -93,7 +93,6 @@ const uint8_t spaceship_frame_2[24] = {
   0x61, 0x00, 0x00
 };
 
-
 const uint8_t player_laser_frame_0[2] = { 0x3F, 0xDF };
 const uint8_t player_laser_frame_1[2] = { 0xDF, 0xBF };
 const uint8_t player_laser_frame_2[2] = { 0x7F, 0x1F };
@@ -195,7 +194,6 @@ void _debug_invader_tick() {
   uart_printf("-----END TICK-----\n\r");
 }
 #endif
-
 
 /* FIXME: Visually it seems like it's faster for the ship to move down
    than up. Test with print statements if that's accurate, and if so,
@@ -476,19 +474,12 @@ signed char check_invader_laser_collisions() {
   return 0;
 }
 
-/* TODO: Best way to update statuses to have stuff explode? Maybe just "exploding" state var in structs? */
-signed char check_collisions() {
-  check_player_laser_collisions();
-  check_invader_laser_collisions();
-
-  return 0;
-}
-
 /* SDCC 4.0.0 doesn't support passing structures directly, despite that
    being part of the C standard. Page 25 of sddcman.pdf. I cry every time. */
 /* A "recent" (2020) revision in changelog said they removed some
    barriers regarding this. */
 signed char invader_game_tick(struct InvaderCommands *commands) {
+  static int score = 0;
   ship_tick(commands->movement); /* should this be combined with player_laser_shoot and player_laser_tick? */
   player_laser_shoot(commands->shoot);
   player_laser_tick();
@@ -497,7 +488,8 @@ signed char invader_game_tick(struct InvaderCommands *commands) {
   invader_tick();               /* combine??? */
   invader_laser_tick();
 
-  check_collisions();
+  score += check_player_laser_collisions();
+  check_invader_laser_collisions();
   
   return 0;
 }
@@ -543,7 +535,6 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
       .images = {&invader_laser_image_0, &invader_laser_image_1}};
     invader_lasers[i].laser = invader_laser_init;
   }
-
   
   return 0;
 }
