@@ -31,8 +31,8 @@
 #define INVADER_Y_SPEED                (game_height / 16)
 #define INVADER_X_SPEED                (game_width / 32)
 
-#define INVADER_SPAWN_CHANCE (10) /* percentage out of 100 per tick */
-#define INVADER_SHOOT_CHANCE (15)
+#define INVADER_SPAWN_CHANCE (5) /* percentage out of 100 per tick */
+#define INVADER_SHOOT_CHANCE (5)
 
 typedef enum {STATUS_ALIVE, STATUS_EXPLODING, STATUS_DEAD} ship_status_t;
 
@@ -148,9 +148,9 @@ const struct Image invader_1_image_0 = {.width = 8, .height = 11, .pixels = inva
 const struct Image invader_1_image_1 = {.width = 8, .height = 11, .pixels = invader_1_frame_1};
 
 const struct Image invader_explosion_image_0 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_0};
-const struct Image invader_explosion_image_1 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_0};
-const struct Image invader_explosion_image_2 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_0};
-const struct Image invader_explosion_image_3 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_0};
+const struct Image invader_explosion_image_1 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_1};
+const struct Image invader_explosion_image_2 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_2};
+const struct Image invader_explosion_image_3 = {.width = 8, .height = 11, .pixels = invader_explosion_frame_3};
 
 const struct Image invader_laser_image_0 = {.width = 8, .height = 3, .pixels = invader_laser_frame_0};
 const struct Image invader_laser_image_1 = {.width = 8, .height = 3, .pixels = invader_laser_frame_1};
