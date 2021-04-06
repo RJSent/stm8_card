@@ -50,7 +50,8 @@ $(BUILD_DIR):
 clean:
 	@rm -rf $(BUILD_DIR)
 
-
+# looped in case multiple build dirs becomes a thing
+$(foreach bdir,$(BUILD_DIR),$(eval $(call make-goal,$(bdir))))
 
 flash: $(final_exe)
 	stm8flash -c $(programmer) -p $(part) -w $(final_exe)
@@ -62,5 +63,5 @@ dump:
 graph_deps:
 	codeviz -r
 
-$(foreach bdir,$(BUILD_DIR),$(eval $(call make-goal,$(bdir))))
+
 
