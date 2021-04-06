@@ -1,37 +1,61 @@
 # http://web.mit.edu/gnu/doc/html/make_4.html
 # Use -m$(family) in both compiling and linking stage
 # FIXME: It seems like files aren't always recompiled when they should be. Maybe only when I change the header? Not sure.
-CC = sdcc
-CFLAGS = -m$(family)
-LDFLAGS = -m$(family) --out-fmt-$(bin_fmt)
-objects := $(patsubst %.c,%.rel,$(wildcard *.c))
+# Adapted from https://stackoverflow.com/questions/231229
+CC         :=  sdcc
+LD         :=  sdcc
+CFLAGS     =  -m$(family)
+LDFLAGS    =  -m$(family) --out-fmt-$(bin_fmt)
 
-family = stm8
-part = stm8s103?3
-programmer = stlinkv2
-bin_fmt = ihx
-final_exe = main.$(bin_fmt)
+# change when splitting into separate libraries
+SRC_DIR    := src
+BUILD_DIR  := build
 
-all: $(final_exe)
+SRC        := $(wildcard $(SRC_DIR)/*.c)
+OBJ        := $(patsubst $(SRC_DIR)/%.c,build/%.rel,$(SRC))
+INCLUDES   := $(addprefix -I,$(SRC_DIR))
 
-$(final_exe): $(objects)
-	$(CC) $(LDFLAGS) -o $(final_exe) $(objects)
+family     :=  stm8
+part       :=  stm8s103?3
+programmer :=  stlinkv2
+bin_fmt    := ihx
+final_exe  := $(BUILD_DIR)/main.$(bin_fmt)
 
-%.rel : %.c %.h
-	$(CC) -c $(CFLAGS) $< -o $@
+vpath %.c $(SRC_DIR)
 
-main.rel: main.c
-	$(CC) -c $(CFLAGS) $< -o $@
+define make-goal
+$1/%.rel: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $$< -o $$@
+endef
 
-flash: $(final_exe)
-	stm8flash -c $(programmer) -p $(part) -w $(final_exe)
+.PHONY: all clean dump flash graph_deps
+
+# Order matters here. Can we stop that?
+all: checkdirs $(final_exe)
+
+$(final_exe): $(OBJ)
+	$(LD) $(LDFLAGS) -o $(final_exe) $(OBJ)
+
+checkdirs: $(BUILD_DIR)
+
+$(BUILD_DIR):
+	@mkdir -p $@
+
+# looped in case multiple build dirs becomes a thing
+$(foreach bdir,$(BUILD_DIR),$(eval $(call make-goal,$(bdir))))
+
+clean:
+	@rm -rf $(BUILD_DIR)
 
 # Valid options for dump are flash, eeprom, ram, opt, or an explicit address
 dump:
 	stm8flash -s $(dump) -c $(programmer) -p $(part) -r $(dump).dump
 
+flash: all
+	stm8flash -c $(programmer) -p $(part) -w $(final_exe)
+
 graph_deps:
 	codeviz -r
 
-clean:
-	rm -f *.asm *.cdb *.lk *.lst *.map *.rel *.rst *.sym *.mem *.ihx *.elf *.s19 *.dump codeviz.*
+
+
