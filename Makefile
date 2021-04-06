@@ -1,27 +1,56 @@
 # http://web.mit.edu/gnu/doc/html/make_4.html
 # Use -m$(family) in both compiling and linking stage
 # FIXME: It seems like files aren't always recompiled when they should be. Maybe only when I change the header? Not sure.
-CC = sdcc
-CFLAGS = -m$(family)
+CC 	= sdcc
+LD 	= sdcc
+CFLAGS	= -m$(family)
 LDFLAGS = -m$(family) --out-fmt-$(bin_fmt)
-objects := $(patsubst %.c,%.rel,$(wildcard *.c))
 
-family = stm8
-part = stm8s103?3
+# change when splitting into separate libraries
+SRC_DIR   := src
+BUILD_DIR := build
+
+SRC	 := $(wildcard $(SRC_DIR)/*.c)
+OBJ	 := $(patsubst $(SRC_DIR)/%.c,build/%.rel,$(SRC))
+INCLUDES := $(addprefix -I,$(SRC_DIR))
+
+# objects := $(patsubst src/%.c,build/%.rel,$(wildcard src/*.c))
+
+family	   = stm8
+part	   = stm8s103?3
 programmer = stlinkv2
-bin_fmt = ihx
-final_exe = main.$(bin_fmt)
+bin_fmt    = ihx
+final_exe  = $(BUILD_DIR)/main.$(bin_fmt)
 
-all: $(final_exe)
+vpath %.c $(SRC_DIR)
 
-$(final_exe): $(objects)
-	$(CC) $(LDFLAGS) -o $(final_exe) $(objects)
+define make-goal
+$1/%.rel: %.c
+	$(CC) $(INCLUDES) -c $$< -o $$@
+endef
 
-%.rel : %.c %.h
-	$(CC) -c $(CFLAGS) $< -o $@
+.PHONY: all clean flash dump graph_deps
 
-main.rel: main.c
-	$(CC) -c $(CFLAGS) $< -o $@
+all: checkdirs $(final_exe)
+
+$(final_exe): $(OBJ)
+	$(LD) $(LDFLAGS) -o $(final_exe) $(OBJ)
+
+# %.rel : %.c %.h
+# 	$(CC) -c $(CFLAGS) $< -o $@
+
+# main.rel: main.c
+# 	$(CC) -c $(CFLAGS) $< -o $@
+
+checkdirs: $(BUILD_DIR)
+
+$(BUILD_DIR):
+	@mkdir -p $@
+
+clean:
+	@rm -rf $(BUILD_DIR)
+
+
 
 flash: $(final_exe)
 	stm8flash -c $(programmer) -p $(part) -w $(final_exe)
@@ -33,5 +62,5 @@ dump:
 graph_deps:
 	codeviz -r
 
-clean:
-	rm -f *.asm *.cdb *.lk *.lst *.map *.rel *.rst *.sym *.mem *.ihx *.elf *.s19 *.dump codeviz.*
+$(foreach bdir,$(BUILD_DIR),$(eval $(call make-goal,$(bdir))))
+
