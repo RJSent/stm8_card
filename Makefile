@@ -30,6 +30,7 @@ endef
 
 .PHONY: all clean dump flash graph_deps
 
+# Order matters here. Can we stop that?
 all: checkdirs $(final_exe)
 
 $(final_exe): $(OBJ)
