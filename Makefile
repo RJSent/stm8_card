@@ -1,26 +1,25 @@
 # http://web.mit.edu/gnu/doc/html/make_4.html
 # Use -m$(family) in both compiling and linking stage
 # FIXME: It seems like files aren't always recompiled when they should be. Maybe only when I change the header? Not sure.
-CC 	= sdcc
-LD 	= sdcc
-CFLAGS	= -m$(family)
-LDFLAGS = -m$(family) --out-fmt-$(bin_fmt)
+# Adapted from https://stackoverflow.com/questions/231229
+CC         :=  sdcc
+LD         :=  sdcc
+CFLAGS     =  -m$(family)
+LDFLAGS    =  -m$(family) --out-fmt-$(bin_fmt)
 
 # change when splitting into separate libraries
-SRC_DIR   := src
-BUILD_DIR := build
+SRC_DIR    := src
+BUILD_DIR  := build
 
-SRC	 := $(wildcard $(SRC_DIR)/*.c)
-OBJ	 := $(patsubst $(SRC_DIR)/%.c,build/%.rel,$(SRC))
-INCLUDES := $(addprefix -I,$(SRC_DIR))
+SRC        := $(wildcard $(SRC_DIR)/*.c)
+OBJ        := $(patsubst $(SRC_DIR)/%.c,build/%.rel,$(SRC))
+INCLUDES   := $(addprefix -I,$(SRC_DIR))
 
-# objects := $(patsubst src/%.c,build/%.rel,$(wildcard src/*.c))
-
-family	   = stm8
-part	   = stm8s103?3
-programmer = stlinkv2
-bin_fmt    = ihx
-final_exe  = $(BUILD_DIR)/main.$(bin_fmt)
+family     :=  stm8
+part       :=  stm8s103?3
+programmer :=  stlinkv2
+bin_fmt    := ihx
+final_exe  := $(BUILD_DIR)/main.$(bin_fmt)
 
 vpath %.c $(SRC_DIR)
 
