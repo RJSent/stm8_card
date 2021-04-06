@@ -69,7 +69,7 @@
 #define CLK_BASE        0x0050C0
 #define CLK_CKDIVR_OFF  0x000006
 
-#define CLK_CKDIVR      (uint8_t*) (CLK_BASE + CLK_CKDIVR_OFF)
+#define CLK_CKDIVR      ((uint8_t*) (CLK_BASE + CLK_CKDIVR_OFF))
 
 /* I2C */
 #define I2C_BASE        ((uint8_t*)0x005210)

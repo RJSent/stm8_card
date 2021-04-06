@@ -26,7 +26,7 @@ int math_mag_decrease(int val, int amount); /* decrease magnitude of val by amou
 
 int math_mag_increase(int val, int amount); /* increase magnitude of val by amount. */
 
-int math_mag_set(int val, unsigned int amount); /* sets magnitude of val to amount while maintaining sign. */
+int math_mag_set(int val, const unsigned int amount); /* sets magnitude of val to amount while maintaining sign. */
 
 uint8_t reverse_byte(uint8_t byte);
 
