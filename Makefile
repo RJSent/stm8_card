@@ -28,7 +28,7 @@ $1/%.rel: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $$< -o $$@
 endef
 
-.PHONY: all clean flash dump graph_deps
+.PHONY: all clean dump flash graph_deps
 
 all: checkdirs $(final_exe)
 
@@ -40,18 +40,18 @@ checkdirs: $(BUILD_DIR)
 $(BUILD_DIR):
 	@mkdir -p $@
 
-clean:
-	@rm -rf $(BUILD_DIR)
-
 # looped in case multiple build dirs becomes a thing
 $(foreach bdir,$(BUILD_DIR),$(eval $(call make-goal,$(bdir))))
 
-flash: $(final_exe)
-	stm8flash -c $(programmer) -p $(part) -w $(final_exe)
+clean:
+	@rm -rf $(BUILD_DIR)
 
 # Valid options for dump are flash, eeprom, ram, opt, or an explicit address
 dump:
 	stm8flash -s $(dump) -c $(programmer) -p $(part) -r $(dump).dump
+
+flash: all
+	stm8flash -c $(programmer) -p $(part) -w $(final_exe)
 
 graph_deps:
 	codeviz -r
