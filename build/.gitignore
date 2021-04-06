@@ -1,0 +1,15 @@
+*.asm
+*.cdb
+*.lk
+*.lst
+*.map
+*.pdf
+*.rel
+*.rst
+*.sym
+*.mem
+*.ihx
+*.dump
+*.s19
+*.elf
+*#*
