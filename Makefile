@@ -35,12 +35,6 @@ all: checkdirs $(final_exe)
 $(final_exe): $(OBJ)
 	$(LD) $(LDFLAGS) -o $(final_exe) $(OBJ)
 
-# %.rel : %.c %.h
-# 	$(CC) -c $(CFLAGS) $< -o $@
-
-# main.rel: main.c
-# 	$(CC) -c $(CFLAGS) $< -o $@
-
 checkdirs: $(BUILD_DIR)
 
 $(BUILD_DIR):
