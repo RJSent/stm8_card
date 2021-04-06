@@ -26,7 +26,7 @@ vpath %.c $(SRC_DIR)
 
 define make-goal
 $1/%.rel: %.c
-	$(CC) $(INCLUDES) -c $$< -o $$@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $$< -o $$@
 endef
 
 .PHONY: all clean flash dump graph_deps
