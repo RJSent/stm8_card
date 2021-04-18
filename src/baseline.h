@@ -10,8 +10,10 @@
 
 /* Macro for sizeof array */
 /* Be VERY careful with that, as it won't work if the array is > number of useful elements (e.g. has unused elements) */
+/* TODO: replace with c_baseline submodule */
 #define SIZEOFARRAY(x) (sizeof(x) / sizeof(x[0]))
 
+/* TODO: replace with stdbool everywhere */
 typedef enum Boolean { FALSE, TRUE } boolean_t;
 
 char delay(unsigned long num);
