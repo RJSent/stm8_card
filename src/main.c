@@ -6,6 +6,7 @@
 #include "ssd1306.h"
 #include "image.h"
 #include "space_invader.h"
+#include "gpio.h"
 
 /* Note that the dev board that I am using has a button meant to help
    quickly power cycle for testing. This power cycle seems to only
@@ -20,6 +21,22 @@
 /* There 1000% is odd behavior just using the button to power cycle.
    Confirmed when I noticed I2C communication wasn't being sent at
    all, but after fully power cycling it was sent again. */
+
+gpio_pin_t btn0 = { .port = 'D', .num = 1 };
+gpio_pin_t btn1 = { .port = 'D', .num = 2 };
+gpio_pin_t btn2 = { .port = 'C', .num = 6 };
+gpio_pin_t led0 = { .port = 'A', .num = 1 };
+gpio_pin_t led1 = { .port = 'A', .num = 2 };
+
+void gpio_initialize() {
+  gpio_mode(&btn0, GPIO_INPUT_FLOAT);
+  gpio_mode(&btn1, GPIO_INPUT_FLOAT);
+  gpio_mode(&btn2, GPIO_INPUT_FLOAT);
+  gpio_mode(&led0, GPIO_OUTPUT_PUSH_PULL);
+  gpio_mode(&led1, GPIO_OUTPUT_PUSH_PULL);
+}
+
+
 
 int main() {
   const int baud_rate = 9600;
@@ -71,17 +88,23 @@ int main() {
   char cycle_num = 0;
   const char max_cycles = 2;
 
-  uart_printf("addr main: %x", main);
-
   while (1) {
     uart_printf("-----CYCLE %d-----\n\r", cycle_num);
 
     char loops = 30;
     for (int i = 0; i < loops; i++) {
-      if (i < loops / 2) {
+      if (gpio_read(&btn0)) {
+	gpio_write(&led0, true);
+	gpio_write(&led1, false);
 	invader_commands.movement = DOWN;
-      } else {
+      } else if (gpio_read(&btn1)) {
+	gpio_write(&led0, false);
+	gpio_write(&led1, true);
 	invader_commands.movement = UP;
+      } else {
+	gpio_write(&led0, false);
+	gpio_write(&led1, false);
+	invader_commands.movement = NOP;
       }
       if (random_upto(32) > 30) {
 	invader_commands.shoot = TRUE;
