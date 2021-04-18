@@ -1,7 +1,6 @@
 #ifndef GPIO_H
 #define GPIO_H
 
-#include <stdint.h>
 #include <stdbool.h>
 
 /* TODO: Incorporate with BSP somehow? BSP should probably specify
