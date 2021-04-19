@@ -79,7 +79,6 @@ int main() {
   if (err == NACK_ERROR) {
     uart_printf("NACK ERROR!!!\n\r");
   }
-  /* Funny story with (char) cast. Originally send_bytes took an int in that spot, but I changed it to char in i2c.c/h for memory concerns. I then noticed that addr wasn't being sent correctly after that. Turns out I needed to recompile main.c as well! */
 
   clear_display();
 
@@ -87,17 +86,20 @@ int main() {
   struct InvaderCommands invader_commands = {.movement = DOWN};
   char cycle_num = 0;
   const char max_cycles = 2;
-
+  gpio_initialize();
+  /* something is resetting PORTD CR1 to reset val of 0x02 */
+  /* no clue wtf is going on, stm8flash dump has cr1 as reset of 0x02,
+     my printfs have it going from reset of 0x02 to 0x00 (expected) */
+  /* gpio_write seems to work though! */
   while (1) {
-    uart_printf("-----CYCLE %d-----\n\r", cycle_num);
-
-    char loops = 30;
-    for (int i = 0; i < loops; i++) {
-      if (gpio_read(&btn0)) {
+    /* uart_printf("-----CYCLE %d-----\n\r", cycle_num); */
+    uart_printf("PD_cr1 addr %x\n\r", (volatile uint8_t *)(PD_BASE + CR1_OFF));
+    uart_printf("PD_cr1 val %b\n\r", *(volatile uint8_t *)(PD_BASE + CR1_OFF));
+      /* if (gpio_read(&btn0)) { */
 	gpio_write(&led0, true);
 	gpio_write(&led1, false);
 	invader_commands.movement = DOWN;
-      } else if (gpio_read(&btn1)) {
+      /* } else */ if (gpio_read(&btn1)) {
 	gpio_write(&led0, false);
 	gpio_write(&led1, true);
 	invader_commands.movement = UP;
@@ -106,39 +108,7 @@ int main() {
 	gpio_write(&led1, false);
 	invader_commands.movement = NOP;
       }
-      if (random_upto(32) > 30) {
-	invader_commands.shoot = TRUE;
-      }
-      struct DrawableImage *spaceship = debug_drawableimage_spaceship();
-      invader_game_tick(&invader_commands);
-      draw_image(spaceship, LEFT);
-      struct DrawableImage *lasers[3];
-      struct DrawableImage *invader_lasers[3];
-      struct DrawableImage *invaders[3];
-      for (int i = 0; i < 3; i++) {
-	lasers[i] = debug_drawableimage_playerlaser(i);
-	invader_lasers[i] = debug_drawableimage_invaderlaser(i);
-	invaders[i] = debug_drawableimage_invader(i);
-	draw_image(lasers[i], LEFT);
-	draw_image(invader_lasers[i], LEFT);
-	draw_image(invaders[i], LEFT);
-      }
-      /* for (int ii = 0; ii < 3; ii++) { */
-      /* 	invaders[ii] = debug_drawableimage_invader(ii); /\* fack, spent an hour chasing down bug because I typed debug_drawableimage_invader(i) instead of (ii). (Also sdcc was suddenly complaining about reusing i now but not before?) *\/ */
-      /* 	draw_image(invaders[ii], LEFT); */
-      /* } */
-      draw_half(LEFT);
-      clear_buffer();
-      for (int i = 0; i < 3; i++) {
-	draw_image(lasers[i], RIGHT);
-	draw_image(invader_lasers[i], RIGHT);
-	draw_image(invaders[i], RIGHT);
-      }
-      draw_half(RIGHT);
-      clear_buffer();
-      invader_commands.shoot = FALSE;
-      delay(30000);
-    }
+      delay(1600000);
 
     cycle_num++;
 
@@ -147,7 +117,6 @@ int main() {
     /*   while(1) {}; */
     /* } */
     
-    clear_buffer();    
   }
 }
 
