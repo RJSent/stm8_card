@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdint.h>
 
 #include "gpio.h"
@@ -32,7 +33,7 @@ static volatile uint8_t * _get_gpio_base(char port) {
   case 'F':
     return PF_BASE;
   default:
-    return 0;
+    return NULL;
   }
 }
 
