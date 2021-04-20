@@ -8,20 +8,6 @@
 #include "space_invader.h"
 #include "gpio.h"
 
-/* Note that the dev board that I am using has a button meant to help
-   quickly power cycle for testing. This power cycle seems to only
-   partially power off the controller, as I've noticed changes to my
-   I2C code not fully carrying over if I just press the button as
-   opposed to fully cutting it from power. Weird unexpected behavior
-   may occur otherwise. */
-/* That said, there may be a simpler explanation. It's possible I
-   might have just not zoomed out fully on the logic analyzer, leading
-   to me misidentifying odd behavior. I thought I did in fact zoom out
-   fully several times, so I'm not sure. */
-/* There 1000% is odd behavior just using the button to power cycle.
-   Confirmed when I noticed I2C communication wasn't being sent at
-   all, but after fully power cycling it was sent again. */
-
 gpio_pin_t btn0 = { .port = 'C', .num = 6 };
 gpio_pin_t btn1 = { .port = 'C', .num = 5 };
 gpio_pin_t btn2 = { .port = 'C', .num = 4 };
@@ -35,13 +21,6 @@ void initialize_gpio() {
   gpio_mode(&led0, GPIO_OUTPUT_PUSH_PULL);
   gpio_mode(&led1, GPIO_OUTPUT_PUSH_PULL);
 }
-
-/* FIXME: For as of yet unknown reasons, I need at least 2 bytes of padding
-   at the start of the heap (0x1) to avoid memory corruption. This
-   wasn't visible before because blink_code.c had 16 bytes placed at
-   the start. */
-/* identified reason, see 157fd06 */
-/* volatile char pins[2]; */
 
 int main() {
   const int baud_rate = 9600;
@@ -77,7 +56,6 @@ int main() {
   if (err == NACK_ERROR) {
     uart_printf("NACK ERROR!!!\n\r");
   }
-  /* Funny story with (char) cast. Originally send_bytes took an int in that spot, but I changed it to char in i2c.c/h for memory concerns. I then noticed that addr wasn't being sent correctly after that. Turns out I needed to recompile main.c as well! */
 
   clear_display();
 
