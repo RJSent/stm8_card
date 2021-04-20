@@ -151,10 +151,8 @@ struct MultiCommand cmd_zoom(char enable);
 /* charge pump commands */
 struct MultiCommand cmd_pump_setting();
 
-/* display functions */
-signed char ssd1306_protocol(char protocol);
-
-signed char ssd1306_init();
+/* TODO: enum for protocol */
+signed char ssd1306_init(char protocol);
 
 /* x < WIDTH / 2 and y < HEIGHT / 2. This is needed because we split
    the screen into two halves. The calling function / source code

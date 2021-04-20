@@ -28,38 +28,10 @@ static void initialize() {
 
   clk_hsi_prescaler(1); 
   uart_init(baud_rate, fmaster);
-  ssd1306_protocol(SSD1306_I2C); /* TODO: Move into ssd1306_init */
   i2c_init(2);
   initialize_gpio();
-  uart_printf("%s\n\r", __DATE__);
-  /* Initialize display */
-  /* TODO: Move into ssd1306.c as ssd1306_init() */
-  uint8_t data[16];
-  data[0] = CONTROL_BYTE(CO_DATA, DC_COMMAND);
-  data[1] = CMD_OFF;
-  data[2] = CMD_TIM_DISPLAY_CLK_DIVIDE_RATIO;
-  data[3] = 0x80;                /* ratio 0x80 */
-  data[4] = CMD_HW_MULTIPLEX_RATIO;
-  data[5] = 0x1F;                /* ratio 31 mux */
-  data[6] = CMD_HW_COM_PINS_CONFIG;
-  data[7] = 0x02;                /* split for 128x32 */
-  data[8] = 0x20;                /* set addressing mode */
-  data[9] = 0x00;                /* horiztonal addressing mode */
-  data[10] = CMD_PUMP_SETTING;
-  data[11] = CHARGE_PUMP_75;
-  data[12] = CMD_FOLLOW_RAM;
-  data[13] = CMD_NOINVERSE;
-  data[14] = CMD_ON;
-  delay(75000);
-
-  int err = i2c_send_bytes(data, 15, 0x3C);
-  if (err == NACK_ERROR) {
-    uart_printf("NACK ERROR!!!\n\r");
-  }
-  clear_display();
-
+  ssd1306_init(SSD1306_I2C);
   invader_game_init(SSD1306_WIDTH, SSD1306_HEIGHT);
-
 }
 
 int main() {

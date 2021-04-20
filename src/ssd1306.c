@@ -33,7 +33,25 @@ struct S {
   uint8_t frame_buffer[BUF_SIZE];
 } SSD1306_Data = {.control_byte = CONTROL_BYTE(CO_DATA, DC_DATA)};
 
-signed char ssd1306_protocol(char protocol_arg) {
+const uint8_t init_commands[] = {
+  CONTROL_BYTE(CO_DATA, DC_COMMAND),
+  CMD_OFF, CMD_TIM_DISPLAY_CLK_DIVIDE_RATIO,
+  0x80,                         /* ratio 0x80 */
+  CMD_HW_MULTIPLEX_RATIO,
+  0x1F,                         /* ratio 31 mux */
+  CMD_HW_COM_PINS_CONFIG,
+  0x02,                         /* split for 128x32 TODO: generate
+				   based on dimenstions */
+  0x20,                         /* set addressing mode */
+  0x00,                         /* horizontal addressing mode */
+  CMD_PUMP_SETTING,
+  CHARGE_PUMP_75,
+  CMD_FOLLOW_RAM,
+  CMD_NOINVERSE,
+  CMD_ON,
+};
+
+static signed char _ssd1306_protocol(char protocol_arg) {
   switch (protocol_arg) {
   case SSD1306_I2C:
     protocol = SSD1306_I2C;
@@ -192,4 +210,12 @@ signed char draw_image(struct DrawableImage *image, ssd1306_side_t side) {
   }
   
   return need_redraw;
+}
+
+/* todo protocol enum typedef */
+signed char ssd1306_init(char protocol) {
+  _ssd1306_protocol(protocol);
+  int err = send_data(init_commands, sizeof(init_commands) / sizeof(init_commands[0]));
+  if (!err) clear_display();
+  return err;
 }
