@@ -36,7 +36,11 @@ void initialize_gpio() {
   gpio_mode(&led1, GPIO_OUTPUT_PUSH_PULL);
 }
 
-
+/* FIXME: For as of yet unknown reasons, I need at least 2 bytes of padding
+   at the start of the heap (0x1) to avoid memory corruption. This
+   wasn't visible before because blink_code.c had 16 bytes placed at
+   the start. */
+volatile char pins[2];
 
 int main() {
   const int baud_rate = 9600;
