@@ -3,3 +3,4 @@ external_doc/
 *#*
 codeviz.*
 *.bak
+*.dump
