@@ -36,13 +36,13 @@ static void initialize() {
 
 int main() {
   initialize();
-  
-  struct InvaderCommands invader_commands = {.movement = DOWN};
+  uart_printf("%s\n\r", __DATE__);
   char cycle_num = 0;
   const char max_cycles = 10;
 
   while (1) {
     /* uart_printf("-----CYCLE %d-----\n\r", cycle_num); */
+      struct InvaderCommands invader_commands;
       if (gpio_read(&btn0)) {
 	gpio_write(&led0, true);
 	gpio_write(&led1, false);
