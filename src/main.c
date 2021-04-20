@@ -40,6 +40,7 @@ void initialize_gpio() {
    at the start of the heap (0x1) to avoid memory corruption. This
    wasn't visible before because blink_code.c had 16 bytes placed at
    the start. */
+/* identified reason, see 157fd06 */
 /* volatile char pins[2]; */
 
 int main() {
