@@ -1,6 +1,7 @@
 #include <stdint.h>
 
 #include "gpio.h"
+/* #include "uart.h" */
 
 /* registers */
 #define ODR_OFF 0x0000
@@ -34,6 +35,21 @@ static volatile uint8_t * _get_gpio_base(char port) {
     return 0;
   }
 }
+
+#ifdef UART_H
+void _debug_gpio_registers() {
+  for (int i = 0; i < 6; i++) {
+    volatile uint8_t *ptr = _get_gpio_base(i + 'A');
+    uart_printf("\tPort %c\n\r", i + 'A');
+    uart_printf("\tODR: %b\n\r", *(ptr + ODR_OFF));
+    uart_printf("\tIDR: %b\n\r", *(ptr + IDR_OFF));
+    uart_printf("\tDDR: %b\n\r", *(ptr + DDR_OFF));
+    uart_printf("\tCR1: %b\n\r", *(ptr + CR1_OFF));
+    uart_printf("\tCR2: %b\n\r", *(ptr + CR2_OFF));
+    uart_printf("---\n\r");
+  }
+}
+#endif
 
 /* returns mode of pin */
 static gpio_mode_t _gpio_mode_read(gpio_pin_t *pin) {
