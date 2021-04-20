@@ -14,7 +14,7 @@ gpio_pin_t btn2 = { .port = 'C', .num = 4 };
 gpio_pin_t led0 = { .port = 'A', .num = 1 };
 gpio_pin_t led1 = { .port = 'A', .num = 2 };
 
-void initialize_gpio() {
+static void initialize_gpio() {
   gpio_mode(&btn0, GPIO_INPUT_FLOAT);
   gpio_mode(&btn1, GPIO_INPUT_FLOAT);
   gpio_mode(&btn2, GPIO_INPUT_FLOAT);
@@ -22,7 +22,7 @@ void initialize_gpio() {
   gpio_mode(&led1, GPIO_OUTPUT_PUSH_PULL);
 }
 
-int main() {
+static void initialize() {
   const int baud_rate = 9600;
   const long fmaster = 16000000;
 
@@ -56,10 +56,15 @@ int main() {
   if (err == NACK_ERROR) {
     uart_printf("NACK ERROR!!!\n\r");
   }
-
   clear_display();
 
   invader_game_init(SSD1306_WIDTH, SSD1306_HEIGHT);
+
+}
+
+int main() {
+  initialize();
+  
   struct InvaderCommands invader_commands = {.movement = DOWN};
   char cycle_num = 0;
   const char max_cycles = 10;
