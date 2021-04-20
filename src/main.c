@@ -93,23 +93,23 @@ int main() {
   /* gpio_write seems to work though! */
   while (1) {
     /* uart_printf("-----CYCLE %d-----\n\r", cycle_num); */
-    uart_printf("PD_cr1 addr %x\n\r", (volatile uint8_t *)(PD_BASE + CR1_OFF));
-    uart_printf("PD_cr1 val %b\n\r", *(volatile uint8_t *)(PD_BASE + CR1_OFF));
-      /* if (gpio_read(&btn0)) { */
-	gpio_write(&led0, true);
-	gpio_write(&led1, false);
-	invader_commands.movement = DOWN;
-      /* } else */ if (gpio_read(&btn1)) {
-	gpio_write(&led0, false);
-	gpio_write(&led1, true);
-	invader_commands.movement = UP;
-      } else {
-	gpio_write(&led0, false);
-	gpio_write(&led1, false);
-	invader_commands.movement = NOP;
-      }
-      delay(1600000);
-
+    /* uart_printf("PD_cr1 addr %x\n\r", (volatile uint8_t *)(PD_BASE + CR1_OFF)); */
+    /* uart_printf("PD_cr1 val %b\n\r", *(volatile uint8_t *)(PD_BASE + CR1_OFF)); */
+    /* gpio_write(&led0, false); */
+    /* gpio_write(&led1, false); */
+    /* if (gpio_read(&btn0)) { */
+    /*   gpio_write(&led0, true); */
+    /*   invader_commands.movement = DOWN; */
+    /* } */
+    /* if (gpio_read(&btn1)) { */
+    /*   gpio_write(&led1, true); */
+    /*   invader_commands.movement = UP; */
+    /* } */
+    gpio_mode(&btn0, GPIO_INPUT_FLOAT);
+    delay(200000);
+    gpio_mode(&btn0, GPIO_INPUT_PULLUP);
+    delay(200000);
+    
     cycle_num++;
 
     /* if (cycle_num == max_cycles) { */
