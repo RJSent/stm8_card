@@ -93,18 +93,30 @@ int main() {
     const char loops = 30;
     for (int i = 0; i < loops; i++) {
       data_1[i] = *(volatile uint8_t*)0x1;
-      if (gpio_read(&btn0)) {
-	gpio_write(&led0, true);
-	gpio_write(&led1, false);
-	invader_commands.movement = DOWN;
-      } else if (gpio_read(&btn1)) {
-	gpio_write(&led0, false);
-	gpio_write(&led1, true);
+      /* if (gpio_read(&btn0)) { */
+      /* 	gpio_write(&led0, true); */
+      /* 	gpio_write(&led1, false); */
+      /* 	invader_commands.movement = DOWN; */
+      /* } else if (gpio_read(&btn1)) { */
+      /* 	gpio_write(&led0, false); */
+      /* 	gpio_write(&led1, true); */
+      /* 	invader_commands.movement = UP; */
+      /* } else { */
+      /* 	gpio_write(&led0, false); */
+      /* 	gpio_write(&led1, false); */
+      /* 	invader_commands.movement = NOP; */
+      /* } */
+      /* FIXME: apparently can't handle random movement inputs. */
+      switch (random_upto(3)) {
+      case 0:
+	/* invader_commands.movement = DOWN; */
+	break;
+      case 1:
 	invader_commands.movement = UP;
-      } else {
-	gpio_write(&led0, false);
-	gpio_write(&led1, false);
+	break;
+      case 2:
 	invader_commands.movement = NOP;
+	break;
       }
       if (random_upto(32) > 30) {
 	invader_commands.shoot = TRUE;
@@ -133,7 +145,7 @@ int main() {
       draw_half(RIGHT);
       clear_buffer();
       invader_commands.shoot = FALSE;
-      delay(30000);
+      delay(3000);
     }
 
     cycle_num++;
