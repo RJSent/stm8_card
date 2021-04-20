@@ -49,7 +49,6 @@ int main() {
 
   clk_hsi_prescaler(1); 
   uart_init(baud_rate, fmaster);
-  uart_printf("addr1: %x", *(uint8_t*)8000);
   ssd1306_protocol(SSD1306_I2C); /* TODO: Move into ssd1306_init */
   i2c_init(2);
   initialize_gpio();
@@ -86,14 +85,11 @@ int main() {
   struct InvaderCommands invader_commands = {.movement = DOWN};
   char cycle_num = 0;
   const char max_cycles = 10;
-  volatile uint8_t data_1[30];
 
   while (1) {
-    uart_printf("-----CYCLE %d-----\n\r", cycle_num);
-    /* identify memory corruption? might not occur directly at 0x1 */
+    /* uart_printf("-----CYCLE %d-----\n\r", cycle_num); */
     const char loops = 30;
     for (int i = 0; i < loops; i++) {
-      data_1[i] = *(volatile uint8_t*)0x1;
       /* if (gpio_read(&btn0)) { */
       /* 	gpio_write(&led0, true); */
       /* 	gpio_write(&led1, false); */
@@ -107,10 +103,9 @@ int main() {
       /* 	gpio_write(&led1, false); */
       /* 	invader_commands.movement = NOP; */
       /* } */
-      /* FIXME: apparently can't handle random movement inputs. */
       switch (random_upto(3)) {
       case 0:
-	/* invader_commands.movement = DOWN; */
+	invader_commands.movement = DOWN;
 	break;
       case 1:
 	invader_commands.movement = UP;
@@ -146,16 +141,13 @@ int main() {
       draw_half(RIGHT);
       clear_buffer();
       invader_commands.shoot = FALSE;
-      delay(3000);
+      delay(15000);
     }
 
     cycle_num++;
 
     /* if (cycle_num == max_cycles) { */
-    /* for (volatile int j = 0; j < loops; j++) { */
-    /* uart_printf("j: %d, val: %x\n\r", j, data[j]); */
-    /* } */
-    /* uart_printf("-----END-----\n\r"); */
+    /*   uart_printf("-----END-----\n\r"); */
     /* while(1) {}; */
     /* } */
     
