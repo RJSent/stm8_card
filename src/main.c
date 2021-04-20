@@ -22,9 +22,9 @@
    Confirmed when I noticed I2C communication wasn't being sent at
    all, but after fully power cycling it was sent again. */
 
-gpio_pin_t btn0 = { .port = 'D', .num = 1 };
-gpio_pin_t btn1 = { .port = 'D', .num = 2 };
-gpio_pin_t btn2 = { .port = 'C', .num = 6 };
+gpio_pin_t btn0 = { .port = 'C', .num = 6 };
+gpio_pin_t btn1 = { .port = 'C', .num = 5 };
+gpio_pin_t btn2 = { .port = 'C', .num = 4 };
 gpio_pin_t led0 = { .port = 'A', .num = 1 };
 gpio_pin_t led1 = { .port = 'A', .num = 2 };
 
