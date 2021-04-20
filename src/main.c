@@ -88,32 +88,31 @@ int main() {
 
   while (1) {
     /* uart_printf("-----CYCLE %d-----\n\r", cycle_num); */
-    const char loops = 30;
-    for (int i = 0; i < loops; i++) {
-      /* if (gpio_read(&btn0)) { */
-      /* 	gpio_write(&led0, true); */
-      /* 	gpio_write(&led1, false); */
-      /* 	invader_commands.movement = DOWN; */
-      /* } else if (gpio_read(&btn1)) { */
-      /* 	gpio_write(&led0, false); */
-      /* 	gpio_write(&led1, true); */
-      /* 	invader_commands.movement = UP; */
-      /* } else { */
-      /* 	gpio_write(&led0, false); */
-      /* 	gpio_write(&led1, false); */
-      /* 	invader_commands.movement = NOP; */
-      /* } */
-      switch (random_upto(3)) {
-      case 0:
+      if (gpio_read(&btn0)) {
+	gpio_write(&led0, true);
+	gpio_write(&led1, false);
 	invader_commands.movement = DOWN;
-	break;
-      case 1:
+      } else if (gpio_read(&btn1)) {
+	gpio_write(&led0, false);
+	gpio_write(&led1, true);
 	invader_commands.movement = UP;
-	break;
-      case 2:
+      } else {
+	gpio_write(&led0, false);
+	gpio_write(&led1, false);
 	invader_commands.movement = NOP;
-	break;
       }
+      /* _debug_gpio_registers(); */
+      /* switch (random_upto(3)) { */
+      /* case 0: */
+      /* 	invader_commands.movement = DOWN; */
+      /* 	break; */
+      /* case 1: */
+      /* 	invader_commands.movement = UP; */
+      /* 	break; */
+      /* case 2: */
+      /* 	invader_commands.movement = NOP; */
+      /* 	break; */
+      /* } */
       if (random_upto(32) > 30) {
 	invader_commands.shoot = TRUE;
       }
@@ -142,7 +141,6 @@ int main() {
       clear_buffer();
       invader_commands.shoot = FALSE;
       delay(15000);
-    }
 
     cycle_num++;
 
