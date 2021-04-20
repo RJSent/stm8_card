@@ -1,8 +1,8 @@
-
+#include <stddef.h>
 #include "ssd1306.h"
 
 #include "i2c.h"
-#include "uart.h"
+/* #include "uart.h" */
 
 #include "baseline.h"
 
@@ -174,6 +174,7 @@ void clear_display() {
 }
 
 signed char draw_image(struct DrawableImage *image, ssd1306_side_t side) {
+  if (image == NULL) return -1;
   char width = image->images[image->state]->width;
   char need_redraw = 0;                                         /* flag for if any pixels outside bounds of buffer */
   if (side == LEFT && image->x > BUF_WIDTH) return need_redraw; /* don't waste time drawing images that don't appear */
