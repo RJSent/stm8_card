@@ -40,7 +40,7 @@ void initialize_gpio() {
    at the start of the heap (0x1) to avoid memory corruption. This
    wasn't visible before because blink_code.c had 16 bytes placed at
    the start. */
-volatile char pins[2];
+/* volatile char pins[2]; */
 
 int main() {
   const int baud_rate = 9600;
@@ -48,6 +48,7 @@ int main() {
 
   clk_hsi_prescaler(1); 
   uart_init(baud_rate, fmaster);
+  uart_printf("addr1: %x", *(uint8_t*)8000);
   ssd1306_protocol(SSD1306_I2C); /* TODO: Move into ssd1306_init */
   i2c_init(2);
   initialize_gpio();
@@ -83,13 +84,15 @@ int main() {
   invader_game_init(SSD1306_WIDTH, SSD1306_HEIGHT);
   struct InvaderCommands invader_commands = {.movement = DOWN};
   char cycle_num = 0;
-  const char max_cycles = 2;
+  const char max_cycles = 10;
+  volatile uint8_t data_1[30];
 
   while (1) {
     uart_printf("-----CYCLE %d-----\n\r", cycle_num);
-
-    char loops = 30;
+    /* identify memory corruption? might not occur directly at 0x1 */
+    const char loops = 30;
     for (int i = 0; i < loops; i++) {
+      data_1[i] = *(volatile uint8_t*)0x1;
       if (gpio_read(&btn0)) {
 	gpio_write(&led0, true);
 	gpio_write(&led1, false);
@@ -136,8 +139,11 @@ int main() {
     cycle_num++;
 
     /* if (cycle_num == max_cycles) { */
-    /*   uart_printf("-----END-----\n\r"); */
-    /*   while(1) {}; */
+    /* for (volatile int j = 0; j < loops; j++) { */
+    /* uart_printf("j: %d, val: %x\n\r", j, data[j]); */
+    /* } */
+    /* uart_printf("-----END-----\n\r"); */
+    /* while(1) {}; */
     /* } */
     
     clear_buffer();    
