@@ -45,6 +45,7 @@ struct PlayerLaser {
 struct PlayerShip {
   ship_status_t status;
   signed char velocity;
+  unsigned char ticks_until_gain;
   struct DrawableImage ship;
   struct DrawableImage explosion;
 };
@@ -164,7 +165,7 @@ static struct InvaderLaser invader_lasers[MAX_INVADER_LASERS];
 static unsigned char game_width, game_height;
 
 #ifdef UART_H
-void _debug_ship_tick(invader_movecmd_t movement, char ticks_until_gain) {
+void _debug_ship_tick(invader_movecmd_t movement) {
   static char tick_num = 0;
   uart_printf("---\n\r");
   uart_printf("tick: %d\n\r", tick_num++);
@@ -178,7 +179,7 @@ void _debug_ship_tick(invader_movecmd_t movement, char ticks_until_gain) {
     uart_printf("Invalid movement cmd\n\r");
   }
   uart_printf("vel: %d\n\r", player_ship.velocity);
-  uart_printf("tug: %d\n\r", ticks_until_gain);
+  uart_printf("tug: %d\n\r", player_ship.ticks_until_gain);
   uart_printf("pos: %d\n\r", player_ship.ship.y);
 }
 
@@ -199,20 +200,19 @@ void _debug_invader_tick() {
    than up. Test with print statements if that's accurate, and if so,
    fix it. */
 signed char ship_tick(invader_movecmd_t movement) {
-  static char ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
   /* Change velocity based on direction cmd, also decrease mag if NOP so it stops naturally */
-  if (movement == UP && ticks_until_gain <= 1) {
+  if (movement == UP && player_ship.ticks_until_gain <= 1) {
     player_ship.velocity -= PLAYER_VELOCITY_GAIN_PER_TICK;
-    ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
+    player_ship.ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
   }
-  else if (movement == DOWN && ticks_until_gain <= 1) {
+  else if (movement == DOWN && player_ship.ticks_until_gain <= 1) {
     player_ship.velocity += PLAYER_VELOCITY_GAIN_PER_TICK;
-    ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
+    player_ship.ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
   } else if (movement == NOP) {
     player_ship.velocity = math_mag_decrease(player_ship.velocity, PLAYER_VELOCITY_LOSS_PER_TICK);
-    ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
+    player_ship.ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
   } else {
-    ticks_until_gain--;
+    player_ship.ticks_until_gain--;
   }
   /* Ensure |velocity| <= MAX_VELOCITY */
   if (math_absolute(player_ship.velocity) > PLAYER_MAX_VELOCITY) player_ship.velocity = math_mag_set(player_ship.velocity, PLAYER_MAX_VELOCITY);
@@ -239,7 +239,7 @@ signed char ship_tick(invader_movecmd_t movement) {
 
   /* Debugging ship movement. */
 #ifdef UART_H
-  /* _debug_ship_tick(movement, ticks_until_gain); */
+  /* _debug_ship_tick(movement); */
 #endif
 
   return 0;
@@ -406,7 +406,7 @@ signed char invader_tick() {
   }
 
 #ifdef UART_H
-  _debug_invader_tick();
+  /* _debug_invader_tick(); */
 #endif
   
   return 0;
@@ -507,6 +507,7 @@ signed char invader_game_init(unsigned char width, unsigned char height) {
   /* Another case where compound literals not being supported sucks. */
   player_ship.status = STATUS_ALIVE;
   player_ship.ship = spaceship_init;
+  player_ship.ticks_until_gain = PLAYER_VELOCITY_TICKS_PER_GAIN;
   
   /* Initialize player laser structs */
   for (unsigned char i = 0; i < MAX_PLAYER_LASERS; i++) {
