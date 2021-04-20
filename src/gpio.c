@@ -95,7 +95,7 @@ gpio_data_t gpio_read(gpio_pin_t *pin) {
   /* can't use assert statements without defining putchar and using stdio */
   /* assert(mode == GPIO_INPUT_FLOAT || mode == GPIO_INPUT_PULLUP); */
   volatile uint8_t *base_addr = _get_gpio_base(pin->port);
-  return (*(base_addr + IDR_OFF) & (1 << pin->num)) != 0;
+  return ((*(base_addr + IDR_OFF) & (1 << pin->num))) != 0;
 }
 
 void gpio_write(gpio_pin_t *pin, gpio_data_t val) {
