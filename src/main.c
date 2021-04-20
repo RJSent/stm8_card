@@ -101,18 +101,8 @@ int main() {
 	gpio_write(&led1, false);
 	invader_commands.movement = NOP;
       }
-      /* _debug_gpio_registers(); */
-      /* switch (random_upto(3)) { */
-      /* case 0: */
-      /* 	invader_commands.movement = DOWN; */
-      /* 	break; */
-      /* case 1: */
-      /* 	invader_commands.movement = UP; */
-      /* 	break; */
-      /* case 2: */
-      /* 	invader_commands.movement = NOP; */
-      /* 	break; */
-      /* } */
+      /* debounded input here. Maybe just have as timer though for
+	 extra button to exit */
       if (random_upto(32) > 30) {
 	invader_commands.shoot = TRUE;
       }
