@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdint.h>
 
 #include "space_invader.h"
@@ -554,16 +555,16 @@ struct DrawableImage* debug_drawableimage_playerlaser(unsigned char i) {
 
 /* remove, debugging */
 struct DrawableImage* debug_drawableimage_invader(unsigned char i) {
-  if (i >= MAX_INVADERS) return 0;
+  if (i >= MAX_INVADERS) return NULL;
   if (invader_mobs[i].status == STATUS_ALIVE) return &invader_mobs[i].invader;
   if (invader_mobs[i].status == STATUS_EXPLODING) return &invader_mobs[i].explosion;
-  return 0;
+  return NULL;
 }
 
 /* remove, debugging */
 struct DrawableImage* debug_drawableimage_invaderlaser(unsigned char i) {
-  if (i >= MAX_INVADER_LASERS) return 0;
+  if (i >= MAX_INVADER_LASERS) return NULL;
   if (invader_lasers[i].active == TRUE) return &invader_lasers[i].laser;
-  return 0;
+  return NULL;
 }
 
