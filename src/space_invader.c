@@ -27,9 +27,9 @@
 #define INVADER_LASER_VELOCITY  (game_width / 32)
 
 #define PLAYER_MAX_VELOCITY            (game_height / 8)
-#define PLAYER_VELOCITY_TICKS_PER_GAIN (2) /* TODO: adjust in terms of game_height */
+#define PLAYER_VELOCITY_TICKS_PER_GAIN (3) /* TODO: adjust in terms of game_height */
 #define PLAYER_VELOCITY_GAIN_PER_TICK  (1)
-#define PLAYER_VELOCITY_LOSS_PER_TICK  (3)
+#define PLAYER_VELOCITY_LOSS_PER_TICK  (1)
 #define INVADER_Y_SPEED                (game_height / 16)
 #define INVADER_X_SPEED                (game_width / 32)
 
