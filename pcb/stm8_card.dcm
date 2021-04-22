@@ -1,6 +1,6 @@
 EESchema-DOCLIB  Version 2.0
 #
-$CMP stm8s103f3
+$CMP STM8S103F3
 K connector
 F ~
 $ENDCMP
