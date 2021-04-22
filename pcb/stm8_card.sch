@@ -121,7 +121,7 @@ U 1 1 6081E543
 P 1300 4400
 F 0 "BT1" H 1550 4500 50  0000 L CNN
 F 1 "103" H 1418 4405 50  0001 L CNN
-F 2 "Battery:BatteryHolder_Keystone_103_1x20mm" V 1300 4460 50  0001 C CNN
+F 2 "stm8_card:BatteryHolder_Keystone_103_1x20mm_Corrected" V 1300 4460 50  0001 C CNN
 F 3 "~" V 1300 4460 50  0001 C CNN
 F 4 "36-103-ND" H 1650 4400 50  0000 C CNN "digikey"
 	1    1300 4400
