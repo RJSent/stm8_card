@@ -1,4 +1,4 @@
-19080009380715842
+19081628487833842
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -82951,6 +82951,13 @@ ER-OLED0.91-7
 14
 stm8_card
 TL59AF100Q
+
+
+0
+2
+2
+stm8_card
+TL3302AF260QG
 
 
 0
