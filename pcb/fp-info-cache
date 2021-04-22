@@ -1,4 +1,4 @@
-19081628487833842
+19083247602519842
 Battery
 BatteryHolder_Bulgin_BX0036_1xC
 Bulgin Battery Holder, BX0036, Battery Type C (https://www.bulgin.com/products/pub/media/bulgin/data/Battery_holders.pdf)
@@ -82942,6 +82942,13 @@ stm8_card
 0
 8
 8
+stm8_card
+BatteryHolder_Keystone_103_1x20mm_Corrected
+http://www.keyelco.com/product-pdf.cfm?p=719
+Keystone type 103 battery holder
+0
+2
+2
 stm8_card
 ER-OLED0.91-7
 
