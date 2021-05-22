@@ -1,3 +1,4 @@
 (sym_lib_table
   (lib (name stm8_card)(type Legacy)(uri ${KIPRJMOD}/stm8_card.lib)(options "")(descr ""))
+  (lib (name stm8_card-rescue)(type Legacy)(uri ${KIPRJMOD}/stm8_card-rescue.lib)(options "")(descr ""))
 )
