@@ -67,7 +67,7 @@ int uart_printf(char *format, ...) {
     switch(*++p) {
     case 'b':
       ival = va_arg(ap, int);
-      _uitoa(ival, buf, 2);     /* sdcc nonstandard stdlib extension */
+      __uitoa(ival, buf, 2);     /* sdcc nonstandard stdlib extension */
       uart_printf("%s", buf);
       break;
     case 'c':
@@ -77,7 +77,7 @@ int uart_printf(char *format, ...) {
     case 'd':
     case 'i':
       ival = va_arg(ap, int);
-      _itoa(ival, buf, 10);
+      __itoa(ival, buf, 10);
       uart_printf("%s", buf);
       break;
     case 's':
@@ -86,12 +86,12 @@ int uart_printf(char *format, ...) {
       break;
     case 'u':
       ival = va_arg(ap, int);
-      _uitoa(ival, buf, 10);
+      __uitoa(ival, buf, 10);
       uart_printf("%s", buf);
       break;
     case 'x':
       ival = va_arg(ap, int);
-      _uitoa(ival, buf, 16);
+      __uitoa(ival, buf, 16);
       uart_printf("%s", buf);
       break;
     default:
