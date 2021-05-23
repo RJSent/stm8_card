@@ -22,11 +22,17 @@ static void initialize_gpio() {
   gpio_mode(&led1, GPIO_OUTPUT_PUSH_PULL);
 }
 
+static void power_saving() {
+  clk_hsi_prescaler(1);
+  clk_cpu_prescaler(128);        /* 125 kHz cpu */
+}
+
 static void initialize() {
   const int baud_rate = 9600;
   const long fmaster = 16000000;
 
-  clk_hsi_prescaler(1); 
+  power_saving();
+
   uart_init(baud_rate, fmaster);
   i2c_init(2);
   initialize_gpio();
@@ -85,7 +91,7 @@ int main() {
       draw_half(RIGHT);
       clear_buffer();
       invader_commands.shoot = FALSE;
-      delay(15000);
+      /* delay(2000); */
 
     cycle_num++;
 
