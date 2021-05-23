@@ -42,6 +42,7 @@ const uint8_t init_commands[] = {
   CMD_HW_COM_PINS_CONFIG,
   0x02,                         /* split for 128x32 TODO: generate
 				   based on dimenstions */
+  CMD_CONTRAST, 0x3F,           /* 1/4 brightness, reset is 1/2 */
   0x20,                         /* set addressing mode */
   0x00,                         /* horizontal addressing mode */
   CMD_PUMP_SETTING,

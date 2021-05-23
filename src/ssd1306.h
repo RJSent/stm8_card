@@ -50,6 +50,7 @@ typedef enum { RIGHT, LEFT } ssd1306_side_t;
 #define CONTROL_BYTE(bit1, bit2) ((bit1 << 7) | (bit2 << 6))
 
 /* fundamental commands */
+#define CMD_CONTRAST                                    (0x81)  /* two byte command, 2nd selects contrast 1-255 */
 #define CMD_FOLLOW_RAM                                  (0xA4)
 #define CMD_NOFOLLOW_RAM                                (0xA5)  /* Output ignores ram content */
 #define CMD_NOINVERSE                                   (0xA6)
