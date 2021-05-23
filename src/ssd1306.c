@@ -46,7 +46,7 @@ const uint8_t init_commands[] = {
   0x20,                         /* set addressing mode */
   0x00,                         /* horizontal addressing mode */
   CMD_PUMP_SETTING,
-  CHARGE_PUMP_75,
+  CHARGE_PUMP_60,               /* didnt see difference in current w/ various values */
   CMD_FOLLOW_RAM,
   CMD_NOINVERSE,
   CMD_ON,
