@@ -75,7 +75,8 @@ char clk_hsi_prescaler(char divider) {
   default:
     return -1;
   }
-  *CLK_CKDIVR &= (bits << 3);
+  /* bits 7-5 must be kept clear, pg 94 of rm0016 */
+  *CLK_CKDIVR = (*CLK_CKDIVR & ~0x18) | ((bits << 3) & 0x18);
   return 0;
 }
 
@@ -109,6 +110,6 @@ char clk_cpu_prescaler(unsigned char divider) {
   default:
     return -1;
   }
-  *CLK_CKDIVR &= bits;
+  *CLK_CKDIVR = (*CLK_CKDIVR & 0x03) | (bits & 0x03);
   return 0;
 }
