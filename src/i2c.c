@@ -21,6 +21,7 @@
 #define TRA  ((I2C_SR3 & 0x04) >> 2)
 
 /* FIXME: Disable before + reset to initial, also ensure GPIO is set properly */
+/* FIXME: Support hsi or other periph clock prescaling */
 int i2c_init(uint8_t freq_mhz) {
   uint8_t trise = freq_mhz + 1;      /* pg. 318 in rm0016. I think this shortcut calculation is valid */
   if (freq_mhz > 24 || freq_mhz < 1) return -1;      /* 1-24 valid */
