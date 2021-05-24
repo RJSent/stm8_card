@@ -116,18 +116,6 @@ F 3 "" H 6100 4650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L stm8_card-rescue:Battery_Cell-Device BT1
-U 1 1 6081E543
-P 1300 4400
-F 0 "BT1" H 1550 4500 50  0000 L CNN
-F 1 "103" H 1418 4405 50  0001 L CNN
-F 2 "stm8_card:BatteryHolder_Keystone_103_1x20mm_Corrected" V 1300 4460 50  0001 C CNN
-F 3 "~" V 1300 4460 50  0001 C CNN
-F 4 "36-103-ND" H 1650 4400 50  0000 C CNN "digikey"
-	1    1300 4400
-	1    0    0    -1  
-$EndComp
-$Comp
 L stm8_card-rescue:GND-power #PWR06
 U 1 1 6081EBFF
 P 4700 2100
@@ -170,7 +158,7 @@ Wire Wire Line
 Connection ~ 4800 4500
 Wire Wire Line
 	4800 4500 4800 4950
-Text GLabel 1250 4000 0    50   Input ~ 0
+Text GLabel 5200 6500 0    50   Input ~ 0
 3v3
 Text GLabel 3450 3950 0    50   Input ~ 0
 3v3
@@ -580,12 +568,12 @@ Wire Wire Line
 $Comp
 L stm8_card-rescue:GND-power #PWR01
 U 1 1 60827C7E
-P 2250 4150
-F 0 "#PWR01" H 2250 3900 50  0001 C CNN
-F 1 "GND" H 2255 3977 50  0000 C CNN
-F 2 "" H 2250 4150 50  0001 C CNN
-F 3 "" H 2250 4150 50  0001 C CNN
-	1    2250 4150
+P 6200 6650
+F 0 "#PWR01" H 6200 6400 50  0001 C CNN
+F 1 "GND" H 6205 6477 50  0000 C CNN
+F 2 "" H 6200 6650 50  0001 C CNN
+F 3 "" H 6200 6650 50  0001 C CNN
+	1    6200 6650
 	1    0    0    -1  
 $EndComp
 NoConn ~ 8850 2550
@@ -601,35 +589,35 @@ NoConn ~ 5050 1950
 $Comp
 L stm8_card-rescue:PWR_FLAG-power #FLG01
 U 1 1 6084AA5A
-P 1300 4150
-F 0 "#FLG01" H 1300 4225 50  0001 C CNN
-F 1 "PWR_FLAG" V 1300 4277 50  0000 L CNN
-F 2 "" H 1300 4150 50  0001 C CNN
-F 3 "~" H 1300 4150 50  0001 C CNN
-	1    1300 4150
+P 5250 6650
+F 0 "#FLG01" H 5250 6725 50  0001 C CNN
+F 1 "PWR_FLAG" V 5250 6777 50  0000 L CNN
+F 2 "" H 5250 6650 50  0001 C CNN
+F 3 "~" H 5250 6650 50  0001 C CNN
+	1    5250 6650
 	0    -1   -1   0   
 $EndComp
 $Comp
 L stm8_card-rescue:PWR_FLAG-power #FLG02
 U 1 1 6084B498
-P 1300 4550
-F 0 "#FLG02" H 1300 4625 50  0001 C CNN
-F 1 "PWR_FLAG" V 1300 4677 50  0000 L CNN
-F 2 "" H 1300 4550 50  0001 C CNN
-F 3 "~" H 1300 4550 50  0001 C CNN
-	1    1300 4550
+P 5250 7050
+F 0 "#FLG02" H 5250 7125 50  0001 C CNN
+F 1 "PWR_FLAG" V 5250 7177 50  0000 L CNN
+F 2 "" H 5250 7050 50  0001 C CNN
+F 3 "~" H 5250 7050 50  0001 C CNN
+	1    5250 7050
 	0    -1   -1   0   
 $EndComp
 Wire Wire Line
-	1250 4000 1300 4000
+	5200 6500 5250 6500
 Wire Wire Line
-	1300 4000 1300 4150
+	5250 6500 5250 6650
 Wire Wire Line
-	1300 4200 1300 4150
-Connection ~ 1300 4150
+	5250 6700 5250 6650
+Connection ~ 5250 6650
 Wire Wire Line
-	1300 4500 1300 4550
-Connection ~ 1300 4550
+	5250 7000 5250 7050
+Connection ~ 5250 7050
 Wire Wire Line
 	2050 1300 2050 1400
 Wire Wire Line
@@ -705,46 +693,217 @@ Wire Wire Line
 $Comp
 L stm8_card-rescue:R-Device R7
 U 1 1 6087FF9F
-P 2050 4000
-F 0 "R7" V 1950 4000 50  0000 C CNN
-F 1 "470" V 2050 4000 50  0000 C CNN
-F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" V 1980 4000 50  0001 C CNN
-F 3 "~" H 2050 4000 50  0001 C CNN
-	1    2050 4000
+P 6000 6500
+F 0 "R7" V 5900 6500 50  0000 C CNN
+F 1 "4.7k" V 6000 6500 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" V 5930 6500 50  0001 C CNN
+F 3 "~" H 6000 6500 50  0001 C CNN
+	1    6000 6500
 	0    -1   -1   0   
 $EndComp
 $Comp
 L stm8_card-rescue:LED-Device D1
 U 1 1 6088C1B4
-P 1700 4000
-F 0 "D1" H 1693 3745 50  0000 C CNN
-F 1 "LED" H 1693 3836 50  0000 C CNN
-F 2 "stm8_card:LED_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 1700 4000 50  0001 C CNN
-F 3 "~" H 1700 4000 50  0001 C CNN
-F 4 "404-1316-1-ND" H 1700 4000 50  0001 C CNN "digikey"
-	1    1700 4000
+P 5650 6500
+F 0 "D1" H 5643 6245 50  0000 C CNN
+F 1 "LED" H 5643 6336 50  0000 C CNN
+F 2 "stm8_card:LED_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 5650 6500 50  0001 C CNN
+F 3 "~" H 5650 6500 50  0001 C CNN
+F 4 "404-1316-1-ND" H 5650 6500 50  0001 C CNN "digikey"
+	1    5650 6500
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	1300 4000 1550 4000
-Connection ~ 1300 4000
+	5250 6500 5500 6500
+Connection ~ 5250 6500
 Wire Wire Line
-	1850 4000 1900 4000
+	5800 6500 5850 6500
 Wire Wire Line
-	2250 4000 2250 4150
+	6200 6500 6200 6650
 Wire Wire Line
-	2200 4000 2250 4000
+	6150 6500 6200 6500
 $Comp
 L stm8_card-rescue:GND-power #PWR?
 U 1 1 608BFC4F
-P 1300 4750
-F 0 "#PWR?" H 1300 4500 50  0001 C CNN
-F 1 "GND" H 1305 4577 50  0000 C CNN
-F 2 "" H 1300 4750 50  0001 C CNN
-F 3 "" H 1300 4750 50  0001 C CNN
-	1    1300 4750
+P 5250 7250
+F 0 "#PWR?" H 5250 7000 50  0001 C CNN
+F 1 "GND" H 5255 7077 50  0000 C CNN
+F 2 "" H 5250 7250 50  0001 C CNN
+F 3 "" H 5250 7250 50  0001 C CNN
+	1    5250 7250
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1300 4550 1300 4750
+	5250 7050 5250 7250
+$Comp
+L Device:C C10
+U 1 1 60AC16C5
+P 5250 6850
+F 0 "C10" H 5365 6941 50  0000 L CNN
+F 1 "330mF" H 5365 6850 50  0000 L CNN
+F 2 "" H 5288 6700 50  0001 C CNN
+F 3 "~" H 5250 6850 50  0001 C CNN
+F 4 "604-1160-2-ND" H 5365 6759 50  0000 L CNN "digikey"
+	1    5250 6850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector:USB_C_Receptacle_USB2.0 J?
+U 1 1 60AD1E79
+P 1200 6450
+F 0 "J?" H 1307 7407 50  0000 C CNN
+F 1 "USB_C_Receptacle_USB2.0" H 1307 7316 50  0000 C CNN
+F 2 "" H 1350 6450 50  0001 C CNN
+F 3 "https://www.usb.org/sites/default/files/documents/usb_type-c.zip" H 1350 6450 50  0001 C CNN
+F 4 "2073-USB4125-GF-ATR-ND" H 1307 7225 50  0000 C CNN "digikey"
+	1    1200 6450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Regulator_Linear:MIC5205-3.3YM5 U?
+U 1 1 60AFC40A
+P 2900 6550
+F 0 "U?" H 2900 6983 50  0000 C CNN
+F 1 "MIC5253-3.3YC5" H 2900 6892 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-23-5" H 2900 6875 50  0001 C CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20005785A.pdf" H 2900 6550 50  0001 C CNN
+F 4 "MIC5253-3.3YC5-TR" H 2900 6801 50  0000 C CNN "digikey"
+	1    2900 6550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2600 6450 2300 6450
+Wire Wire Line
+	2300 6450 2300 5850
+Wire Wire Line
+	2300 5850 1800 5850
+Wire Wire Line
+	2600 6550 2450 6550
+Wire Wire Line
+	2300 6550 2300 6450
+Connection ~ 2300 6450
+$Comp
+L stm8_card-rescue:GND-power #PWR?
+U 1 1 60B05530
+P 2900 7000
+F 0 "#PWR?" H 2900 6750 50  0001 C CNN
+F 1 "GND" H 2905 6827 50  0000 C CNN
+F 2 "" H 2900 7000 50  0001 C CNN
+F 3 "" H 2900 7000 50  0001 C CNN
+	1    2900 7000
+	1    0    0    -1  
+$EndComp
+$Comp
+L stm8_card-rescue:GND-power #PWR?
+U 1 1 60B05981
+P 1200 7450
+F 0 "#PWR?" H 1200 7200 50  0001 C CNN
+F 1 "GND" H 1205 7277 50  0000 C CNN
+F 2 "" H 1200 7450 50  0001 C CNN
+F 3 "" H 1200 7450 50  0001 C CNN
+	1    1200 7450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1200 7450 1200 7350
+Wire Wire Line
+	2900 7000 2900 6850
+Text GLabel 4500 6450 2    50   Input ~ 0
+3v3
+$Comp
+L stm8_card-rescue:C_Small-Device C?
+U 1 1 60B15FE3
+P 2450 6650
+F 0 "C?" H 2500 6750 50  0000 L CNN
+F 1 "1uf" H 2500 6550 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder" H 2450 6650 50  0001 C CNN
+F 3 "~" H 2450 6650 50  0001 C CNN
+	1    2450 6650
+	1    0    0    -1  
+$EndComp
+Connection ~ 2450 6550
+Wire Wire Line
+	2450 6550 2300 6550
+$Comp
+L stm8_card-rescue:GND-power #PWR?
+U 1 1 60B17629
+P 2450 6750
+F 0 "#PWR?" H 2450 6500 50  0001 C CNN
+F 1 "GND" H 2455 6577 50  0000 C CNN
+F 2 "" H 2450 6750 50  0001 C CNN
+F 3 "" H 2450 6750 50  0001 C CNN
+	1    2450 6750
+	1    0    0    -1  
+$EndComp
+Connection ~ 3750 6450
+Wire Wire Line
+	3200 6450 3750 6450
+$Comp
+L stm8_card-rescue:C_Small-Device C?
+U 1 1 60B17AD2
+P 3750 6550
+F 0 "C?" H 3700 6750 50  0000 L CNN
+F 1 "1uf" H 3800 6450 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder" H 3750 6550 50  0001 C CNN
+F 3 "~" H 3750 6550 50  0001 C CNN
+	1    3750 6550
+	1    0    0    -1  
+$EndComp
+$Comp
+L stm8_card-rescue:GND-power #PWR?
+U 1 1 60B17FDD
+P 3750 6650
+F 0 "#PWR?" H 3750 6400 50  0001 C CNN
+F 1 "GND" H 3755 6477 50  0000 C CNN
+F 2 "" H 3750 6650 50  0001 C CNN
+F 3 "" H 3750 6650 50  0001 C CNN
+	1    3750 6650
+	1    0    0    -1  
+$EndComp
+$Comp
+L stm8_card-rescue:C_Small-Device C?
+U 1 1 60B3D918
+P 3350 6650
+F 0 "C?" H 3400 6750 50  0000 L CNN
+F 1 "0.1uF" H 3400 6550 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.18x1.45mm_HandSolder" H 3350 6650 50  0001 C CNN
+F 3 "~" H 3350 6650 50  0001 C CNN
+	1    3350 6650
+	1    0    0    -1  
+$EndComp
+$Comp
+L stm8_card-rescue:GND-power #PWR?
+U 1 1 60B3DF14
+P 3350 6750
+F 0 "#PWR?" H 3350 6500 50  0001 C CNN
+F 1 "GND" H 3355 6577 50  0000 C CNN
+F 2 "" H 3350 6750 50  0001 C CNN
+F 3 "" H 3350 6750 50  0001 C CNN
+	1    3350 6750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3350 6550 3200 6550
+$Comp
+L stm8_card-rescue:R-Device R?
+U 1 1 60B433B2
+P 4350 6450
+F 0 "R?" V 4250 6450 50  0000 C CNN
+F 1 "470" V 4350 6450 50  0000 C CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" V 4280 6450 50  0001 C CNN
+F 3 "~" H 4350 6450 50  0001 C CNN
+	1    4350 6450
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3750 6450 4200 6450
+NoConn ~ 1800 6050
+NoConn ~ 1800 6150
+NoConn ~ 1800 6350
+NoConn ~ 1800 6450
+NoConn ~ 1800 6550
+NoConn ~ 1800 6650
+NoConn ~ 1800 6950
+NoConn ~ 1800 7050
+NoConn ~ 900  7350
 $EndSCHEMATC
