@@ -17,8 +17,12 @@
 /* CLOCK */
 #define CLK_BASE        0x0050C0
 #define CLK_CKDIVR_OFF  0x000006
+#define CLK_PCKENR1_OFF 0x07
+#define CLK_PCKENR2_OFF 0x0A
 
 #define CLK_CKDIVR      ((uint8_t*) (CLK_BASE + CLK_CKDIVR_OFF))
+#define CLK_PCKENR1     ((uint8_t*) (CLK_BASE + CLK_PCKENR1_OFF))
+#define CLK_PCKENR2     ((uint8_t*) (CLK_BASE + CLK_PCKENR2_OFF))
 
 /* I2C */
 #define I2C_BASE        ((uint8_t*)0x005210)

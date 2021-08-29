@@ -22,9 +22,18 @@ static void initialize_gpio() {
   gpio_mode(&led1, GPIO_OUTPUT_PUSH_PULL);
 }
 
+/* TODO: move to power saving.c/h and take struct for what to gate */
+static void periph_gating() {
+  *CLK_PCKENR1 &= 0x1;           /* only i2c enabled */
+  // *CLK_PCKENR1 |= 1 << 3;        /* enable uart1 */
+  *CLK_PCKENR2 &= !(0x8C);      /* 0 to everything not reserved, rm0016 pg 96 */
+}
+
 static void power_saving() {
   clk_hsi_prescaler(1);
   clk_cpu_prescaler(128);        /* 125 kHz cpu */
+  periph_gating();
+  
 }
 
 static void initialize() {
