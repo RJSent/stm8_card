@@ -1,0 +1,3 @@
+[submodule "lib/stm8_lib"]
+	path = lib/stm8_lib
+	url = git@gitlab.com:rjsent/stm8_lib
